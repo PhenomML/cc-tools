@@ -5,11 +5,16 @@ description = "Standard Claude Code toolset — portable across all PhenomML sys
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
+    "arxiv>=2.4.1",
     "markitdown>=0.1.5",
+    "nbconvert>=7.17.1",
+    "pdfplumber>=0.11.9",
 ]
 
 [project.scripts]
 cc-markitdown = "markitdown.__main__:main"
+cc-nbconvert = "nbconvert.nbconvertapp:main"
+cc-pdfplumber = "pdfplumber.cli:main"
 
 [dependency-groups]
 dev = []
