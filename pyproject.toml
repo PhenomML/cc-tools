@@ -1,0 +1,9 @@
+[project]
+name = "cc-tools"
+version = "0.1.0"
+description = "Standard Claude Code toolset — portable across all PhenomML systems"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "markitdown>=0.1.5",
+]
