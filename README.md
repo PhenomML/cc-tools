@@ -21,7 +21,7 @@ Then restart your shell (or run `source ~/.zshrc`) so that `~/.local/bin` is on 
 ## Installation
 
 ```bash
-git clone <repo-url> ~/Projects/PhenomML/cc-tools
+git clone git@github.com:PhenomML/cc-tools.git ~/Projects/PhenomML/cc-tools
 uv tool install --editable ~/Projects/PhenomML/cc-tools
 ```
 
