@@ -49,8 +49,24 @@ The following slash commands are installed in `~/.claude/commands/` and availabl
 | `/paper-summary` | `/paper-summary path/to/paper.pdf` | Extract and summarize a research paper |
 | `/notebook-narrate` | `/notebook-narrate path/to/analysis.ipynb` | Write a research narrative from a Jupyter notebook |
 | `/math-review` | `/math-review path/to/notes.md` | Check .md files against the $...$ authoring standard |
+| `/wiki-ingest` | `/wiki-ingest raw/paper.pdf` or `/wiki-ingest 2301.07608` | Ingest a source into the research wiki (multi-wiki routing) |
+| `/wiki-query` | `/wiki-query <research question>` | Answer a question by synthesising across wiki pages |
+| `/wiki-lint` | `/wiki-lint` or `/wiki-lint tsa` | Health-check wiki for orphans, broken links, stale pages |
+| `/wiki-project` | `/wiki-project ../MyProject` | Add or update a project page in the wiki |
 
 Skills are symlinked from the cc-tools repo — they update automatically on `git pull` without re-running setup.
+
+## Research Wiki
+
+Wiki skills follow the Karpathy LLM wiki pattern, adapted for multi-subfield research:
+a shared `raw/` directory holds source PDFs (local only, never committed); individual
+sub-wikis (`tsa/`, `bayes/`, etc.) hold Claude-maintained markdown pages. A paper
+spanning multiple subfields is written into all relevant sub-wikis. Projects are
+registered in the wiki with relative filesystem paths; the project repos carry no
+wiki content.
+
+To initialise a new wiki, copy `templates/wiki-CLAUDE.md` from the cc-tools repo to
+your wiki root and edit the sub-wiki table to match your research domains.
 
 Source and full docs: https://github.com/PhenomML/cc-tools
 
