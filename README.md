@@ -57,9 +57,18 @@ More tools will be added here as the standard Claude instantiation grows.
 
 ```bash
 brew install pandoc
-brew install --cask basictex
-sudo tlmgr update --self && sudo tlmgr install collection-fontsrecommended
 ```
+
+For the LaTeX engine, install **one** of the following (MacTeX and BasicTeX conflict — if you have one, skip the other):
+
+```bash
+brew install --cask mactex      # full TeX distribution (~4 GB), recommended
+# or
+brew install --cask basictex    # minimal TeX (~100 MB); then:
+# sudo tlmgr update --self && sudo tlmgr install collection-fontsrecommended
+```
+
+If MacTeX is already installed, only `brew install pandoc` is needed.
 
 **Known limitation:** these files often use Unicode characters for math notation (σ², β̂, x_{t−1}) rather than LaTeX math syntax. XeLaTeX renders Greek letters correctly, but subscript/superscript notation like `_{t−1}` will appear as literal text. Output is readable but not publication-typeset. Proper LaTeX math rendering would require a follow-on preprocessing step.
 
