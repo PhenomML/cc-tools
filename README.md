@@ -74,6 +74,35 @@ If MacTeX is already installed, only `brew install pandoc` is needed.
 
 **Authoring standard:** use `$...$` LaTeX math for all mathematical expressions. This renders correctly as typeset math in both the PDF output and in Obsidian (which uses MathJax with the same syntax). See [AUTHORING.md](AUTHORING.md) for the full guide, including a table of common LaTeX commands and a compatibility matrix.
 
+## MCP Servers
+
+`setup-claude.sh` also merges MCP server entries from `mcp/` into `~/.claude.json`. Each file in `mcp/` is a JSON object of server name → config; they are merged under `mcpServers` without disturbing any other Claude Code settings.
+
+| Server | Package | Purpose |
+|---|---|---|
+| `jupyter` | `uvx jupyter-mcp-server@latest` | Read/write notebooks and execute cells in a running JupyterLab |
+
+### Isolation
+
+The MCP server runs via `uvx` in its own ephemeral uv environment — completely separate from the researcher's Conda environment. It talks to JupyterLab over HTTP. The researcher's Conda env, their notebooks, and Claude's tooling remain independent.
+
+### Jupyter workflow
+
+Start JupyterLab with a known token before invoking Claude Code:
+
+```bash
+export JUPYTER_TOKEN=your_token
+jupyter lab --port 8888 --IdentityProvider.token "$JUPYTER_TOKEN"
+```
+
+For a permanent fixed token, add to `~/.jupyter/jupyter_server_config.py`:
+
+```python
+c.IdentityProvider.token = 'pick-a-token'
+```
+
+And add `export JUPYTER_TOKEN=pick-a-token` to `~/.zshrc`. After that, no per-session setup is needed.
+
 ## Research Skills
 
 `setup-claude.sh` also installs slash-command skills into `~/.claude/commands/` as symlinks to this repo. They are available in any Claude Code session:

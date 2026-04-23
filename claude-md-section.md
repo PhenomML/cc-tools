@@ -18,6 +18,27 @@ The `arxiv` Python library is also available for fetching arXiv paper metadata:
 uv run --directory ~/Projects/PhenomML/cc-tools python
 ```
 
+## MCP Servers
+
+The following MCP servers are registered in `~/.claude.json` and available in every session:
+
+| Server | Purpose |
+|---|---|
+| `jupyter` | Interact with a running JupyterLab instance — read/write notebooks, execute cells, capture outputs |
+
+**Isolation:** the MCP server runs via `uvx` in its own ephemeral uv environment. It connects to JupyterLab over HTTP and never shares a Python environment with the researcher's Conda env.
+
+**Workflow:** before starting Claude Code, export `JUPYTER_TOKEN` and start JupyterLab:
+```bash
+export JUPYTER_TOKEN=your_token
+jupyter lab --port 8888 --IdentityProvider.token "$JUPYTER_TOKEN"
+```
+Or configure a fixed token in `~/.jupyter/jupyter_server_config.py` so you never need to set it each session:
+```python
+c.IdentityProvider.token = 'pick-a-token'
+```
+Then add `export JUPYTER_TOKEN=pick-a-token` to `~/.zshrc` once.
+
 ## Research Skills
 
 The following slash commands are installed in `~/.claude/commands/` and available in any session:
