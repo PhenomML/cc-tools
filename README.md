@@ -70,7 +70,7 @@ brew install --cask basictex    # minimal TeX (~100 MB); then:
 
 If MacTeX is already installed, only `brew install pandoc` is needed.
 
-**Known limitation:** these files often use Unicode characters for math notation (σ², β̂, x_{t−1}) rather than LaTeX math syntax. XeLaTeX renders Greek letters correctly, but subscript/superscript notation like `_{t−1}` will appear as literal text. Output is readable but not publication-typeset. Proper LaTeX math rendering would require a follow-on preprocessing step.
+**Authoring standard:** use `$...$` LaTeX math for all mathematical expressions. This renders correctly as typeset math in both the PDF output and in Obsidian (which uses MathJax with the same syntax). See [AUTHORING.md](AUTHORING.md) for the full guide, including a table of common LaTeX commands and a compatibility matrix.
 
 ## Your Conda environments are unaffected
 
