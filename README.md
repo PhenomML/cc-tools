@@ -23,18 +23,20 @@ Then restart your shell (or run `source ~/.zshrc`) so that `~/.local/bin` is on 
 ```bash
 git clone git@github.com:PhenomML/cc-tools.git ~/Projects/PhenomML/cc-tools
 uv tool install --editable ~/Projects/PhenomML/cc-tools
+bash ~/Projects/PhenomML/cc-tools/setup-claude.sh
 ```
 
-That's it. The tools are now available system-wide on this machine. You do not activate anything — the commands are on your PATH automatically.
+The first two commands install the tools. The third adds the cc-tools section to `~/.claude/CLAUDE.md` (creating it if needed), so every Claude Code session on this machine automatically knows what tools are available. Safe to run again after updates — it replaces the managed section in place without touching anything else in the file.
 
 ## Keeping it up to date
 
-When Claude adds new tools to this repository, pull and reinstall:
+When Claude adds new tools to this repository, pull, reinstall, and refresh CLAUDE.md:
 
 ```bash
 cd ~/Projects/PhenomML/cc-tools
 git pull
 uv tool upgrade cc-tools
+bash setup-claude.sh
 ```
 
 Claude will tell you when this is needed.
