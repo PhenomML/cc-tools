@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
-# setup-claude.sh — install or update the cc-tools section in ~/.claude/CLAUDE.md
-# Safe to run multiple times; uses sentinel comments to locate and replace the managed block.
+# setup-claude.sh — install or update cc-tools configuration for Claude Code
+#   - Manages the cc-tools section in ~/.claude/CLAUDE.md (sentinel-based, idempotent)
+#   - Symlinks skills from skills/ into ~/.claude/commands/ (updates on git pull)
+# Safe to run multiple times.
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
@@ -8,6 +10,8 @@ SECTION="$SCRIPT_DIR/claude-md-section.md"
 CLAUDE_MD="$HOME/.claude/CLAUDE.md"
 BEGIN="<!-- cc-tools:begin -->"
 END="<!-- cc-tools:end -->"
+
+# ── CLAUDE.md ────────────────────────────────────────────────────────────────
 
 mkdir -p "$HOME/.claude"
 
@@ -43,3 +47,27 @@ else
     } >> "$CLAUDE_MD"
     echo "setup-claude: added cc-tools section to $CLAUDE_MD"
 fi
+
+# ── Skills ───────────────────────────────────────────────────────────────────
+
+SKILLS_SRC="$SCRIPT_DIR/skills"
+COMMANDS_DIR="$HOME/.claude/commands"
+mkdir -p "$COMMANDS_DIR"
+
+count=0
+for skill in "$SKILLS_SRC"/*.md; do
+    [[ -f "$skill" ]] || continue
+    name="$(basename "$skill")"
+    target="$COMMANDS_DIR/$name"
+    if [[ -L "$target" ]]; then
+        # Already a symlink — update it in case the repo moved.
+        ln -sf "$skill" "$target"
+    elif [[ -e "$target" ]]; then
+        echo "setup-claude: skipping $name — exists and is not a symlink (user-created file?)"
+        continue
+    else
+        ln -s "$skill" "$target"
+    fi
+    (( count++ )) || true
+done
+echo "setup-claude: $count skill(s) linked to $COMMANDS_DIR"

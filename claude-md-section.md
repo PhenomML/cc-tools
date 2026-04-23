@@ -18,6 +18,19 @@ The `arxiv` Python library is also available for fetching arXiv paper metadata:
 uv run --directory ~/Projects/PhenomML/cc-tools python
 ```
 
+## Research Skills
+
+The following slash commands are installed in `~/.claude/commands/` and available in any session:
+
+| Skill | Usage | Purpose |
+|---|---|---|
+| `/arxiv-search` | `/arxiv-search time series forecasting` | Search arXiv and summarize top results |
+| `/paper-summary` | `/paper-summary path/to/paper.pdf` | Extract and summarize a research paper |
+| `/notebook-narrate` | `/notebook-narrate path/to/analysis.ipynb` | Write a research narrative from a Jupyter notebook |
+| `/math-review` | `/math-review path/to/notes.md` | Check .md files against the $...$ authoring standard |
+
+Skills are symlinked from the cc-tools repo — they update automatically on `git pull` without re-running setup.
+
 Source and full docs: https://github.com/PhenomML/cc-tools
 
 To update cc-tools after a `git pull`:

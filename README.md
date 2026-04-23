@@ -74,6 +74,19 @@ If MacTeX is already installed, only `brew install pandoc` is needed.
 
 **Authoring standard:** use `$...$` LaTeX math for all mathematical expressions. This renders correctly as typeset math in both the PDF output and in Obsidian (which uses MathJax with the same syntax). See [AUTHORING.md](AUTHORING.md) for the full guide, including a table of common LaTeX commands and a compatibility matrix.
 
+## Research Skills
+
+`setup-claude.sh` also installs slash-command skills into `~/.claude/commands/` as symlinks to this repo. They are available in any Claude Code session:
+
+| Skill | Purpose |
+|---|---|
+| `/arxiv-search <topic>` | Search arXiv and summarize top results |
+| `/paper-summary <path>` | Extract and summarize a research paper PDF |
+| `/notebook-narrate <path>` | Write a research narrative from a Jupyter notebook |
+| `/math-review <path>` | Check .md files against the `$...$` authoring standard |
+
+Skills update automatically when you `git pull` — no need to re-run `setup-claude.sh` for skill content changes. Re-run it only when new skills are added to the repo.
+
 ## Your Conda environments are unaffected
 
 `uv tool` installs into `~/.local/share/uv/tools/cc-tools/` — a completely separate location from any Conda environment. It does not touch your `base` environment or any project environment. The two systems do not interact.
