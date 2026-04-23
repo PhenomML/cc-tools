@@ -44,11 +44,24 @@ Claude will tell you when this is needed.
 | Command | Source | Purpose |
 |---|---|---|
 | `cc-markitdown` | [microsoft/markitdown](https://github.com/microsoft/markitdown) | Convert PDFs, Office docs, HTML, and other formats to Markdown |
+| `cc-md2pdf` | cc-tools (built-in) | Convert Markdown to PDF via pandoc + XeLaTeX |
 | `cc-nbconvert` | [jupyter/nbconvert](https://github.com/jupyter/nbconvert) | Convert Jupyter notebooks to Markdown and other formats |
 | `cc-pdfplumber` | [jsvine/pdfplumber](https://github.com/jsvine/pdfplumber) | Extract tables and text from PDFs with precise layout information |
 | `arxiv` (library) | [lukasschwab/arxiv.py](https://github.com/lukasschwab/arxiv.py) | Fetch paper metadata and PDF links from arXiv — used programmatically by Claude |
 
 More tools will be added here as the standard Claude instantiation grows.
+
+### cc-md2pdf prerequisites
+
+`cc-md2pdf` requires system packages not managed by uv. Install once per machine:
+
+```bash
+brew install pandoc
+brew install --cask basictex
+sudo tlmgr update --self && sudo tlmgr install collection-fontsrecommended
+```
+
+**Known limitation:** these files often use Unicode characters for math notation (σ², β̂, x_{t−1}) rather than LaTeX math syntax. XeLaTeX renders Greek letters correctly, but subscript/superscript notation like `_{t−1}` will appear as literal text. Output is readable but not publication-typeset. Proper LaTeX math rendering would require a follow-on preprocessing step.
 
 ## Your Conda environments are unaffected
 
