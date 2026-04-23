@@ -15,11 +15,19 @@ from pathlib import Path
 
 _SUMMARY_RE = re.compile(r"<summary>(.*?)</summary>", re.IGNORECASE | re.DOTALL)
 _DETAILS_RE = re.compile(r"</?details[^>]*>", re.IGNORECASE)
+# Unicode subscript digits ₀–₉ (U+2080–U+2089): absent from most serif fonts.
+# Convert "X₁₂" → "X$_{12}$" so XeLaTeX renders them as proper subscripts.
+_SUB_DIGIT_RE = re.compile(r"([\wͰ-Ͽ])([₀-₉]+)")
+_SUB_DIGIT_MAP = str.maketrans("₀₁₂₃₄₅₆₇₈₉", "0123456789")
 
 
 def _preprocess(text: str) -> str:
     text = _SUMMARY_RE.sub(r"**\1:**", text)
     text = _DETAILS_RE.sub("", text)
+    text = _SUB_DIGIT_RE.sub(
+        lambda m: m.group(1) + "$_{" + m.group(2).translate(_SUB_DIGIT_MAP) + "}$",
+        text,
+    )
     return text
 
 
@@ -68,18 +76,33 @@ def main() -> None:
             tmp.write_text(_preprocess(src.read_text(encoding="utf-8")), encoding="utf-8")
 
             print(f"cc-md2pdf: rendering {src} → {out}")
+            cmd = [
+                "pandoc", str(tmp),
+                f"--pdf-engine={args.engine}",
+                "--from=markdown+raw_html+smart",
+                "-V", "geometry:margin=1in",
+                "-V", "papersize:letter",
+                "-V", "fontsize:11pt",
+                "-V", "colorlinks=true",
+                "--standalone",
+                "-o", str(out),
+            ]
+            # XeLaTeX/LuaLaTeX: default font (Latin Modern) has no Greek glyphs.
+            # TeX Gyre Termes (Times clone, ships with MacTeX) covers Latin+Greek+subscripts.
+            # Fontspec can't find it by "nice name" (not in macOS CoreText), so use file name —
+            # fontspec resolves .otf names through kpsewhich instead.
+            if args.engine in ("xelatex", "lualatex"):
+                cmd += [
+                    "-V", "mainfont=texgyretermes-regular.otf",
+                    "-V", (
+                        "mainfontoptions="
+                        "BoldFont=texgyretermes-bold.otf,"
+                        "ItalicFont=texgyretermes-italic.otf,"
+                        "BoldItalicFont=texgyretermes-bolditalic.otf"
+                    ),
+                ]
             result = subprocess.run(
-                [
-                    "pandoc", str(tmp),
-                    f"--pdf-engine={args.engine}",
-                    "--from=markdown+raw_html+smart",
-                    "-V", "geometry:margin=1in",
-                    "-V", "papersize:letter",
-                    "-V", "fontsize:11pt",
-                    "-V", "colorlinks=true",
-                    "--standalone",
-                    "-o", str(out),
-                ],
+                cmd,
                 capture_output=True,
                 text=True,
             )
