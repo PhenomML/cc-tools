@@ -16,17 +16,10 @@ ones at worst.
 
 Four tools solve the ingestion problem:
 
-- **[markitdown](https://github.com/microsoft/markitdown)** — converts PDFs, Office
-  documents, and HTML to clean markdown. The workhorse for most papers.
-- **[arxiv](https://github.com/lukasschwab/arxiv.py)** — fetches paper metadata and
-  PDFs from arXiv by ID or search query, no API key required. The agent can retrieve a
-  paper directly from `2301.07608` without a browser step.
-- **[pdfplumber](https://github.com/jsvine/pdfplumber)** — extracts tables from PDFs
-  with layout precision. Results tables in papers lose their column structure in naive
-  conversion; pdfplumber preserves it.
-- **[nbconvert](https://github.com/jupyter/nbconvert)** — converts executed Jupyter
-  notebooks to markdown, including all outputs. A notebook without its outputs is a
-  script; with outputs it is a record.
+- **[markitdown](https://github.com/microsoft/markitdown)** — converts PDFs, Office documents, and HTML to clean markdown. The workhorse for most papers.
+- **[arxiv](https://github.com/lukasschwab/arxiv.py)** — fetches paper metadata and PDFs from arXiv by ID or search query, no API key required. The agent can retrieve a paper directly from `2301.07608` without a browser step.
+- **[pdfplumber](https://github.com/jsvine/pdfplumber)** — extracts tables from PDFs with layout precision. Results tables in papers lose their column structure in naive conversion; pdfplumber preserves it.
+- **[nbconvert](https://github.com/jupyter/nbconvert)** — converts executed Jupyter notebooks to markdown, including all outputs. A notebook without its outputs is a script; with outputs it is a record.
 
 These are not exotic requirements. They are the minimum for an agent doing real research
 reading. They need to be installed once, versioned, and consistently available — not
