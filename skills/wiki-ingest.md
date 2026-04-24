@@ -5,16 +5,25 @@ Ingest a source into the research wiki: $ARGUMENTS
 
 ## Step 1 — Acquire the source
 
-**If arXiv ID:** fetch metadata and PDF using the arxiv Python library:
+**If arXiv ID:** first check whether an HTML version exists — HTML produces cleaner
+markdown than PDF conversion:
+```bash
+cc-webfetch https://arxiv.org/html/<id> | head -5
+```
+If the output contains "No HTML for", fall back to PDF:
 ```bash
 uv run --directory ~/Projects/PhenomML/cc-tools python
 ```
-Download the PDF to `raw/<author>-<year>-<slug>.pdf`. Convert to markdown:
+Download the PDF to `raw/<author>-<year>-<slug>.pdf` and convert:
 ```bash
 cc-markitdown raw/<filename>.pdf
 ```
+If HTML is available, fetch it directly into raw/ as markdown:
+```bash
+cc-webfetch https://arxiv.org/html/<id> > raw/<author>-<year>-<slug>.md
+```
 
-**If a path in raw/:** convert directly:
+**If a path in raw/:** convert directly (PDF/Office/HTML file on disk):
 ```bash
 cc-markitdown $ARGUMENTS
 ```
