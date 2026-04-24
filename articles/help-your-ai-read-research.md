@@ -1,4 +1,4 @@
-# Make Your AI's Work Permanent
+# Help Your AI Read Research — and Remember It
 
 Research literature lives in PDFs. Most of it arrives from arXiv before it lives anywhere else. Before an AI agent can reason about a paper, someone has to get it off the page and into readable text — preserving the math, the tables, and the structure that make the argument followable.
 

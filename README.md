@@ -127,6 +127,16 @@ in that project, not globally.
 
 Skills update automatically when you `git pull` — no need to re-run `setup-claude.sh` for skill content changes. Re-run it only when new skills are added to the repo.
 
+## Articles
+
+Background reading on the patterns cc-tools supports:
+
+| Article | Description |
+|---|---|
+| [Help Your AI Read Research — and Remember It](articles/help-your-ai-read-research.md) | The ingestion stack, math notation standard, research skills, and the permanence pattern that underlies the wiki |
+| [The Multi-Subject Personal Research Wiki](articles/multi-subject-personal-research-wiki.md) | Why one wiki is not enough, the multi-sub-wiki architecture, and the skills that maintain it |
+| [Jupyter and the MCP Trade-off](articles/jupyter-and-the-mcp-tradeoff.md) | When static notebook conversion is sufficient and when the Jupyter MCP is worth its token cost |
+
 ## Your Conda environments are unaffected
 
 `uv tool` installs into `~/.local/share/uv/tools/cc-tools/` — a completely separate location from any Conda environment. It does not touch your `base` environment or any project environment. The two systems do not interact.

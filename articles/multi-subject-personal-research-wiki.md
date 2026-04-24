@@ -1,6 +1,6 @@
 # The Multi-Subject Personal Research Wiki
 
-A [previous piece](https://github.com/PhenomML/cc-tools/blob/main/articles/make-your-ai-work-permanent.md) introduced the idea of making AI work permanent: instead of asking an agent to answer questions, ask it to write files and commit the outputs. The natural destination for this work, in a research context, is a wiki — the pattern Andrej Karpathy describes in his [LLM wiki gist](https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f): a structured, interlinked collection of markdown pages that the agent writes and maintains over time.
+A [previous piece](https://github.com/PhenomML/cc-tools/blob/main/articles/help-your-ai-read-research.md) introduced the idea of making AI work permanent: instead of asking an agent to answer questions, ask it to write files and commit the outputs. The natural destination for this work, in a research context, is a wiki — the pattern Andrej Karpathy describes in his [LLM wiki gist](https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f): a structured, interlinked collection of markdown pages that the agent writes and maintains over time.
 
 This piece is about the shape that wiki should take.
 
@@ -113,4 +113,4 @@ The wiki grows from there. Add sub-wikis as new domains become relevant. The age
 
 ---
 
-*The tools that support the ingest workflow — `cc-markitdown`, the arXiv library, `cc-nbconvert`, `cc-pdfplumber` — are part of the standard cc-tools install, described in ["Make Your AI's Work Permanent"](https://github.com/PhenomML/cc-tools/blob/main/articles/make-your-ai-work-permanent.md). Live Jupyter notebook execution, when it is needed beyond what `cc-nbconvert` provides, is covered in ["Jupyter and the MCP Trade-off"](https://github.com/PhenomML/cc-tools/blob/main/articles/jupyter-and-the-mcp-tradeoff.md).*
+*The tools that support the ingest workflow — `cc-markitdown`, the arXiv library, `cc-nbconvert`, `cc-pdfplumber` — are part of the standard cc-tools install, described in ["Help Your AI Read Research — and Remember It"](https://github.com/PhenomML/cc-tools/blob/main/articles/help-your-ai-read-research.md). Live Jupyter notebook execution, when it is needed beyond what `cc-nbconvert` provides, is covered in ["Jupyter and the MCP Trade-off"](https://github.com/PhenomML/cc-tools/blob/main/articles/jupyter-and-the-mcp-tradeoff.md).*

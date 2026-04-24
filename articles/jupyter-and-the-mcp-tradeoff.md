@@ -90,4 +90,4 @@ The default is always static conversion. It costs nothing in token overhead, run
 
 ---
 
-*The cc-tools repository includes a reference Jupyter MCP config at [`mcp/jupyter.json`](https://github.com/PhenomML/cc-tools/blob/main/mcp/jupyter.json). The full toolset, including `cc-nbconvert` and the `/notebook-narrate` skill, is described in ["Make Your AI's Work Permanent"](https://github.com/PhenomML/cc-tools/blob/main/articles/make-your-ai-work-permanent.md).*
+*The cc-tools repository includes a reference Jupyter MCP config at [`mcp/jupyter.json`](https://github.com/PhenomML/cc-tools/blob/main/mcp/jupyter.json). The full toolset, including `cc-nbconvert` and the `/notebook-narrate` skill, is described in ["Help Your AI Read Research — and Remember It"](https://github.com/PhenomML/cc-tools/blob/main/articles/help-your-ai-read-research.md).*
