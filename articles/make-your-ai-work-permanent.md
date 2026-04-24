@@ -110,7 +110,8 @@ update automatically when you pull.
 
 ## The wiki as natural destination
 
-The natural home for permanent AI work on a research topic is a wiki: a structured,
+Andrej Karpathy's [LLM wiki pattern](https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f)
+identifies the natural home for permanent AI work on a research topic: a structured,
 interlinked collection of markdown files that the agent writes and maintains. Drop a paper
 into the source directory; the agent reads it, writes a summary, and updates the concept
 pages it touches. Ask a question; the agent synthesizes across everything it has
