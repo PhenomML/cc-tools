@@ -30,6 +30,31 @@ These are not exotic requirements. They are the minimum for an agent doing real 
 reading. They need to be installed once, versioned, and consistently available — not
 improvised each session.
 
+## A call for AI-friendly source formats
+
+The ingestion tools above work around a problem that authors can largely eliminate.
+
+When you submit to arXiv, you submit LaTeX source. ArXiv compiles it to PDF and
+archives both. The LaTeX source is publicly available for nearly every paper on the
+platform. `pandoc -f latex -t markdown` converts it to clean markdown with math
+preserved — `$...$` notation survives the round-trip almost perfectly, because LaTeX
+already uses it. A reader with the source gets a dramatically better ingestion result
+than one working from the PDF alone.
+
+The ask is small: **link to your arXiv source, and mention it in your README or
+repository**. If you distribute a paper alongside code, include the `.tex` files. If
+you post notes or a preprint, publish the source alongside the PDF.
+
+HTML is the other underused format. Several journals and preprint services offer
+HTML versions of papers. HTML converts cleanly to markdown, preserves hyperlinks,
+and handles tables well. When an HTML version exists, it is frequently the best
+ingestion path — better than either the PDF or the LaTeX source.
+
+The research community has been generating machine-readable source for decades — it
+just hasn't thought of it in those terms. AI-assisted reading is now a routine part
+of research workflows. Publishing the source is a small act with compounding benefits
+for every reader who comes after you, human or otherwise.
+
 ## Mathematical notation
 
 Research papers are dense with mathematics. Conversion that survives the notation is
