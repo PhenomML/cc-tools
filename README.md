@@ -55,7 +55,8 @@ Claude will tell you when this is needed.
 
 | Command | Source | Purpose |
 |---|---|---|
-| `cc-markitdown` | [microsoft/markitdown](https://github.com/microsoft/markitdown) | Convert PDFs, Office docs, HTML, and other formats to Markdown |
+| `cc-markitdown` | [microsoft/markitdown](https://github.com/microsoft/markitdown) | Convert PDFs, Office docs, and HTML files to Markdown |
+| `cc-webfetch` | [markdown.new](https://markdown.new) | Fetch any public URL as clean Markdown (500 req/day free) |
 | `cc-md2pdf` | cc-tools (built-in) | Convert Markdown to PDF via pandoc + XeLaTeX |
 | `cc-nbconvert` | [jupyter/nbconvert](https://github.com/jupyter/nbconvert) | Convert Jupyter notebooks to Markdown and other formats |
 | `cc-pdfplumber` | [jsvine/pdfplumber](https://github.com/jsvine/pdfplumber) | Extract tables and text from PDFs with precise layout information |

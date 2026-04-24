@@ -4,7 +4,8 @@
 
 | Command | Usage | Purpose |
 |---|---|---|
-| `cc-markitdown` | `cc-markitdown <file>` | Convert PDFs, Office docs, HTML → Markdown |
+| `cc-markitdown` | `cc-markitdown <file>` | Convert PDFs, Office docs, HTML files → Markdown |
+| `cc-webfetch` | `cc-webfetch <url>` | Fetch a public URL as clean Markdown (via markdown.new; 500 req/day) |
 | `cc-md2pdf` | `cc-md2pdf [-o DIR] [-e ENGINE] file.md ...` | Convert Markdown → PDF via pandoc + XeLaTeX |
 | `cc-nbconvert` | `cc-nbconvert --to markdown <notebook.ipynb>` | Convert Jupyter notebooks → Markdown |
 | `cc-pdfplumber` | `cc-pdfplumber <file.pdf>` | Extract tables and text from PDFs |

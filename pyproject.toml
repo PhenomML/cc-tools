@@ -16,6 +16,10 @@ cc-markitdown = "markitdown.__main__:main"
 cc-md2pdf     = "cc_tools.md2pdf:main"
 cc-nbconvert  = "nbconvert.nbconvertapp:main"
 cc-pdfplumber = "pdfplumber.cli:main"
+cc-webfetch   = "cc_tools.webfetch:main"
+
+[tool.setuptools.packages.find]
+include = ["cc_tools*"]
 
 [dependency-groups]
 dev = []

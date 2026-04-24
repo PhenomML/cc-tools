@@ -10,14 +10,15 @@ A PDF is not text. Naive extraction loses column alignment in results tables, ga
 
 Four tools solve the ingestion problem:
 
-- **[markitdown](https://github.com/microsoft/markitdown)** — converts PDFs, Office documents, and HTML to clean markdown. The workhorse for most papers.
+- **[markitdown](https://github.com/microsoft/markitdown)** — converts PDFs, Office documents, and HTML files on disk to clean markdown. The workhorse for local files.
+- **[markdown.new](https://markdown.new)** — fetches any public URL as clean markdown via a three-tier pipeline (native markdown → AI conversion → headless browser). The right tool when a paper or document is available at a URL rather than as a local file. 500 requests/day free, no API key.
 - **[arxiv](https://github.com/lukasschwab/arxiv.py)** — fetches paper metadata and PDFs from arXiv by ID or search query, no API key required. The agent can retrieve a paper directly from `2301.07608` without a browser step.
 - **[pdfplumber](https://github.com/jsvine/pdfplumber)** — extracts tables from PDFs with layout precision. Results tables in papers lose their column structure in naive conversion; pdfplumber preserves it.
 - **[nbconvert](https://github.com/jupyter/nbconvert)** — converts executed Jupyter notebooks to markdown, including all outputs. A notebook without its outputs is a script; with outputs it is a record.
 
 These are not exotic requirements. They are the minimum for an agent doing real research reading. They need to be installed once, versioned, and consistently available — not improvised each session.
 
-cc-tools installs these under prefixed names (`cc-markitdown`, `cc-pdfplumber`, `cc-nbconvert`) to avoid collisions with any versions already in your project environments.
+cc-tools installs these under prefixed names (`cc-markitdown`, `cc-webfetch`, `cc-pdfplumber`, `cc-nbconvert`) to avoid collisions with any versions already in your project environments.
 
 ## A call for AI-friendly source formats
 
@@ -27,7 +28,7 @@ When you submit to arXiv, you submit LaTeX source. ArXiv compiles it to PDF and 
 
 The ask is small: **link to your arXiv source, and mention it in your README or repository**. If you distribute a paper alongside code, include the `.tex` files. If you post notes or a preprint, publish the source alongside the PDF.
 
-HTML is the other underused format. Several journals and preprint services offer HTML versions of papers. HTML converts cleanly to markdown, preserves hyperlinks, and handles tables well. When an HTML version exists, it is frequently the best ingestion path — better than either the PDF or the LaTeX source.
+HTML is the other underused format. Several journals and preprint services offer HTML versions of papers. HTML converts cleanly to markdown, preserves hyperlinks, and handles tables well. When an HTML version exists, it is frequently the best ingestion path — better than either the PDF or the LaTeX source. `cc-webfetch` fetches it directly: `cc-webfetch https://arxiv.org/html/2301.07608`.
 
 The research community has been generating machine-readable source for decades — it just hasn't thought of it in those terms. AI-assisted reading is now a routine part of research workflows. Publishing the source is a small act with compounding benefits for every reader who comes after you, human or otherwise.
 
