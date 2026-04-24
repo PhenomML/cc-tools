@@ -171,5 +171,6 @@ twice.
 
 *The tools that support the ingest workflow — `cc-markitdown`, the arXiv library,
 `cc-nbconvert`, `cc-pdfplumber` — are part of the standard cc-tools install, described
-in "Make Your AI's Work Permanent." Live Jupyter notebook execution, when it is needed
-beyond what `cc-nbconvert` provides, is covered in "Jupyter and the MCP Trade-off."*
+in ["Make Your AI's Work Permanent"](https://github.com/PhenomML/cc-tools/blob/main/articles/make-your-ai-work-permanent.md).
+Live Jupyter notebook execution, when it is needed beyond what `cc-nbconvert` provides,
+is covered in ["Jupyter and the MCP Trade-off"](https://github.com/PhenomML/cc-tools/blob/main/articles/jupyter-and-the-mcp-tradeoff.md).*

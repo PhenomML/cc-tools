@@ -138,6 +138,8 @@ artifact. The next Claude instance that works on this project will find it here.
 
 ---
 
-*Companion pieces: "The Multi-Subject Personal Research Wiki" covers the wiki architecture
-and the skills that maintain it. "Jupyter and the MCP Trade-off" covers when live notebook
-execution is worth its token cost and when shell-based conversion is sufficient.*
+*Companion pieces: ["The Multi-Subject Personal Research Wiki"](https://github.com/PhenomML/cc-tools/blob/main/articles/multi-subject-personal-research-wiki.md)
+covers the wiki architecture and the skills that maintain it.
+["Jupyter and the MCP Trade-off"](https://github.com/PhenomML/cc-tools/blob/main/articles/jupyter-and-the-mcp-tradeoff.md)
+covers when live notebook execution is worth its token cost and when shell-based
+conversion is sufficient.*

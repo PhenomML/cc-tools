@@ -135,6 +135,7 @@ to think with the data, not just read about it.
 
 ---
 
-*The cc-tools repository includes a reference Jupyter MCP config at `mcp/jupyter.json`.
+*The cc-tools repository includes a reference Jupyter MCP config at
+[`mcp/jupyter.json`](https://github.com/PhenomML/cc-tools/blob/main/mcp/jupyter.json).
 The full toolset, including `cc-nbconvert` and the `/notebook-narrate` skill, is described
-in "Make Your AI's Work Permanent."*
+in ["Make Your AI's Work Permanent"](https://github.com/PhenomML/cc-tools/blob/main/articles/make-your-ai-work-permanent.md).*
