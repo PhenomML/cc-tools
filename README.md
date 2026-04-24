@@ -2,6 +2,16 @@
 
 This repository is **Claude's toolset**, not a research library. It has nothing to do with your Conda environment or project dependencies. You install it once per machine so that the Claude Code (CC) assistant running in any of your projects has access to a consistent, versioned set of tools regardless of which project you are in.
 
+## Articles
+
+Background reading on the patterns cc-tools supports:
+
+| Article | Description |
+|---|---|
+| [Help Your AI Read Research — and Remember It](articles/help-your-ai-read-research.md) | The ingestion stack, math notation standard, research skills, and the permanence pattern that underlies the wiki |
+| [The Multi-Subject Personal Research Wiki](articles/multi-subject-personal-research-wiki.md) | Why one wiki is not enough, the multi-sub-wiki architecture, and the skills that maintain it |
+| [Jupyter and the MCP Trade-off](articles/jupyter-and-the-mcp-tradeoff.md) | When static notebook conversion is sufficient and when the Jupyter MCP is worth its token cost |
+
 ## Why you need to do this
 
 Claude Code runs as an AI agent that can invoke shell commands. Several of the tools it uses — document conversion, markdown extraction, and others added over time — are Python programs that must be installed before Claude can call them. This repository pins those tools to known-good versions and installs them into an isolated environment managed by `uv`, completely separate from your Conda setup.
@@ -126,16 +136,6 @@ in that project, not globally.
 | `/math-review <path>` | Check .md files against the `$...$` authoring standard |
 
 Skills update automatically when you `git pull` — no need to re-run `setup-claude.sh` for skill content changes. Re-run it only when new skills are added to the repo.
-
-## Articles
-
-Background reading on the patterns cc-tools supports:
-
-| Article | Description |
-|---|---|
-| [Help Your AI Read Research — and Remember It](articles/help-your-ai-read-research.md) | The ingestion stack, math notation standard, research skills, and the permanence pattern that underlies the wiki |
-| [The Multi-Subject Personal Research Wiki](articles/multi-subject-personal-research-wiki.md) | Why one wiki is not enough, the multi-sub-wiki architecture, and the skills that maintain it |
-| [Jupyter and the MCP Trade-off](articles/jupyter-and-the-mcp-tradeoff.md) | When static notebook conversion is sufficient and when the Jupyter MCP is worth its token cost |
 
 ## Your Conda environments are unaffected
 
