@@ -1,12 +1,6 @@
 # The Multi-Subject Personal Research Wiki
 
-A [previous piece](https://github.com/PhenomML/cc-tools/blob/main/articles/make-your-ai-work-permanent.md)
-introduced the idea of making AI work permanent: instead of asking an agent to answer
-questions, ask it to write files and commit the outputs. The natural destination for this
-work, in a research context, is a wiki — the pattern Andrej Karpathy describes in his
-[LLM wiki gist](https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f): a
-structured, interlinked collection of markdown pages that the agent writes and maintains
-over time.
+A [previous piece](https://github.com/PhenomML/cc-tools/blob/main/articles/make-your-ai-work-permanent.md) introduced the idea of making AI work permanent: instead of asking an agent to answer questions, ask it to write files and commit the outputs. The natural destination for this work, in a research context, is a wiki — the pattern Andrej Karpathy describes in his [LLM wiki gist](https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f): a structured, interlinked collection of markdown pages that the agent writes and maintains over time.
 
 This piece is about the shape that wiki should take.
 
