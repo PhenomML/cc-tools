@@ -9,8 +9,7 @@ disappears into chat history. The next session starts from scratch.
 There is a better pattern. Instead of asking the AI to *answer*, ask it to *write*.
 Commit the output. The work accumulates.
 
-This is the core insight behind Andrej Karpathy's LLM wiki idea, but it extends well
-beyond wikis. Once you see it, you find it everywhere.
+This is the core insight behind [Andrej Karpathy's LLM wiki idea](https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f), but it extends well beyond wikis. Once you see it, you find it everywhere.
 
 ## The pattern
 
