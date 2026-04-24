@@ -21,11 +21,9 @@ Four tools solve the ingestion problem:
 - **[pdfplumber](https://github.com/jsvine/pdfplumber)** — extracts tables from PDFs with layout precision. Results tables in papers lose their column structure in naive conversion; pdfplumber preserves it.
 - **[nbconvert](https://github.com/jupyter/nbconvert)** — converts executed Jupyter notebooks to markdown, including all outputs. A notebook without its outputs is a script; with outputs it is a record.
 
-These are not exotic requirements. They are the minimum for an agent doing real research
-reading. They need to be installed once, versioned, and consistently available — not
-improvised each session. cc-tools installs them under `cc-`-prefixed commands (`cc-markitdown`,
-`cc-pdfplumber`, `cc-nbconvert`) to avoid conflicts with any versions you may already have
-in your project environments.
+These are not exotic requirements. They are the minimum for an agent doing real research reading. They need to be installed once, versioned, and consistently available — not improvised each session.
+
+cc-tools installs these under prefixed names (`cc-markitdown`, `cc-pdfplumber`, `cc-nbconvert`) to avoid collisions with any versions already in your project environments.
 
 ## A call for AI-friendly source formats
 
