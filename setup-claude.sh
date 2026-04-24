@@ -2,8 +2,10 @@
 # setup-claude.sh — install or update cc-tools configuration for Claude Code
 #   - Manages the cc-tools section in ~/.claude/CLAUDE.md (sentinel-based, idempotent)
 #   - Symlinks skills from skills/ into ~/.claude/commands/ (updates on git pull)
-#   - Merges MCP server entries from mcp/ into ~/.claude.json (idempotent)
 # Safe to run multiple times.
+#
+# MCP servers are NOT registered globally by this script. See mcp/ for reference
+# configs and README for the project-scoped .mcp.json pattern.
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
@@ -69,31 +71,3 @@ for skill in "$SKILLS_SRC"/*.md; do
     (( count++ )) || true
 done
 echo "setup-claude: $count skill(s) linked to $COMMANDS_DIR"
-
-# ── MCP servers ──────────────────────────────────────────────────────────────
-# Each file in mcp/ is a JSON object whose keys are server names and values
-# are server config objects. They are merged into ~/.claude.json under
-# "mcpServers". Existing non-cc-tools entries are preserved.
-
-MCP_DIR="$SCRIPT_DIR/mcp"
-CLAUDE_JSON="$HOME/.claude.json"
-
-MCP_DIR="$MCP_DIR" CLAUDE_JSON="$CLAUDE_JSON" python3 - <<'PYEOF'
-import json, os, pathlib
-
-mcp_dir    = pathlib.Path(os.environ["MCP_DIR"])
-claude_json = pathlib.Path(os.environ["CLAUDE_JSON"])
-
-config = json.loads(claude_json.read_text()) if claude_json.exists() else {}
-config.setdefault("mcpServers", {})
-
-added = []
-for cfg_file in sorted(mcp_dir.glob("*.json")):
-    servers = json.loads(cfg_file.read_text())
-    for name, entry in servers.items():
-        config["mcpServers"][name] = entry
-        added.append(name)
-
-claude_json.write_text(json.dumps(config, indent=2) + "\n")
-print(f"setup-claude: registered MCP server(s): {', '.join(added)}")
-PYEOF

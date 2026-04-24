@@ -76,32 +76,43 @@ If MacTeX is already installed, only `brew install pandoc` is needed.
 
 ## MCP Servers
 
-`setup-claude.sh` also merges MCP server entries from `mcp/` into `~/.claude.json`. Each file in `mcp/` is a JSON object of server name → config; they are merged under `mcpServers` without disturbing any other Claude Code settings.
+MCP servers add their tool schemas to every session context whether or not they are
+used — typically 1,000–4,000 tokens per server. For a token-light toolset, **no MCP
+servers are registered globally by `setup-claude.sh`.**
 
-| Server | Package | Purpose |
-|---|---|---|
-| `jupyter` | `uvx jupyter-mcp-server@latest` | Read/write notebooks and execute cells in a running JupyterLab |
+Instead, activate MCP servers **project-scoped** when a specific project needs them.
+Add a `.mcp.json` at the project root (not committed if it contains tokens):
 
-### Isolation
+```json
+{
+  "mcpServers": {
+    "jupyter": {
+      "command": "uvx",
+      "args": ["jupyter-mcp-server@latest"],
+      "env": {
+        "JUPYTER_URL": "http://localhost:8888",
+        "JUPYTER_TOKEN": "${JUPYTER_TOKEN}",
+        "ALLOW_IMG_OUTPUT": "true"
+      }
+    }
+  }
+}
+```
 
-The MCP server runs via `uvx` in its own ephemeral uv environment — completely separate from the researcher's Conda environment. It talks to JupyterLab over HTTP. The researcher's Conda env, their notebooks, and Claude's tooling remain independent.
+The `mcp/` directory in this repo contains reference configs for available servers.
 
-### Jupyter workflow
+### Jupyter and notebooks
 
-Start JupyterLab with a known token before invoking Claude Code:
+For most notebook work the shell execution pattern is sufficient and costs no MCP tokens:
 
 ```bash
-export JUPYTER_TOKEN=your_token
-jupyter lab --port 8888 --IdentityProvider.token "$JUPYTER_TOKEN"
+jupyter nbconvert --to notebook --execute notebook.ipynb --output executed.ipynb
+cc-nbconvert --to markdown executed.ipynb --stdout
 ```
 
-For a permanent fixed token, add to `~/.jupyter/jupyter_server_config.py`:
-
-```python
-c.IdentityProvider.token = 'pick-a-token'
-```
-
-And add `export JUPYTER_TOKEN=pick-a-token` to `~/.zshrc`. After that, no per-session setup is needed.
+Use the Jupyter MCP only for genuinely interactive work — writing new cells, testing
+hypotheses iteratively — where two-way access is required. Activate it via `.mcp.json`
+in that project, not globally.
 
 ## Research Skills
 

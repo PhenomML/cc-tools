@@ -18,26 +18,21 @@ The `arxiv` Python library is also available for fetching arXiv paper metadata:
 uv run --directory ~/Projects/PhenomML/cc-tools python
 ```
 
-## MCP Servers
+## Jupyter and notebooks
 
-The following MCP servers are registered in `~/.claude.json` and available in every session:
-
-| Server | Purpose |
-|---|---|
-| `jupyter` | Interact with a running JupyterLab instance — read/write notebooks, execute cells, capture outputs |
-
-**Isolation:** the MCP server runs via `uvx` in its own ephemeral uv environment. It connects to JupyterLab over HTTP and never shares a Python environment with the researcher's Conda env.
-
-**Workflow:** before starting Claude Code, export `JUPYTER_TOKEN` and start JupyterLab:
+For most notebook work, use the shell execution pattern — no MCP overhead:
 ```bash
-export JUPYTER_TOKEN=your_token
-jupyter lab --port 8888 --IdentityProvider.token "$JUPYTER_TOKEN"
+jupyter nbconvert --to notebook --execute notebook.ipynb --output executed.ipynb
+cc-nbconvert --to markdown executed.ipynb --stdout
 ```
-Or configure a fixed token in `~/.jupyter/jupyter_server_config.py` so you never need to set it each session:
-```python
-c.IdentityProvider.token = 'pick-a-token'
-```
-Then add `export JUPYTER_TOKEN=pick-a-token` to `~/.zshrc` once.
+This executes the notebook in the researcher's Conda environment and gives Claude the
+full output as markdown.
+
+For **interactive** notebook work (writing new cells, testing hypotheses iteratively),
+the Jupyter MCP server (`uvx jupyter-mcp-server@latest`) provides two-way access but
+adds ~1,000–4,000 tokens to every session context. Activate it project-scoped rather
+than globally: add a `.mcp.json` at the project root (see cc-tools `mcp/jupyter.json`
+for the config template). It is never registered globally.
 
 ## Research Skills
 
