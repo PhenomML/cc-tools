@@ -8,3 +8,6 @@ wheels/
 
 # Virtual environments
 .venv
+
+# Private ideas — not for public repo
+ideas/
