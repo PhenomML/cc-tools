@@ -1,3 +1,4 @@
+
 # Make Your AI's Work Permanent
 
 Most interactions with an AI agent are ephemeral. You ask a question, you get an answer,
@@ -110,12 +111,7 @@ update automatically when you pull.
 
 ## The wiki as natural destination
 
-Andrej Karpathy's [LLM wiki pattern](https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f)
-identifies the natural home for permanent AI work on a research topic: a structured,
-interlinked collection of markdown files that the agent writes and maintains. Drop a paper
-into the source directory; the agent reads it, writes a summary, and updates the concept
-pages it touches. Ask a question; the agent synthesizes across everything it has
-previously written. The knowledge compounds.
+Andrej Karpathy's [LLM wiki pattern](https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f) identifies the natural home for permanent AI work on a research topic: a structured, interlinked collection of markdown files that the agent writes and maintains. Drop a paper into the source directory; the agent reads it, writes a summary, and updates the concept pages it touches. Ask a question; the agent synthesizes across everything it has previously written. The knowledge compounds.
 
 The research wiki — its architecture, its multi-subject structure, and the skills that
 maintain it — is the subject of a companion piece. The standard toolset includes full
@@ -139,8 +135,4 @@ artifact. The next Claude instance that works on this project will find it here.
 
 ---
 
-*Companion pieces: ["The Multi-Subject Personal Research Wiki"](https://github.com/PhenomML/cc-tools/blob/main/articles/multi-subject-personal-research-wiki.md)
-covers the wiki architecture and the skills that maintain it.
-["Jupyter and the MCP Trade-off"](https://github.com/PhenomML/cc-tools/blob/main/articles/jupyter-and-the-mcp-tradeoff.md)
-covers when live notebook execution is worth its token cost and when shell-based
-conversion is sufficient.*
+*Companion pieces: ["The Multi-Subject Personal Research Wiki"](https://github.com/PhenomML/cc-tools/blob/main/articles/multi-subject-personal-research-wiki.md) covers the wiki architecture and the skills that maintain it. ["Jupyter and the MCP Trade-off"](https://github.com/PhenomML/cc-tools/blob/main/articles/jupyter-and-the-mcp-tradeoff.md) covers when live notebook execution is worth its token cost and when shell-based conversion is sufficient.*
