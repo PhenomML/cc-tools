@@ -5,11 +5,8 @@ existing wiki — skips files and directories that already exist without overwri
 
 ## Step 1 — Read the Sub-wikis table
 
-Read `CLAUDE.md` and extract every data row from the Sub-wikis table (skip the header
-and separator rows). For each row record:
-- Directory name (e.g. `tsa/`)
-- Full scope string
-- Related sub-wikis (may be empty)
+Read `CLAUDE.md` and extract the directory name from every data row in the Sub-wikis
+table (skip the header and separator rows).
 
 ## Step 2 — Scaffold each sub-wiki
 
@@ -37,11 +34,8 @@ For each sub-wiki, create the following if they do not already exist:
 ```markdown
 # <dir> Sub-wiki
 
-**Scope:** <scope string from table>
-**Related:** <related sub-wikis, or "none">
-
-See the root `CLAUDE.md` for page conventions, frontmatter schema, math notation
-standard, and workflow skills.
+This is the <dir> sub-wiki. Scope, related sub-wikis, page conventions, frontmatter
+schema, math notation standard, and workflow skills are defined in the root `CLAUDE.md`.
 ```
 
 ## Step 3 — Scaffold the wiki root
