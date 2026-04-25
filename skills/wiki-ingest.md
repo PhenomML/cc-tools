@@ -17,17 +17,20 @@ cc-webfetch https://arxiv.org/html/<id> > raw/<author>-<year>-<slug>.md
 If HTML is not available, download the PDF using the URL from cc-arxiv output and convert:
 ```bash
 curl -L <pdf-url> -o raw/<author>-<year>-<slug>.pdf
-cc-markitdown raw/<author>-<year>-<slug>.pdf
+cc-markitdown raw/<author>-<year>-<slug>.pdf > raw/<author>-<year>-<slug>.md
 ```
 
-**If a path in raw/:** convert directly (PDF/Office/HTML file on disk):
+**If a path in raw/:** convert once and save alongside the source:
 ```bash
-cc-markitdown $ARGUMENTS
+cc-markitdown $ARGUMENTS > raw/<same-name-as-source>.md
 ```
+
+In both cases the saved `.md` file is the working copy for all subsequent steps —
+do not re-run the conversion.
 
 ## Step 2 — Read and discuss
 
-Read the full converted text. Briefly summarise the paper's contribution and ask the
+Read the full converted text from the saved `.md` file. Briefly summarise the paper's contribution and ask the
 researcher to confirm emphasis or redirect focus before writing anything.
 
 ## Step 3 — Determine scope (multi-wiki routing)
