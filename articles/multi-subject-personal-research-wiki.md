@@ -92,7 +92,9 @@ cp ~/Projects/PhenomML/cc-tools/templates/wiki-CLAUDE.md <your-wiki-root>/CLAUDE
 
 ## The wiki skills
 
-Four slash commands maintain the wiki:
+Five slash commands set up and maintain the wiki:
+
+**`/wiki-init`** — run once after filling in the Sub-wikis table. Reads the table and scaffolds the full directory structure: one directory per sub-wiki (with `papers/`, `concepts/`, `methods/`, `projects/`, a scoped `CLAUDE.md`, and an `index.md`), plus the root `index.md`, `log.md`, `raw/`, and `.gitignore`. Safe to re-run — skips anything that already exists.
 
 **`/wiki-ingest <source>`** — the core ingest loop. Accepts a path in `raw/` or an arXiv ID (fetched automatically). Reads the source, routes it to the relevant sub-wikis, writes summary and concept pages, updates indexes, appends to the log.
 
@@ -106,11 +108,9 @@ Four slash commands maintain the wiki:
 
 1. Create `~/Projects/wiki/` as a git repository
 2. Copy the template: `cp ~/Projects/PhenomML/cc-tools/templates/wiki-CLAUDE.md wiki/CLAUDE.md`
-3. Edit the sub-wiki table to reflect your research domains
-4. Create subdirectories for each sub-wiki, each with its own `CLAUDE.md` defining scope
-5. Create `raw/`, add it to `.gitignore`
-6. Create empty `index.md` and `log.md` at the root
-7. Run `/wiki-ingest` on your first paper
+3. Edit the Sub-wikis table to reflect your research domains
+4. Run `/wiki-init` — Claude reads the table and scaffolds everything: sub-wiki directories, per-sub-wiki `CLAUDE.md` files and indexes, root `index.md`, `log.md`, `raw/`, and `.gitignore`
+5. Run `/wiki-ingest` on your first paper
 
 The wiki grows from there. Add sub-wikis as new domains become relevant. The agent learns the structure from the schema and maintains consistency across sessions without being told twice.
 
