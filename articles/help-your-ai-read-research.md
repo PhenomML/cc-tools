@@ -70,7 +70,15 @@ The permanence pattern produces individual artifacts. The wiki combines them int
 
 Karpathy's pattern: the agent reads a paper, writes a summary page, and updates the concept pages the paper touches — cross-linking the summary to related ideas, appending to the index, logging the ingestion. Ask a question later; the agent synthesizes across everything it has previously written. The knowledge doesn't reset between sessions because it was written down.
 
-The ingestion tools and the wiki pattern were made for each other. `cc-markitdown` gets the paper into readable text. `/paper-summary` produces the summary. `/wiki-ingest` routes that summary into the right sub-wikis, updates the concept pages, and maintains the index. Each step feeds the next.
+The ingestion tools and the wiki pattern were made for each other. `cc-markitdown` gets the paper into readable text. `/paper-summary` produces the summary. Four wiki skills carry it from there:
+
+**Ingest a paper.** `/wiki-ingest` routes a paper into all the relevant sub-wikis, writes a structured summary page, updates the concept pages it touches, and maintains the index. One command does the full filing.
+
+**Query across the wiki.** `/wiki-query` takes a research question and synthesises an answer from everything the agent has previously written — not a web search, but a synthesis of your own accumulated notes.
+
+**Register a project.** `/wiki-project` adds a research project to the wiki, linking it to the papers and concepts that inform it, so the wiki reflects not just what you've read but what you're building.
+
+**Keep the wiki healthy.** `/wiki-lint` checks for orphaned pages, broken links, and stale summaries — the hygiene work that keeps accumulated knowledge navigable as it grows.
 
 The multi-wiki extension — one paper filed into all the sub-wikis it informs, from a shared source directory — is the subject of a companion piece. The key point here is that the wiki is where the permanence pattern reaches its full expression: not a collection of disconnected files, but a structured, interlinked body of knowledge that grows with every paper you read.
 

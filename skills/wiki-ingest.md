@@ -5,22 +5,19 @@ Ingest a source into the research wiki: $ARGUMENTS
 
 ## Step 1 — Acquire the source
 
-**If arXiv ID:** first check whether an HTML version exists — HTML produces cleaner
-markdown than PDF conversion:
+**If arXiv ID:** fetch metadata first — this gives the title, authors, year, PDF URL,
+and whether an HTML version exists:
 ```bash
-cc-webfetch https://arxiv.org/html/<id> | head -5
+cc-arxiv <id>
 ```
-If the output contains "No HTML for", fall back to PDF:
-```bash
-uv run --directory ~/Projects/PhenomML/cc-tools python
-```
-Download the PDF to `raw/<author>-<year>-<slug>.pdf` and convert:
-```bash
-cc-markitdown raw/<filename>.pdf
-```
-If HTML is available, fetch it directly into raw/ as markdown:
+If HTML is available (reported in the output), fetch it directly into raw/ as markdown:
 ```bash
 cc-webfetch https://arxiv.org/html/<id> > raw/<author>-<year>-<slug>.md
+```
+If HTML is not available, download the PDF using the URL from cc-arxiv output and convert:
+```bash
+curl -L <pdf-url> -o raw/<author>-<year>-<slug>.pdf
+cc-markitdown raw/<author>-<year>-<slug>.pdf
 ```
 
 **If a path in raw/:** convert directly (PDF/Office/HTML file on disk):

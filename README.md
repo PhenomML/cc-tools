@@ -1,10 +1,14 @@
 # cc-tools
 
-This repository is **Claude's toolset**, not a research library. It has nothing to do with your Conda environment or project dependencies. You install it once per machine so that the Claude Code (CC) assistant running in any of your projects has access to a consistent, versioned set of tools regardless of which project you are in.
+An AI agent doing real research work needs to read research — and reading research means ingesting PDFs without garbling the math, extracting tables without losing column structure, fetching papers from arXiv, and converting executed notebooks into readable records. These are not exotic requirements. They are the minimum for an agent doing useful work in a research project, and they have to be installed somewhere before the agent can call them.
+
+cc-tools is that somewhere. It packages the essential ingestion stack into an isolated environment managed by `uv`, completely separate from your research project dependencies. You install it once per machine; after that, Claude manages it and uses it from any project, without touching your Conda environments.
+
+cc-tools also ships the wiki skills that implement [Karpathy's LLM wiki pattern](https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f) — where the agent reads a paper, writes a structured summary, updates the concept pages it touches, and maintains a cross-linked index across sessions. The knowledge accumulates because it is written down, not held in chat history.
 
 ## Articles
 
-Background reading on the patterns cc-tools supports:
+The design choices behind cc-tools are explained in three pieces:
 
 | Article | Description |
 |---|---|
@@ -12,15 +16,9 @@ Background reading on the patterns cc-tools supports:
 | [The Multi-Subject Personal Research Wiki](articles/multi-subject-personal-research-wiki.md) | Why one wiki is not enough, the multi-sub-wiki architecture, and the skills that maintain it |
 | [Jupyter and the MCP Trade-off](articles/jupyter-and-the-mcp-tradeoff.md) | When static notebook conversion is sufficient and when the Jupyter MCP is worth its token cost |
 
-## Why you need to do this
+## Installation
 
-Claude Code runs as an AI agent that can invoke shell commands. Several of the tools it uses — document conversion, markdown extraction, and others added over time — are Python programs that must be installed before Claude can call them. This repository pins those tools to known-good versions and installs them into an isolated environment managed by `uv`, completely separate from your Conda setup.
-
-**You install this once. After that, Claude manages it.**
-
-## Prerequisites
-
-Install `uv` (Claude's package manager — distinct from conda):
+**Prerequisites:** Install `uv` (Claude's package manager — distinct from conda):
 
 ```bash
 curl -LsSf https://astral.sh/uv/install.sh | sh
@@ -28,7 +26,7 @@ curl -LsSf https://astral.sh/uv/install.sh | sh
 
 Then restart your shell (or run `source ~/.zshrc`) so that `~/.local/bin` is on your PATH.
 
-## Installation
+**Install:**
 
 ```bash
 git clone git@github.com:PhenomML/cc-tools.git ~/Projects/PhenomML/cc-tools
@@ -36,7 +34,7 @@ uv tool install --editable ~/Projects/PhenomML/cc-tools
 bash ~/Projects/PhenomML/cc-tools/setup-claude.sh
 ```
 
-The first two commands install the tools. The third adds the cc-tools section to `~/.claude/CLAUDE.md` (creating it if needed), so every Claude Code session on this machine automatically knows what tools are available. Safe to run again after updates — it replaces the managed section in place without touching anything else in the file.
+The first two commands install the tools into an isolated `uv` environment — completely separate from your Conda setup, no interaction between them. `uv tool` installs into `~/.local/share/uv/tools/cc-tools/`, which does not touch your `base` environment or any project environment. The third command adds the cc-tools section to `~/.claude/CLAUDE.md` (creating it if needed), so every Claude Code session on this machine automatically knows what tools are available and how to use them. Safe to run again after updates — it replaces the managed section in place without touching anything else in the file.
 
 ## Keeping it up to date
 
@@ -55,12 +53,12 @@ Claude will tell you when this is needed.
 
 | Command | Source | Purpose |
 |---|---|---|
-| `cc-markitdown` | [microsoft/markitdown](https://github.com/microsoft/markitdown) | Convert PDFs, Office docs, and HTML files to Markdown |
+| `cc-markitdown` | [microsoft/markitdown](https://github.com/microsoft/markitdown) | Convert PDFs, Office docs, and HTML files on disk to Markdown |
 | `cc-webfetch` | [markdown.new](https://markdown.new) | Fetch any public URL as clean Markdown to stdout (500 req/day free); redirect to save: `cc-webfetch <url> > file.md` |
 | `cc-md2pdf` | cc-tools (built-in) | Convert Markdown to PDF via pandoc + XeLaTeX |
 | `cc-nbconvert` | [jupyter/nbconvert](https://github.com/jupyter/nbconvert) | Convert Jupyter notebooks to Markdown and other formats |
 | `cc-pdfplumber` | [jsvine/pdfplumber](https://github.com/jsvine/pdfplumber) | Extract tables and text from PDFs with precise layout information |
-| `arxiv` (library) | [lukasschwab/arxiv.py](https://github.com/lukasschwab/arxiv.py) | Fetch paper metadata and PDF links from arXiv — used programmatically by Claude |
+| `cc-arxiv` | [lukasschwab/arxiv.py](https://github.com/lukasschwab/arxiv.py) | Fetch arXiv paper metadata by ID: title, authors, year, PDF URL, HTML availability, abstract |
 
 More tools will be added here as the standard Claude instantiation grows.
 
@@ -87,12 +85,9 @@ If MacTeX is already installed, only `brew install pandoc` is needed.
 
 ## MCP Servers
 
-MCP servers add their tool schemas to every session context whether or not they are
-used — typically 1,000–4,000 tokens per server. For a token-light toolset, **no MCP
-servers are registered globally by `setup-claude.sh`.**
+MCP servers add their tool schemas to every session context whether or not they are used — typically 1,000–4,000 tokens per server. For a token-light toolset, **no MCP servers are registered globally by `setup-claude.sh`.**
 
-Instead, activate MCP servers **project-scoped** when a specific project needs them.
-Add a `.mcp.json` at the project root (not committed if it contains tokens):
+Instead, activate MCP servers **project-scoped** when a specific project needs them. Add a `.mcp.json` at the project root (not committed if it contains tokens):
 
 ```json
 {
@@ -121,23 +116,4 @@ jupyter nbconvert --to notebook --execute notebook.ipynb --output executed.ipynb
 cc-nbconvert --to markdown executed.ipynb --stdout
 ```
 
-Use the Jupyter MCP only for genuinely interactive work — writing new cells, testing
-hypotheses iteratively — where two-way access is required. Activate it via `.mcp.json`
-in that project, not globally.
-
-## Research Skills
-
-`setup-claude.sh` also installs slash-command skills into `~/.claude/commands/` as symlinks to this repo. They are available in any Claude Code session:
-
-| Skill | Purpose |
-|---|---|
-| `/arxiv-search <topic>` | Search arXiv and summarize top results |
-| `/paper-summary <path>` | Extract and summarize a research paper PDF |
-| `/notebook-narrate <path>` | Write a research narrative from a Jupyter notebook |
-| `/math-review <path>` | Check .md files against the `$...$` authoring standard |
-
-Skills update automatically when you `git pull` — no need to re-run `setup-claude.sh` for skill content changes. Re-run it only when new skills are added to the repo.
-
-## Your Conda environments are unaffected
-
-`uv tool` installs into `~/.local/share/uv/tools/cc-tools/` — a completely separate location from any Conda environment. It does not touch your `base` environment or any project environment. The two systems do not interact.
+Use the Jupyter MCP only for genuinely interactive work — writing new cells, testing hypotheses iteratively — where two-way access is required. Activate it via `.mcp.json` in that project, not globally.

@@ -102,7 +102,8 @@ Operations: `ingest`, `query`, `lint`, `project`.
 ## Tools available
 
 Claude has access to the following cc-tools commands for wiki operations:
-- `cc-markitdown <file>` — convert PDF, Office, or HTML to markdown
+- `cc-markitdown <file>` — convert PDF, Office, or HTML file on disk to markdown
+- `cc-webfetch <url>` — fetch any public URL as clean markdown (500 req/day); redirect to save: `cc-webfetch <url> > file.md`
+- `cc-arxiv <arxiv-id>` — fetch paper metadata: title, authors, year, PDF URL, HTML availability, abstract
 - `cc-pdfplumber <file>` — extract tables from PDFs
-- `uv run --directory ~/Projects/PhenomML/cc-tools python` — access arxiv library
 - `/wiki-ingest`, `/wiki-query`, `/wiki-lint`, `/wiki-project` — wiki skills

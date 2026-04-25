@@ -6,6 +6,7 @@
 |---|---|---|
 | `cc-markitdown` | `cc-markitdown <file>` | Convert PDFs, Office docs, HTML files → Markdown |
 | `cc-webfetch` | `cc-webfetch <url>` | Fetch a public URL as clean Markdown (via markdown.new; 500 req/day) |
+| `cc-arxiv` | `cc-arxiv <arxiv-id>` | Fetch arXiv paper metadata: title, authors, year, PDF URL, HTML availability, abstract |
 | `cc-md2pdf` | `cc-md2pdf [-o DIR] [-e ENGINE] file.md ...` | Convert Markdown → PDF via pandoc + XeLaTeX |
 | `cc-nbconvert` | `cc-nbconvert --to markdown <notebook.ipynb>` | Convert Jupyter notebooks → Markdown |
 | `cc-pdfplumber` | `cc-pdfplumber <file.pdf>` | Extract tables and text from PDFs |
@@ -14,10 +15,6 @@
 
 **Authoring standard for any `.md` file processed by cc-md2pdf or opened in Obsidian:** use `$...$` for all inline math and `$$...$$` for display math. Inside math delimiters, use LaTeX commands — never Unicode Greek or Unicode subscript digits. Examples: `$\theta_1$`, `$\sigma^2_w$`, `$\hat{x}_{n+1|n}$`, `$\sum_{j=0}^\infty \phi^j w_{t-j}$`. Unicode text outside math (∇, ×, —, ≥ in prose) is fine. Both cc-md2pdf and Obsidian use the same `$...$` syntax, so one source file serves both outputs. See cc-tools `AUTHORING.md` for the full reference.
 
-The `arxiv` Python library is also available for fetching arXiv paper metadata:
-```bash
-uv run --directory ~/Projects/PhenomML/cc-tools python
-```
 
 ## Jupyter and notebooks
 
@@ -61,8 +58,10 @@ spanning multiple subfields is written into all relevant sub-wikis. Projects are
 registered in the wiki with relative filesystem paths; the project repos carry no
 wiki content.
 
-To initialise a new wiki, copy `templates/wiki-CLAUDE.md` from the cc-tools repo to
-your wiki root and edit the sub-wiki table to match your research domains.
+To initialise a new wiki, copy the template to your wiki root and edit the sub-wiki table to match your research domains:
+```bash
+cp ~/Projects/PhenomML/cc-tools/templates/wiki-CLAUDE.md <your-wiki-root>/CLAUDE.md
+```
 
 Source and full docs: https://github.com/PhenomML/cc-tools
 

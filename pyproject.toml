@@ -17,6 +17,7 @@ cc-md2pdf     = "cc_tools.md2pdf:main"
 cc-nbconvert  = "nbconvert.nbconvertapp:main"
 cc-pdfplumber = "pdfplumber.cli:main"
 cc-webfetch   = "cc_tools.webfetch:main"
+cc-arxiv      = "cc_tools.arxiv_fetch:main"
 
 [tool.setuptools.packages.find]
 include = ["cc_tools*"]

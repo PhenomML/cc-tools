@@ -85,7 +85,10 @@ The Karpathy pattern's key insight is that the schema — the document that tell
 
 The top-level `wiki/CLAUDE.md` carries the schema: the sub-wiki table, the page conventions, the frontmatter format, the math notation standard, the naming conventions. Each sub-wiki has its own `CLAUDE.md` defining its scope and its relationship to siblings.
 
-A starting template for the schema is at `templates/wiki-CLAUDE.md` in the cc-tools repository. Copy it to your wiki root, edit the sub-wiki table to match your research domains, and refine it over time as you learn what produces the most useful pages.
+A starting template for the schema is at `templates/wiki-CLAUDE.md` in the cc-tools repository. Copy it to your wiki root with the correct name, edit the sub-wiki table to match your research domains, and refine it over time as you learn what produces the most useful pages:
+```bash
+cp ~/Projects/PhenomML/cc-tools/templates/wiki-CLAUDE.md <your-wiki-root>/CLAUDE.md
+```
 
 ## The wiki skills
 
@@ -102,7 +105,7 @@ Four slash commands maintain the wiki:
 ## Getting started
 
 1. Create `~/Projects/wiki/` as a git repository
-2. Copy `templates/wiki-CLAUDE.md` from the cc-tools repo to `wiki/CLAUDE.md`
+2. Copy the template: `cp ~/Projects/PhenomML/cc-tools/templates/wiki-CLAUDE.md wiki/CLAUDE.md`
 3. Edit the sub-wiki table to reflect your research domains
 4. Create subdirectories for each sub-wiki, each with its own `CLAUDE.md` defining scope
 5. Create `raw/`, add it to `.gitignore`
