@@ -27,8 +27,9 @@ clearly informs another sub-wiki that has no corresponding page for it. Suggest 
 **index.md gaps** — pages that exist in the filesystem but are absent from the sub-wiki's
 `index.md`. List them.
 
-**Math notation** — pages containing bare Unicode Greek letters or Unicode subscript
-digits used as math notation outside `$...$`. Flag for `/math-review`.
+**Math notation** — flag two classes of issue, both for `/math-review`:
+- Bare Unicode Greek letters or Unicode subscript digits used as math notation outside `$...$`
+- Inline `$...$` expressions containing `_` (subscript) where content follows the subscript before the closing `$`, or multiple such expressions on the same line — GitHub italic conflict risk (see AUTHORING.md)
 
 ## After reporting
 

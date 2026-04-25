@@ -50,6 +50,21 @@ The MA(2) process x_t = w_t − 0.5 w_{t−1} + 0.25 w_{t−2} with σ²_w = 1.
 | Inequality | `$0 \leq \alpha_1 < 1$` | 0 ≤ α₁ < 1 |
 | Chi-squared | `$\chi^2(H-p-q)$` | χ²(H−p−q) |
 
+### GitHub rendering
+
+GitHub's Markdown parser processes `_` (italic marker) before the math renderer processes `$...$` delimiters. **Inline math containing `_` where content follows the subscript before the closing `$` is a GitHub rendering risk** — the `_` is consumed as an italic marker, breaking the math block and italicising the surrounding text.
+
+**Rule:** Any inline math more complex than a bare subscripted variable should use display math `$$...$$`.
+
+| Expression | Inline `$...$` | Action |
+|---|---|---|
+| `$x_t$`, `$\sigma_w^2$` | ✓ safe | keep inline |
+| `$\hat{w}_t^2$` | ✗ GitHub fails | use display math |
+| `$\nabla^d x_t$` on a line with other subscripted math | ✗ GitHub fails | use display math |
+| `$\sum_{h=1}^H \hat{\rho}^2(h)/(n-h)$` | ✗ GitHub fails | use display math |
+
+Obsidian and cc-md2pdf render all inline math correctly; this limitation is GitHub-specific. When in doubt, display math is also better typography for any expression beyond a simple variable.
+
 ### Why this matters
 
 | Element | XeLaTeX (PDF) | Obsidian |
