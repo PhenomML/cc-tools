@@ -1,7 +1,11 @@
 Ingest a source into the research wiki: $ARGUMENTS
 
-`$ARGUMENTS` is either a path inside `raw/` (e.g. `raw/kalman-1960.pdf`) or an arXiv ID
-(e.g. `2301.07608`). If working directory is not the wiki root, navigate there first.
+`$ARGUMENTS` is one of:
+- An arXiv ID (e.g. `2301.07608`)
+- A path inside `raw/` (e.g. `raw/kalman-1960.pdf`)
+- Any filesystem path to a PDF, Office doc, or HTML file (e.g. `~/Books/textbook.pdf`)
+
+If working directory is not the wiki root, navigate there first.
 
 ## Step 1 — Acquire the source
 
@@ -20,13 +24,15 @@ curl -L <pdf-url> -o raw/<author>-<year>-<slug>.pdf
 cc-markitdown raw/<author>-<year>-<slug>.pdf > raw/<author>-<year>-<slug>.md
 ```
 
-**If a path in raw/:** convert once and save alongside the source:
+**If a filesystem path:** convert once and save into `raw/` using the source filename's
+basename:
 ```bash
-cc-markitdown $ARGUMENTS > raw/<same-name-as-source>.md
+cc-markitdown /path/to/source.pdf > raw/<basename>.md
 ```
+The source file stays where it is; only the converted markdown lands in `raw/`.
 
-In both cases the saved `.md` file is the working copy for all subsequent steps —
-do not re-run the conversion.
+In all cases the saved `.md` file in `raw/` is the working copy for all subsequent
+steps — do not re-run the conversion.
 
 ## Step 2 — Read and discuss
 
