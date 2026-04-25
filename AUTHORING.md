@@ -65,6 +65,8 @@ GitHub's Markdown parser processes `_` (italic marker) before the math renderer 
 
 Obsidian and cc-md2pdf render all inline math correctly; this limitation is GitHub-specific. When in doubt, display math is also better typography for any expression beyond a simple variable.
 
+GitHub introduced a backtick workaround in May 2023 — `$`\hat{w}_t^2`$` — that passes inline math through the Markdown parser intact. It is documented here for reference only. **Do not use it in generated content:** it renders as code in Obsidian and other local viewers. Display math is the correct cross-platform fix.
+
 ### Why this matters
 
 | Element | XeLaTeX (PDF) | Obsidian |
