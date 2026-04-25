@@ -1,32 +1,3 @@
-# Research Wiki
-
-This is a personal LLM-maintained research wiki. Claude writes and maintains all content;
-the researcher curates sources and directs analysis.
-
-## Sub-wikis
-
-<!-- List each sub-wiki, its scope, and related sub-wikis.
-
-The Scope column should be specific enough that an agent can decide unambiguously
-whether a paper belongs in this sub-wiki. Prefer concrete topic lists over broad labels.
-
-The Related column lists other sub-wikis in this table whose concepts frequently
-overlap with this one. The agent uses it when writing concept and method pages: if a
-concept in tsa/ is deeply connected to Bayesian inference, knowing that bayes/ is
-related tells the agent to check bayes/concepts/ for an existing page to link to, or
-to create a cross-wiki link there. List only sub-wikis defined in this table.
-Relationships should be symmetric: if A lists B, B should list A.
-
-Example: -->
-
-| Directory | Scope | Related |
-|---|---|---|
-| `tsa/` | Time series analysis, forecasting, state space models, ARIMA, spectral methods | `bayes/` |
-| `bayes/` | Bayesian inference, MCMC, hierarchical models, prior elicitation | `tsa/` |
-
-<!-- Add rows as new sub-wikis are created. -->
-
-<!-- cc-tools:wiki:begin -->
 ## Structure
 
 ```
@@ -121,4 +92,3 @@ Claude has access to the following cc-tools commands for wiki operations:
 - `cc-arxiv <arxiv-id>` — fetch paper metadata: title, authors, year, PDF URL, HTML availability, abstract
 - `cc-pdfplumber <file>` — extract tables from PDFs
 - `/wiki-ingest`, `/wiki-query`, `/wiki-lint`, `/wiki-project`, `/wiki-upgrade` — wiki skills
-<!-- cc-tools:wiki:end -->
