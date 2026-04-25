@@ -49,6 +49,8 @@ bash setup-claude.sh
 
 Claude will tell you when this is needed.
 
+After pulling, **start a new Claude session** before invoking updated skills. Claude Code caches skill file content within a session — a running instance will not pick up changes to skill files mid-session. A fresh session reads all skills from scratch. If a new session is not practical, you can tell Claude explicitly: "Re-read `~/.claude/commands/<skill-name>.md` before proceeding."
+
 ## What's included
 
 | Command | Source | Purpose |
