@@ -15,6 +15,10 @@ and whether an HTML version exists:
 ```bash
 cc-arxiv <id>
 ```
+If the abstract answers your question, metadata alone may be sufficient — you have the
+title, authors, year, and PDF URL for a citation without fetching further. Fetch the
+full text when you need specific claims, methodology, or data not visible in the abstract.
+
 If HTML is available (reported in the output), fetch it directly into raw/ as markdown:
 ```bash
 cc-webfetch https://arxiv.org/html/<id> > raw/<author>-<year>-<slug>.md
@@ -43,8 +47,13 @@ steps — do not re-run the conversion.
 
 ## Step 2 — Read and discuss
 
-Read the full converted text from the saved `.md` file. Briefly summarise the paper's contribution and ask the
-researcher to confirm emphasis or redirect focus before writing anything.
+Read the full converted text from the saved `.md` file. Briefly summarise the paper's
+contribution and ask the researcher to confirm emphasis or redirect focus before writing
+anything.
+
+**Large files:** the Read tool enforces a 256KB limit. If a file in `raw/` exceeds
+this, use `offset` and `limit` to read it in sections — read the first 200 lines to
+assess structure, then target the sections relevant to your sub-wikis.
 
 ## Step 3 — Determine scope (multi-wiki routing)
 
