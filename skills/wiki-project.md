@@ -21,7 +21,7 @@ For each relevant sub-wiki, write or update `<wiki>/projects/<project-slug>.md`:
 
 ```yaml
 ---
-title: <Project Name>
+title: "<Project Name>"
 type: project
 path: <relative filesystem path from wiki root to project repo>
 github: <GitHub URL>

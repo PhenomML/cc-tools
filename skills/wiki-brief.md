@@ -210,6 +210,13 @@ sources. Follow /wiki-ingest conventions:
 - `related:` cross-linking to pages in sibling sub-wikis where connections exist —
   cross-wiki paths from `<subwiki>/concepts/` are always `../../<other>/concepts/<page>.md`
 
+**Always double-quote the `title:` field in generated frontmatter.** Colons are common
+in synthesis and concept titles ("X: Offense and Defense", "Cyc: A Stranded Asset?") and
+cause YAML parsers — including Obsidian — to misread an unquoted title as a nested key.
+The other scalar fields (`type`, `confidence`, `created`, `updated`) are single-word
+values safe unquoted; array fields (`wikis`, `sources`, `related`) are bracket-delimited
+and safe. Only `title` routinely hits this.
+
 In a person brief, the biography sub-wiki's career-timeline page plays the same role
 a survey paper plays in a domain wiki — it is the anchor that cross-links everything else.
 

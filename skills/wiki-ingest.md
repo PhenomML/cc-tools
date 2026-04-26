@@ -66,7 +66,7 @@ will write into and why; confirm with the researcher before proceeding.
 For **each** sub-wiki identified in Step 3:
 
 **4a. Source summary page** → `<wiki>/papers/<author>-<year>-<slug>.md`
-YAML frontmatter: `title, type: paper, wikis: [list], sources: [raw path],
+YAML frontmatter: `title: "<quoted title>", type: paper, wikis: [list], sources: [raw path],
 related: [], created: <today>, updated: <today>, confidence: high`
 Content: citation, research question, methods, key results, limitations.
 Use `$...$` LaTeX for all math. In the Sources section, link to `raw/` files

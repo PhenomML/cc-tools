@@ -56,7 +56,7 @@ wiki/                   ← repo root (this file lives here)
 **Frontmatter** (required on every page):
 ```yaml
 ---
-title: <descriptive title>
+title: "<descriptive title>"
 type: paper | concept | method | project | comparison | synthesis
 wikis: [list of sub-wikis this page belongs to]
 sources: [relative paths to raw/ files that support this page]
