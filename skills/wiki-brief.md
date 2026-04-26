@@ -185,6 +185,16 @@ company like Databricks or Stripe is thin not because critics don't exist but be
 they write behind paywalls. Distinguish this from genuine absence of scrutiny when
 writing the absence notation in Step 7.
 
+**Log each adversarial search as you run it.** For each query, append a one-line entry
+to `log.md` immediately:
+```
+- Adversarial search: "[query]" → [found: <title> | nothing | paywalled: <title>]
+```
+Step 7's absence notation must be grounded in this log, not in session memory. By the
+time you are writing the synthesis, you may not accurately recall whether a search
+returned nothing or was never run — the log is the record. If nothing adversarial was
+found, Step 7 can cite the log entries as evidence of the search attempt.
+
 When none of these strategies surface adversarial material, record that explicitly —
 do not leave the absence invisible. See Step 7.
 
@@ -215,7 +225,9 @@ the synthesis's absence notation so the researcher knows what was found but not 
 For each sub-wiki, write at least one concept page synthesizing the relevant fetched
 sources. Follow /wiki-ingest conventions:
 - Frontmatter with `sources:` pointing to `../../raw/` files (two levels up from
-  `<subwiki>/concepts/`)
+  `<subwiki>/concepts/`). **Before writing all pages, verify one `sources:` path
+  resolves by checking the file exists** — path errors are silent at write time and
+  propagate to every page in the brief before anyone notices.
 - `confidence: high | medium | low` reflecting source quality
 - `related:` cross-linking to pages in sibling sub-wikis where connections exist —
   cross-wiki paths from `<subwiki>/concepts/` are always `../../<other>/concepts/<page>.md`
@@ -325,6 +337,10 @@ and append to root `log.md`. Updating these after the synthesis exists avoids br
 links if the session is interrupted before the synthesis is complete.
 
 ## Step 8 — Report
+
+Run `/wiki-lint` to catch path errors, broken links, and orphaned pages before closing
+the session. Path convention failures are silent at write time — lint is the checkpoint
+that catches them while the session is still warm and fixes are cheap.
 
 List every file and directory created, grouped by sub-wiki. If a synthesis was written,
 report its path and a one-sentence summary of the answer. Note any sub-wikis that
