@@ -276,13 +276,14 @@ Update each sub-wiki's `index.md` with links to the pages just written.
 ## Step 7 — Answer the driving question
 
 **Check for relevant sibling briefs before synthesizing.** List the parent directory
-(the directory containing this brief) to see what other briefs exist. If any are
-relevant comparables — a competitor, a predecessor technology, a person associated with
-the subject — read their `syntheses/` directory and reference useful analysis with
-relative links (`../../<sibling-brief>/syntheses/<page>.md`). A brief library grows
-more valuable than the sum of its parts when syntheses reference each other; a
-Databricks synthesis that can cite an existing Snowflake analysis is stronger than one
-that reconstructs the comparison from scratch.
+(the directory containing this brief) to see what other briefs exist. A sibling is
+relevant if it shares the same market, the same customer type, or the same technology
+layer as the subject — scan past others quickly. If relevant siblings exist, read their
+`syntheses/` directory and reference useful analysis with relative links
+(`../../<sibling-brief>/syntheses/<page>.md`). A brief library grows more valuable than
+the sum of its parts when syntheses reference each other; a Databricks synthesis that can
+cite an existing Snowflake analysis is stronger than one that reconstructs the comparison
+from scratch.
 
 **If the driving question contains a factual error, correct it before answering.**
 The researcher may have acted on an incorrect premise — a wrong date, a misattributed
@@ -290,6 +291,14 @@ claim, a company name error — that the fetched sources now contradict. Open th
 by naming the error and the correction ("The question assumes X; fetched sources show Y"),
 then answer the corrected version of the question. A synthesis built on a false premise
 misleads the researcher even if every individual claim is accurate.
+
+**Before writing, extract the evaluative frame from the driving question.** A driving
+question does double duty: it scopes the research and provides the lens for the synthesis.
+"Is this a plan or a hope?" is not just a question to answer — it is an evaluative frame
+to carry structurally through every relevant concept page and into the synthesis spine.
+Identify the frame before writing, name it explicitly in the synthesis opening, and apply
+it consistently. A synthesis that answers a well-framed question at the end but didn't
+use the frame to organize the argument is weaker than one where the frame runs through it.
 
 If a driving question was provided in `$ARGUMENTS`, synthesize an answer now by reading
 across the concept pages just written. File the result as `syntheses/<slug>.md` with
