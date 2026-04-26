@@ -9,7 +9,10 @@ Run from the parent directory where the brief should be created
 
 ## Step 1 — Parse arguments and determine subject type
 
-Extract the subject name from `$ARGUMENTS`. If a driving question follows, capture it.
+Extract the subject name from `$ARGUMENTS`. If a driving question follows, capture it. If
+the driving question contains a URL, treat it as a suggested starting source: fetch it in
+Step 5 before or alongside other discovery searches, and note in the synthesis that it was
+provided by the researcher rather than discovered independently.
 
 Infer the subject type from the name and any available context:
 
@@ -36,7 +39,7 @@ and expensive to retrofit.
 | Type | Default directories |
 |---|---|
 | Person | `biography/`, `research/`, `views/`, `ventures/` |
-| Company | `history/`, `products/`, `strategy/`, `team/` |
+| Company | `history/`, `products/`, `strategy/`, `financials/`, `team/` |
 | Conference | `program/`, `speakers/`, `themes/`, `papers/` |
 | Topic | `positions/`, `evidence/`, `key-figures/`, `history/` |
 | Policy | `text/`, `sponsors/`, `arguments/`, `status/` |
@@ -118,6 +121,10 @@ Skip any file or directory that already exists without overwriting.
 Search for and fetch the most informative public sources for the subject. Every source
 must be saved to `raw/` before reading — do not use transient fetch results.
 
+**Check for existing files before fetching.** Run `ls raw/` before each fetch. If a
+slug already exists (e.g. `raw/wikipedia-databricks.md`), skip the fetch — do not
+overwrite work from a prior session or a concurrent fetch.
+
 **Discover sources before fetching.** Use WebSearch to find URLs rather than
 constructing them from guesses — guessed URLs produce 404s. Search for the subject
 name plus relevant terms ("Databricks business model", "Ilya Sutskever interview
@@ -185,6 +192,11 @@ Save each source with a descriptive slug:
 cc-webfetch <url> > raw/<slug>.md
 ```
 
+**Paywalled sources:** when a search result looks highly relevant but the fetch returns
+a paywall or login page, save a stub file named `raw/<slug>-paywalled.md` with the
+title, URL, and a one-sentence note that it was unavailable. Reference these stubs in
+the synthesis's absence notation so the researcher knows what was found but not read.
+
 ## Step 6 — Write initial concept pages
 
 For each sub-wiki, write at least one concept page synthesizing the relevant fetched
@@ -207,18 +219,24 @@ links — not code spans. Pages are two levels from the wiki root, so the path i
 - Wikipedia, "Ilya Sutskever" (accessed 2026-04-26) — [raw/wikipedia-sutskever.md](../../raw/wikipedia-sutskever.md)
 ```
 
-**Company financial figures from press releases require a structured caveat — when
-used in valuation, growth, or financial comparison contexts.** Company announcements
-and investor press releases frequently report "revenue run-rate" (a single quarter
-annualized) rather than trailing twelve months under GAAP — and almost never note the
-distinction explicitly. When a concept page uses revenue or valuation figures from a
-press release or funding announcement *in the context of valuation analysis, growth
-rate comparison, or financial benchmarking*, add a note: "Figure is [run-rate / ARR /
-annualized] as reported by the company; not audited under GAAP." A reader unfamiliar
-with this convention can easily misread run-rate as trailing revenue, overstating actual
-performance by 2–4×. Do not fire this caveat on non-financial figures (customer counts,
-product launch metrics, headcount) — treating every press release citation as suspect
-trains researchers to skip past the warning when it actually matters.
+**Company financial figures require a structured caveat — when used in valuation,
+growth, or financial comparison contexts.** Apply two tiers:
+
+- **Public companies** (SEC-filed 10-K / 10-Q): cite the figure, note the filing
+  period (e.g., "FY2024 10-K"), and flag if it is revenue vs. ARR vs. deferred revenue.
+  No further caveat needed — SEC-filed figures are audited and subject to restatement
+  risk but are not run-rate estimates.
+
+- **Private companies** (press releases, funding announcements, management commentary):
+  figures are self-reported and unaudited. Add a note: "Figure is [run-rate / ARR /
+  annualized] as reported by the company; not audited under GAAP." Company announcements
+  frequently report a single quarter annualized rather than trailing twelve months — and
+  almost never note the distinction. A reader unfamiliar with this convention can easily
+  misread run-rate as trailing revenue, overstating actual performance by 2–4×.
+
+Do not fire this caveat on non-financial figures (customer counts, product launch
+metrics, headcount) — treating every press release citation as suspect trains researchers
+to skip past the warning when it actually matters.
 
 Update each sub-wiki's `index.md` with links to the pages just written.
 
@@ -232,6 +250,13 @@ relative links (`../../<sibling-brief>/syntheses/<page>.md`). A brief library gr
 more valuable than the sum of its parts when syntheses reference each other; a
 Databricks synthesis that can cite an existing Snowflake analysis is stronger than one
 that reconstructs the comparison from scratch.
+
+**If the driving question contains a factual error, correct it before answering.**
+The researcher may have acted on an incorrect premise — a wrong date, a misattributed
+claim, a company name error — that the fetched sources now contradict. Open the synthesis
+by naming the error and the correction ("The question assumes X; fetched sources show Y"),
+then answer the corrected version of the question. A synthesis built on a false premise
+misleads the researcher even if every individual claim is accurate.
 
 If a driving question was provided in `$ARGUMENTS`, synthesize an answer now by reading
 across the concept pages just written. File the result as `syntheses/<slug>.md` with
