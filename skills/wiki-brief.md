@@ -143,6 +143,16 @@ Concrete search strategies when the subject lacks obvious adversarial coverage:
   tested the subject's stated capabilities
 - For people or organizations with academic output: check who has cited them critically
   in Google Scholar or arXiv comments
+- **For companies too small or too new to have attracted retrospective analysis** (no
+  post-mortems, no press coverage beyond launch announcements): use proxy surfaces that
+  reveal internal state obliquely — job postings show what is broken or missing
+  internally; LinkedIn departure patterns reveal attrition and where talent went;
+  customer reviews in vertical-specific forums (G2, Capterra, Reddit communities) carry
+  signal that PR-managed channels suppress; regulatory filings may reveal disputes or
+  compliance issues not otherwise public
+
+When none of these strategies surface adversarial material, record that explicitly —
+do not leave the absence invisible. See Step 7.
 
 **arXiv sources:** use `cc-arxiv <id>` to fetch metadata. If the abstract answers your
 question, metadata alone may be sufficient — the abstract, authors, year, and PDF URL
@@ -195,6 +205,16 @@ Note: synthesis pages are one level from the wiki root, so `raw/` links use `../
 and cross-wiki links use `../<subwiki>/concepts/<page>.md`.
 
 This is the deliverable the brief was built for. Make it specific and citable.
+
+**Explicit absence notation:** if the adversarial search in Step 5 returned nothing,
+say so explicitly in the synthesis — do not let the absence be invisible. Use language
+like: "No independent criticism of [subject] was found. This may reflect recency (too
+new to have attracted retrospective analysis), obscurity (too small to have generated
+press coverage), or operating context (e.g., defense or healthcare, where public
+critique is suppressed or legally constrained)." A uniformly positive brief that
+silently omitted a failed search is more dangerous than one that acknowledges the
+gap — the reader needs to know whether absence of criticism reflects strength or
+absence of scrutiny.
 
 After writing the synthesis, update the root `index.md` to add the syntheses entry,
 and append to root `log.md`. Updating these after the synthesis exists avoids broken
