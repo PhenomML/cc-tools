@@ -134,6 +134,16 @@ the company controls most public information and will present itself favorably. 
 search for critical analyses, post-mortems, competitor assessments, or independent
 reviews — they are often the most valuable sources and materially change the synthesis.
 
+Concrete search strategies when the subject lacks obvious adversarial coverage:
+- Check Wikipedia's external links and "Criticism" sections — they often surface named
+  critics and negative analyses directly
+- Query `cc-webfetch` on searches like "[subject] criticism", "[subject] failure",
+  "[subject] post-mortem", "[subject] problems"
+- For technology claims: look for independent replication attempts or benchmarks that
+  tested the subject's stated capabilities
+- For people or organizations with academic output: check who has cited them critically
+  in Google Scholar or arXiv comments
+
 **arXiv sources:** use `cc-arxiv <id>` to fetch metadata. If the abstract answers your
 question, metadata alone may be sufficient — the abstract, authors, year, and PDF URL
 are all you need for a citation. Fetch the full text (HTML preferred; PDF via
