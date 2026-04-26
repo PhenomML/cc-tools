@@ -2,6 +2,7 @@ Ingest a source into the research wiki: $ARGUMENTS
 
 `$ARGUMENTS` is one of:
 - An arXiv ID (e.g. `2301.07608`)
+- A public URL (e.g. `https://en.wikipedia.org/wiki/Ilya_Sutskever`)
 - A path inside `raw/` (e.g. `raw/kalman-1960.pdf`)
 - Any filesystem path to a PDF, Office doc, or HTML file (e.g. `~/Books/textbook.pdf`)
 
@@ -23,6 +24,12 @@ If HTML is not available, download the PDF using the URL from cc-arxiv output an
 curl -L <pdf-url> -o raw/<author>-<year>-<slug>.pdf
 cc-markitdown raw/<author>-<year>-<slug>.pdf > raw/<author>-<year>-<slug>.md
 ```
+
+**If a public URL:** fetch once and save to `raw/` with a descriptive slug:
+```bash
+cc-webfetch <url> > raw/<slug>.md
+```
+Choose a slug that identifies the source: `wikipedia-sutskever.md`, `ssi-inc-homepage.md`, `patel-sutskever-2023-interview.md`.
 
 **If a filesystem path:** convert once and save into `raw/` using the source filename's
 basename:
