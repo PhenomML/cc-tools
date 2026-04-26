@@ -11,13 +11,14 @@ Run from the parent directory where the brief should be created
 
 Extract the subject name from `$ARGUMENTS`. If a driving question follows, capture it.
 
-**If the driving question contains substantive claims about the subject** — product
-architecture, market positioning, financial figures, competitive framing, or insider
-knowledge not likely available on the public web — save it verbatim to
-`raw/driving-question-<YYYY-MM-DD>.md` before proceeding. It is a source, not just a
-prompt: it contributes factual claims that concept pages will cite, and those citations
-need a traceable file in `raw/` like any other source. A floating "investor description"
-or "researcher framing" reference with no corresponding file is a provenance hole.
+**If the driving question makes falsifiable empirical claims about the subject**, save it
+verbatim to `raw/driving-question-<YYYY-MM-DD>.md` before proceeding. Any argument text
+that asserts something verifiable or refutable — product architecture, competitive
+positioning, customer anecdotes, financial figures — is a primary source regardless of
+how it arrived in the conversation. It contributes claims that concept pages will cite,
+and those citations need a traceable file in `raw/` like any other source. A floating
+"investor description" or "researcher framing" with no corresponding file is a provenance
+hole.
 
 If the driving question contains a URL, treat it as a suggested starting source: fetch it
 in Step 5 before or alongside other discovery searches unless it is clearly a marketing
