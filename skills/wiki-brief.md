@@ -11,8 +11,11 @@ Run from the parent directory where the brief should be created
 
 Extract the subject name from `$ARGUMENTS`. If a driving question follows, capture it. If
 the driving question contains a URL, treat it as a suggested starting source: fetch it in
-Step 5 before or alongside other discovery searches, and note in the synthesis that it was
-provided by the researcher rather than discovered independently.
+Step 5 before or alongside other discovery searches unless it is clearly a marketing
+homepage (e.g. the subject's own `company.com/` root) — marketing homepages rarely add
+analytical value beyond what the About page provides. A deep-link to an investor page,
+earnings transcript, or specific product page should always be fetched. Note in the
+synthesis that researcher-provided URLs were provided rather than discovered independently.
 
 Infer the subject type from the name and any available context:
 
@@ -220,19 +223,23 @@ links — not code spans. Pages are two levels from the wiki root, so the path i
 ```
 
 **Company financial figures require a structured caveat — when used in valuation,
-growth, or financial comparison contexts.** Apply two tiers:
+growth, or financial comparison contexts.** The cleanest signal is EDGAR: if the company
+files a 10-K or 10-Q, it is public and its financials are under SEC audit obligation;
+if no 10-K exists on EDGAR, apply the private-company caveat regardless of how the figure
+is presented. Apply two tiers:
 
-- **Public companies** (SEC-filed 10-K / 10-Q): cite the figure, note the filing
-  period (e.g., "FY2024 10-K"), and flag if it is revenue vs. ARR vs. deferred revenue.
-  No further caveat needed — SEC-filed figures are audited and subject to restatement
-  risk but are not run-rate estimates.
+- **Public companies** (10-K / 10-Q on EDGAR): cite the figure, note the filing period
+  (e.g., "FY2024 10-K"), and flag if it is revenue vs. ARR vs. deferred revenue. No
+  further caveat needed — EDGAR-filed figures are audited and subject to restatement risk
+  but are not run-rate estimates.
 
-- **Private companies** (press releases, funding announcements, management commentary):
-  figures are self-reported and unaudited. Add a note: "Figure is [run-rate / ARR /
-  annualized] as reported by the company; not audited under GAAP." Company announcements
-  frequently report a single quarter annualized rather than trailing twelve months — and
-  almost never note the distinction. A reader unfamiliar with this convention can easily
-  misread run-rate as trailing revenue, overstating actual performance by 2–4×.
+- **Private companies** (no 10-K on EDGAR — press releases, funding announcements,
+  management commentary): figures are self-reported and unaudited. Add a note: "Figure is
+  [run-rate / ARR / annualized] as reported by the company; not audited under GAAP."
+  Company announcements frequently report a single quarter annualized rather than trailing
+  twelve months — and almost never note the distinction. A reader unfamiliar with this
+  convention can easily misread run-rate as trailing revenue, overstating actual
+  performance by 2–4×.
 
 Do not fire this caveat on non-financial figures (customer counts, product launch
 metrics, headcount) — treating every press release citation as suspect trains researchers
