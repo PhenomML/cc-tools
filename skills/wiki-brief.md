@@ -118,6 +118,12 @@ Skip any file or directory that already exists without overwriting.
 Search for and fetch the most informative public sources for the subject. Every source
 must be saved to `raw/` before reading — do not use transient fetch results.
 
+**Discover sources before fetching.** Use WebSearch to find URLs rather than
+constructing them from guesses — guessed URLs produce 404s. Search for the subject
+name plus relevant terms ("Databricks business model", "Ilya Sutskever interview
+2023"), then fetch the discovered URLs with `cc-webfetch`. Wikipedia and official
+company sites are safe to fetch directly; everything else should be searched first.
+
 **Typical sources by type:**
 
 **Person:** Wikipedia page, personal/lab/company site, one or two significant interviews
@@ -150,6 +156,14 @@ Concrete search strategies when the subject lacks obvious adversarial coverage:
   customer reviews in vertical-specific forums (G2, Capterra, Reddit communities) carry
   signal that PR-managed channels suppress; regulatory filings may reveal disputes or
   compliance issues not otherwise public
+
+**For large private companies, adversarial absence is often structural, not editorial.**
+The highest-quality critical analysis of private tech companies — Stratechery, The
+Information, WSJ investor coverage, internal investor memos — is paywalled, under NDA,
+or in forums cc-webfetch cannot reliably surface. Free-web adversarial coverage of a
+company like Databricks or Stripe is thin not because critics don't exist but because
+they write behind paywalls. Distinguish this from genuine absence of scrutiny when
+writing the absence notation in Step 7.
 
 When none of these strategies surface adversarial material, record that explicitly —
 do not leave the absence invisible. See Step 7.
@@ -193,9 +207,27 @@ links — not code spans. Pages are two levels from the wiki root, so the path i
 - Wikipedia, "Ilya Sutskever" (accessed 2026-04-26) — [raw/wikipedia-sutskever.md](../../raw/wikipedia-sutskever.md)
 ```
 
+**Company financial figures from press releases require a structured caveat.** Company
+announcements and investor press releases frequently report "revenue run-rate"
+(a single quarter annualized) rather than trailing twelve months under GAAP — and
+almost never note the distinction explicitly. When a concept page cites revenue or
+valuation figures sourced from a company press release or funding announcement, add a
+note: "Figure is [run-rate / ARR / annualized] as reported by the company; not audited
+under GAAP." A reader unfamiliar with this convention can easily misread run-rate as
+trailing revenue, which may overstate actual performance by 2–4×.
+
 Update each sub-wiki's `index.md` with links to the pages just written.
 
 ## Step 7 — Answer the driving question
+
+**Check for relevant sibling briefs before synthesizing.** List the parent directory
+(the directory containing this brief) to see what other briefs exist. If any are
+relevant comparables — a competitor, a predecessor technology, a person associated with
+the subject — read their `syntheses/` directory and reference useful analysis with
+relative links (`../../<sibling-brief>/syntheses/<page>.md`). A brief library grows
+more valuable than the sum of its parts when syntheses reference each other; a
+Databricks synthesis that can cite an existing Snowflake analysis is stronger than one
+that reconstructs the comparison from scratch.
 
 If a driving question was provided in `$ARGUMENTS`, synthesize an answer now by reading
 across the concept pages just written. File the result as `syntheses/<slug>.md` with
@@ -210,11 +242,12 @@ This is the deliverable the brief was built for. Make it specific and citable.
 say so explicitly in the synthesis — do not let the absence be invisible. Use language
 like: "No independent criticism of [subject] was found. This may reflect recency (too
 new to have attracted retrospective analysis), obscurity (too small to have generated
-press coverage), or operating context (e.g., defense or healthcare, where public
-critique is suppressed or legally constrained)." A uniformly positive brief that
-silently omitted a failed search is more dangerous than one that acknowledges the
-gap — the reader needs to know whether absence of criticism reflects strength or
-absence of scrutiny.
+press coverage), paywall structure (the best critical analysis of large private
+companies is behind Stratechery, The Information, or WSJ paywalls and inaccessible to
+cc-webfetch), or operating context (e.g., defense or healthcare, where public critique
+is suppressed or legally constrained)." A uniformly positive brief that silently omitted
+a failed search is more dangerous than one that acknowledges the gap — the reader needs
+to know whether absence of criticism reflects strength or absence of scrutiny.
 
 After writing the synthesis, update the root `index.md` to add the syntheses entry,
 and append to root `log.md`. Updating these after the synthesis exists avoids broken
