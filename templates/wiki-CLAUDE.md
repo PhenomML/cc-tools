@@ -7,8 +7,13 @@ the researcher curates sources and directs analysis.
 
 <!-- List each sub-wiki, its scope, and related sub-wikis.
 
+Sub-wikis are not limited to research domains. They can represent any orthogonal
+dimension of a subject: for a person wiki, sub-wikis might be biography, research,
+ai-safety, and ventures; for a company wiki, history, products, strategy, and team.
+Use whatever decomposition makes sense for your subject.
+
 The Scope column should be specific enough that an agent can decide unambiguously
-whether a paper belongs in this sub-wiki. Prefer concrete topic lists over broad labels.
+whether a source belongs in this sub-wiki. Prefer concrete topic lists over broad labels.
 
 The Related column lists other sub-wikis in this table whose concepts frequently
 overlap with this one. The agent uses it when writing concept and method pages: if a
@@ -75,15 +80,23 @@ See cc-tools `AUTHORING.md` for the full standard.
 
 ## Ingestion workflow
 
-Use `/wiki-ingest <raw/filename or arXiv ID>`. Claude will:
-1. Run `cc-arxiv <id>` to fetch metadata and check HTML availability (arXiv sources)
-2. Fetch HTML via `cc-webfetch` if available, otherwise download PDF and run `cc-markitdown`
-3. Determine which sub-wikis the source informs
-4. Write source summary pages into each relevant sub-wiki
-5. Update concept/method pages with cross-links
-6. Update the relevant `index.md` files and root `log.md`
+**All sources must be saved to `raw/` before use.** This applies regardless of source type — every piece of evidence the wiki cites must have a corresponding file in `raw/` so provenance is traceable and the `sources:` frontmatter field is populated.
 
-A paper spanning multiple subfields is written into all relevant sub-wikis.
+| Source type | Acquire | Save to raw/ |
+|---|---|---|
+| arXiv paper | `cc-arxiv <id>` for metadata; fetch HTML or PDF | `raw/<author>-<year>-<slug>.md` or `.pdf` |
+| Web page (Wikipedia, blog, company page) | `cc-webfetch <url>` | `raw/<slug>.md` |
+| Local PDF or document | — | already in raw/ or copy there first |
+| Podcast / interview transcript | `cc-webfetch <transcript-url>` | `raw/<speaker>-<year>-<slug>.md` |
+
+Use `/wiki-ingest <source>` for the full workflow. Claude will:
+1. Acquire and save the source to `raw/` (see table above)
+2. Determine which sub-wikis the source informs
+3. Write source summary pages into each relevant sub-wiki
+4. Update concept/method pages with cross-links
+5. Update the relevant `index.md` files and root `log.md`
+
+A source spanning multiple subfields is written into all relevant sub-wikis.
 
 ## Query workflow
 

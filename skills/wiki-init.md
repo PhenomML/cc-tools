@@ -3,6 +3,11 @@ Initialise the wiki directory structure from the Sub-wikis table in CLAUDE.md: $
 Run from the wiki root (the directory containing CLAUDE.md). Safe to re-run on an
 existing wiki — skips files and directories that already exist without overwriting them.
 
+Sub-wikis are not limited to research domains — they can represent any orthogonal
+dimension of a subject. A person wiki might have biography, research, ai-safety, and
+ventures. A company wiki might have history, products, strategy, and team. The structure
+that emerges from the Sub-wikis table is whatever the researcher defined.
+
 ## Step 1 — Read the Sub-wikis table
 
 Read `CLAUDE.md` and extract the directory name from every data row in the Sub-wikis
