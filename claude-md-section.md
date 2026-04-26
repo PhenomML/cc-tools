@@ -42,6 +42,7 @@ The following slash commands are installed in `~/.claude/commands/` and availabl
 | `/paper-summary` | `/paper-summary path/to/paper.pdf` | Extract and summarize a research paper |
 | `/notebook-narrate` | `/notebook-narrate path/to/analysis.ipynb` | Write a research narrative from a Jupyter notebook |
 | `/math-review` | `/math-review path/to/notes.md` | Check .md files against the $...$ authoring standard |
+| `/wiki-brief` | `/wiki-brief "Ilya Sutskever" "driving question"` | Create a research brief for a person, company, or topic in one pass |
 | `/wiki-init` | `/wiki-init` | Scaffold the wiki from the Sub-wikis table: creates all sub-wiki directories, CLAUDE.md files, index files, raw/, and .gitignore |
 | `/wiki-ingest` | `/wiki-ingest raw/paper.pdf` or `/wiki-ingest 2301.07608` | Ingest a source into the research wiki (multi-wiki routing) |
 | `/wiki-query` | `/wiki-query <research question>` | Answer a question by synthesising across wiki pages |
