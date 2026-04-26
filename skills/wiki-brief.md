@@ -207,14 +207,18 @@ links — not code spans. Pages are two levels from the wiki root, so the path i
 - Wikipedia, "Ilya Sutskever" (accessed 2026-04-26) — [raw/wikipedia-sutskever.md](../../raw/wikipedia-sutskever.md)
 ```
 
-**Company financial figures from press releases require a structured caveat.** Company
-announcements and investor press releases frequently report "revenue run-rate"
-(a single quarter annualized) rather than trailing twelve months under GAAP — and
-almost never note the distinction explicitly. When a concept page cites revenue or
-valuation figures sourced from a company press release or funding announcement, add a
-note: "Figure is [run-rate / ARR / annualized] as reported by the company; not audited
-under GAAP." A reader unfamiliar with this convention can easily misread run-rate as
-trailing revenue, which may overstate actual performance by 2–4×.
+**Company financial figures from press releases require a structured caveat — when
+used in valuation, growth, or financial comparison contexts.** Company announcements
+and investor press releases frequently report "revenue run-rate" (a single quarter
+annualized) rather than trailing twelve months under GAAP — and almost never note the
+distinction explicitly. When a concept page uses revenue or valuation figures from a
+press release or funding announcement *in the context of valuation analysis, growth
+rate comparison, or financial benchmarking*, add a note: "Figure is [run-rate / ARR /
+annualized] as reported by the company; not audited under GAAP." A reader unfamiliar
+with this convention can easily misread run-rate as trailing revenue, overstating actual
+performance by 2–4×. Do not fire this caveat on non-financial figures (customer counts,
+product launch metrics, headcount) — treating every press release citation as suspect
+trains researchers to skip past the warning when it actually matters.
 
 Update each sub-wiki's `index.md` with links to the pages just written.
 
