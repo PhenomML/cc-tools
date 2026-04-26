@@ -4,7 +4,7 @@ An AI agent doing real research work needs to read research — and reading rese
 
 cc-tools is that somewhere. It packages the essential ingestion stack into an isolated environment managed by `uv`, completely separate from your research project dependencies. You install it once per machine; after that, Claude manages it and uses it from any project, without touching your Conda environments.
 
-cc-tools also ships the wiki skills that implement [Karpathy's LLM wiki pattern](https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f) — where the agent reads a paper, writes a structured summary, updates the concept pages it touches, and maintains a cross-linked index across sessions. The knowledge accumulates because it is written down, not held in chat history.
+cc-tools also ships the wiki skills that implement [Karpathy's LLM wiki pattern](https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f) — where the agent reads a paper, writes a structured summary, updates the concept pages it touches, and maintains a cross-linked index across sessions. The knowledge accumulates because it is written down, not held in chat history. A lighter brief variant builds a subject-oriented wiki in a single session for a meeting or time-sensitive question — a person, company, topic, or policy assembled from public sources around a driving question.
 
 ## Articles
 
@@ -14,6 +14,7 @@ The design choices behind cc-tools are explained in three pieces:
 |---|---|
 | [Help Your AI Read Research — and Remember It](articles/help-your-ai-read-research.md) | The ingestion stack, math notation standard, research skills, and the permanence pattern that underlies the wiki |
 | [The Multi-Subject Personal Research Wiki](articles/multi-subject-personal-research-wiki.md) | Why one wiki is not enough, the multi-sub-wiki architecture, and the skills that maintain it |
+| [The Research Brief](articles/the-research-brief.md) | A subject-oriented wiki assembled in one session for a meeting or time-sensitive question — person, company, topic, or policy |
 | [Jupyter and the MCP Trade-off](articles/jupyter-and-the-mcp-tradeoff.md) | When static notebook conversion is sufficient and when the Jupyter MCP is worth its token cost |
 
 ## Installation
