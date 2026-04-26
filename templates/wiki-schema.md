@@ -40,6 +40,17 @@ Concept pages: descriptive noun phrase, e.g. `kalman-filter.md`, `state-space-mo
 Example from `tsa/concepts/state-space.md` to `bayes/concepts/gaussian-update.md`:
 `../../bayes/concepts/gaussian-update.md`
 
+**Source references in body content:** use relative markdown links to `raw/` files,
+not code spans. Pages in `<subwiki>/concepts/`, `<subwiki>/papers/`, etc. are two
+levels from the wiki root, so the relative path to `raw/` is always `../../raw/`.
+Example Sources section:
+```markdown
+## Sources
+
+- Wikipedia, "Kalman Filter" (accessed 2026-04-26) — [raw/wikipedia-kalman.md](../../raw/wikipedia-kalman.md)
+- Kalman (1960) — [raw/kalman-1960.md](../../raw/kalman-1960.md)
+```
+
 **Math:** always use `$...$` for inline math and `$$...$$` for display math with LaTeX
 commands inside. Never use bare Unicode Greek letters or Unicode subscript digits in math.
 See cc-tools `AUTHORING.md` for the full standard.

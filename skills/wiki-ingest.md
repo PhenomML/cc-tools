@@ -60,7 +60,9 @@ For **each** sub-wiki identified in Step 3:
 YAML frontmatter: `title, type: paper, wikis: [list], sources: [raw path],
 related: [], created: <today>, updated: <today>, confidence: high`
 Content: citation, research question, methods, key results, limitations.
-Use `$...$` LaTeX for all math.
+Use `$...$` LaTeX for all math. In the Sources section, link to `raw/` files
+using relative markdown links — not code spans — since pages are two levels
+from the wiki root: `[raw/file.md](../../raw/file.md)`.
 
 **4b. Concept and method pages** — update or create pages in `<wiki>/concepts/` and
 `<wiki>/methods/` touched by this source. Add a citation back to the paper page.

@@ -133,6 +133,15 @@ sources. Follow /wiki-ingest conventions:
 In a person brief, the biography sub-wiki's career-timeline page plays the same role
 a survey paper plays in a domain wiki — it is the anchor that cross-links everything else.
 
+In the Sources section of every page, link to `raw/` files using relative markdown
+links — not code spans. Pages are two levels from the wiki root, so the path is always
+`../../raw/<filename>`. Example:
+```markdown
+## Sources
+
+- Wikipedia, "Ilya Sutskever" (accessed 2026-04-26) — [raw/wikipedia-sutskever.md](../../raw/wikipedia-sutskever.md)
+```
+
 Update each sub-wiki's `index.md` and append to root `log.md`.
 
 ## Step 7 — Answer the driving question
