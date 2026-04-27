@@ -49,7 +49,7 @@ Create the following if they do not already exist:
 
 **`raw/`** directory.
 
-**`.gitignore`** — if absent, create with `raw/`. If present but missing `raw/`, append it.
+**`.gitignore`** — if absent, create with `raw/` and `.credentialed-domains`. If present but missing either entry, append the missing one(s).
 
 **`index.md`:**
 ```markdown
