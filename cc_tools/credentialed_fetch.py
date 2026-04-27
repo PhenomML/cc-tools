@@ -61,14 +61,17 @@ def _slug_from_url(url: str) -> str:
 
 
 def fetch_via_chrome(url: str, delay: int) -> tuple[str | None, str]:
-    safe_url = url.replace("\\", "\\\\").replace('"', '\\"')
+    # AppleScript does not support backslash escaping inside string literals.
+    # Double-quotes in URLs must be rejected rather than escaped.
+    if '"' in url:
+        return None, "URL contains a literal double-quote character — invalid URL"
     script = f'''
 tell application "Google Chrome"
     if (count windows) is 0 then
         error "No Chrome windows open — open a Chrome window first"
     end if
     set newTab to make new tab at end of tabs of window 1
-    set URL of newTab to "{safe_url}"
+    set URL of newTab to "{url}"
     delay {delay}
     set tabContent to execute newTab javascript "document.body.innerText"
     if tabContent is missing value or tabContent is "" then
@@ -97,6 +100,27 @@ end tell
         return None, "empty response (page may not have loaded — try --delay with a larger value)"
 
     return content, f"{len(content.encode('utf-8'))} bytes"
+
+
+def disable_apple_events() -> tuple[bool, str]:
+    """Attempt to disable Apple Events access in Chrome's Preferences JSON.
+
+    Chrome may overwrite this change while running; the caller should instruct
+    the user to verify via the menu and restart Chrome to confirm.
+    """
+    try:
+        with open(CHROME_PREF_PATH) as f:
+            prefs = json.load(f)
+        if not prefs.get("browser", {}).get("allow_javascript_apple_events", False):
+            return True, "already disabled"
+        prefs.setdefault("browser", {})["allow_javascript_apple_events"] = False
+        with open(CHROME_PREF_PATH, "w") as f:
+            json.dump(prefs, f)
+        return True, "disabled"
+    except FileNotFoundError:
+        return False, "Chrome preferences file not found"
+    except Exception as e:
+        return False, str(e)
 
 
 def main():
@@ -231,12 +255,24 @@ def main():
             file=sys.stderr,
         )
 
-    # Post-fetch security reminder
+    # Post-fetch: attempt to disable Apple Events automatically
     if apple_events_on:
-        print(
-            "\nSECURITY: disable Chrome's Apple Events access now:\n"
-            "  Chrome → View → Developer → Allow JavaScript from Apple Events  (uncheck)",
-            file=sys.stderr,
-        )
+        ok, msg = disable_apple_events()
+        if ok and msg == "already disabled":
+            pass  # nothing to do
+        elif ok:
+            print(
+                "\nSECURITY: Apple Events access disabled in Chrome preferences.\n"
+                "Restart Chrome to confirm, then verify:\n"
+                "  Chrome → View → Developer → Allow JavaScript from Apple Events  (should be unchecked)",
+                file=sys.stderr,
+            )
+        else:
+            print(
+                f"\nSECURITY: could not auto-disable Apple Events ({msg}).\n"
+                "Disable manually now:\n"
+                "  Chrome → View → Developer → Allow JavaScript from Apple Events  (uncheck)",
+                file=sys.stderr,
+            )
 
     sys.exit(1 if failed else 0)
