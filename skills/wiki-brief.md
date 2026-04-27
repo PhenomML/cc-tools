@@ -4,8 +4,18 @@ Create a research brief for a subject: $ARGUMENTS
 - `/wiki-brief "Ilya Sutskever"` — brief only
 - `/wiki-brief "Ilya Sutskever" "Why would a Stanford signal processing mathematician interest a superintelligence researcher?"` — brief with purpose
 
-Run from the parent directory where the brief should be created
-(e.g., `~/Research/People/` for a person brief).
+**Run from inside the brief directory, not the parent.** Each brief should be its own
+Claude Code session anchored at the brief root — this keeps its memory isolated from
+other briefs in the same parent directory. Create the directory first, then open Claude
+inside it:
+
+```bash
+mkdir -p ~/Research/People/ilya-sutskever
+# open Claude Code in ~/Research/People/ilya-sutskever/
+/wiki-brief "Ilya Sutskever" "driving question"
+```
+
+Step 3 skips directory creation if the directory already exists.
 
 ## Step 1 — Parse arguments and determine subject type
 
