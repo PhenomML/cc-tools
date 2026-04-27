@@ -283,6 +283,21 @@ Do not fire this caveat on non-financial figures (customer counts, product launc
 metrics, headcount) — treating every press release citation as suspect trains researchers
 to skip past the warning when it actually matters.
 
+**Before writing any claim about a third party's actions, relationships, or funding,
+grep existing `raw/` files for their name.** Peer-reviewed journals require financial
+disclosure statements that name funding sources, institutional affiliations, and conflicts
+of interest — these are authoritative and already in files you fetched. A claim you
+would otherwise state tentatively may already be confirmed or contradicted by a disclosure
+statement sitting in `raw/`.
+
+```bash
+grep -r "Person or Org Name" raw/
+```
+
+Run this before asserting any funding relationship, co-authorship, institutional tie,
+or conflict of interest about a named individual or organization. If the grep surfaces
+a disclosure statement, cite it; if it contradicts the claim, correct it before writing.
+
 Update each sub-wiki's `index.md` with links to the pages just written.
 
 ## Step 7 — Answer the driving question

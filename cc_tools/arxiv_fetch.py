@@ -1,4 +1,5 @@
 import sys
+import time
 import urllib.request
 import urllib.error
 import arxiv
@@ -22,11 +23,22 @@ def main():
         sys.exit(0 if "--help" in sys.argv else 1)
 
     paper_id = sys.argv[1]
-    try:
-        client = arxiv.Client()
-        results = list(client.results(arxiv.Search(id_list=[paper_id])))
-    except Exception as e:
-        print(f"cc-arxiv: {e}", file=sys.stderr)
+    client = arxiv.Client()
+    results = None
+    for attempt in range(3):
+        try:
+            results = list(client.results(arxiv.Search(id_list=[paper_id])))
+            break
+        except Exception as e:
+            if "429" in str(e) and attempt < 2:
+                wait = (attempt + 1) * 10
+                print(f"cc-arxiv: rate limited (429), retrying in {wait}s...", file=sys.stderr)
+                time.sleep(wait)
+            else:
+                print(f"cc-arxiv: {e}", file=sys.stderr)
+                sys.exit(1)
+    if results is None:
+        print("cc-arxiv: failed after retries", file=sys.stderr)
         sys.exit(1)
 
     if not results:
