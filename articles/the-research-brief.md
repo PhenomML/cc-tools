@@ -52,16 +52,17 @@ The Purpose field does three things. First, it focuses the initial ingest — so
 
 ## The `/wiki-brief` workflow
 
-The `/wiki-brief` skill takes a subject name and an optional driving question, runs from the parent directory:
+Each brief is its own Claude Code session, anchored at the brief's root directory. This matters: Claude's memory is scoped to the working directory of the session that writes it. Running a brief from a parent directory like `~/Research/People/` causes its memory to merge with memory from other briefs in the same parent — each brief should be isolated. Create the directory first, open Claude inside it, then invoke the skill:
 
-```
-# open Claude in ~/Research/People/
+```bash
+mkdir -p ~/Research/People/ilya-sutskever
+# open Claude Code in ~/Research/People/ilya-sutskever/
 /wiki-brief "Ilya Sutskever" "Why would Dave's signal processing work interest him?"
 ```
 
 The skill:
 1. Confirms the subject type and sub-wiki dimensions with the researcher
-2. Creates the subject directory, writes `CLAUDE.md` with the Purpose field and Sub-wikis table
+2. Creates `CLAUDE.md` with the Purpose field and Sub-wikis table (skips if already present)
 3. Scaffolds the directory structure — sub-wiki directories, `raw/`, `index.md`, `log.md`, `.gitignore`
 4. Fetches public sources and saves them to `raw/`
 5. Writes initial concept pages, cross-linked across sub-wikis
@@ -117,9 +118,11 @@ Users reach for the brief pattern in three stages.
 
 The brief pattern requires no separate installation. `/wiki-brief` is part of the standard cc-tools skill library.
 
-To build your first brief, open a Claude session in the directory where you want the brief to live — `~/Research/People/` is a natural home for person briefs — and run:
+To build your first brief, create the subject directory, open a Claude session inside it, and run:
 
-```
+```bash
+mkdir -p ~/Research/People/subject-name
+# open Claude Code in ~/Research/People/subject-name/
 /wiki-brief "Subject Name" "Your driving question"
 ```
 
