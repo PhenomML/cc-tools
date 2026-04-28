@@ -11,3 +11,6 @@ wheels/
 
 # Private ideas — not for public repo
 ideas/
+
+# Obsidian workspace files
+.obsidian/
