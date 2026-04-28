@@ -36,9 +36,11 @@ flowchart LR
 
 Apple has already built the right isolation — in the browser context itself. `SFSafariViewController` runs in a separate Safari process that the host application cannot inspect: it cannot read cookies, inject JavaScript, or observe the session. The user's authenticated state is fully available inside that process; the host app sees only a view it cannot peek behind. `ASWebAuthenticationSession` applies the same principle to OAuth flows.
 
-What does not exist is the extension of this isolation to **content extraction**: a way to say "fetch this URL using Safari's authenticated session and return me the text, without giving my app access to the underlying session."
+Safari already has a production content extraction pipeline: Reader View. It strips navigation, ads, and chrome from any page and returns clean readable text — for public content, it already does what the proposed API would do for authenticated content. The extraction capability exists.
 
-`SFSafariViewController` already holds the content in exactly the right place. The missing API is a sanctioned way to extract the rendered text and return it to the requesting application — converting to Markdown if needed — without the session ever crossing the process boundary.
+What does not exist is its extension to **authenticated content**: a way to say "fetch this URL using Safari's authenticated session, apply Reader View, and return me the text, without giving my app access to the underlying session."
+
+`SFSafariViewController` provides the credential isolation. Reader View provides the content extraction. The missing API combines them — returning content instead of rendering a view — with TCC gating that makes the credential access explicit and user-revocable.
 
 ```mermaid
 flowchart LR
@@ -85,6 +87,8 @@ let result = try await SFAuthenticatedFetch.fetch(request)
 
 ## Why Apple Is Uniquely Positioned
 
+- **Reader View.** Apple's built-in reading mode is already a production content extraction pipeline — it strips navigation, ads, and chrome and returns clean readable text. The extraction capability `SFAuthenticatedFetch` needs on the output side already ships in every copy of Safari. For developers, it also eliminates the third-party service dependency that today's public-web tooling requires — the same clean output, with no external endpoint and no rate limit. The missing piece is the permission model, not the technology.
+
 - **Full stack ownership.** Apple controls Safari, WebKit, iCloud Keychain, and the Secure Enclave. The credential isolation guarantee is only credible when one vendor controls all three layers. A Google equivalent would give Google visibility into what content users are fetching. Apple's architecture makes the privacy promise coherent.
 
 - **On-device AI.** Apple Intelligence runs locally. A credentialed fetch that also runs locally — content, credentials, and inference all on the user's device — is the natural complement. Cloud-based AI (ChatGPT, Gemini) cannot make this promise: the content must leave the device to reach the model.
@@ -107,7 +111,7 @@ Apple has the opportunity to define the correct abstraction before these workaro
 
 ## Implementation Path
 
-**Phase 1 — macOS, Safari only.** The API fetches through the running Safari process using its existing session. Content is extracted via WebKit's internal rendering pipeline — equivalent to `document.body.innerText` but without the Apple Events attack surface. No user-visible browser interaction.
+**Phase 1 — macOS, Safari only.** The API fetches through the running Safari process using its existing session. Content is extracted via Safari's Reader View pipeline — the same extraction that already runs when a user taps the Reader button, without the Apple Events attack surface. No user-visible browser interaction.
 
 **Phase 2 — iOS/iPadOS.** Identical API; simpler implementation because WebKit is the only engine. The on-device AI use case is strongest here: Apple Intelligence summarizing subscriber content, Siri pulling authenticated dashboards into Shortcuts workflows.
 

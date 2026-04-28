@@ -28,9 +28,11 @@ flowchart LR
 
 ## The Right Abstraction
 
-Apple has already solved this class of problem in the browser context itself. `SFSafariViewController` runs in a separate Safari process that the host application cannot inspect: it cannot read cookies, inject JavaScript, or observe the session. The user's authenticated state is fully available inside that process; the host app sees only a view it cannot peek behind.
+Apple has already solved both halves of this problem. `SFSafariViewController` runs in a separate Safari process that the host application cannot inspect: it cannot read cookies, inject JavaScript, or observe the session. The user's authenticated state is fully available inside that process; the host app sees only a view it cannot peek behind.
 
-The proposed capability is the natural extension of that existing isolation: **the AI agent should receive the content, not the session.** `SFSafariViewController` already holds the content in exactly the right place. The missing API is a sanctioned way to extract the rendered text and return it to the requesting application — without the session ever crossing the process boundary.
+The other half is Reader View. Safari's built-in reading mode already strips navigation, ads, and chrome from any page and returns clean readable text — the same transformation markdown.new performs for public web content. For public pages, Reader View is the content extraction pipeline that already ships in every copy of Safari, with no external service dependency and no rate limit.
+
+The proposed capability is the natural combination of both: **the AI agent should receive the content, not the session.** `SFSafariViewController` provides the credential isolation. Reader View provides the content extraction. The missing API is a sanctioned way to invoke both together and return the result to the requesting application — without the session ever crossing the process boundary.
 
 ```mermaid
 flowchart LR
