@@ -1,6 +1,24 @@
 # The Authenticated Fetch Gap: An Opportunity for Apple
 
-## The Problem
+## The Existing Workflow — Public Web
+
+For public web content, the developer workflow is already clean. Services like
+[markdown.new](https://markdown.new) accept a URL, fetch the page, and return clean
+Markdown — stripping navigation, ads, and markup to leave only the content. A local AI
+agent calls a single endpoint, receives readable text, and never needs to touch the DOM.
+
+```mermaid
+flowchart LR
+    A[AI Agent] -->|public URL| B[markdown.new]
+    B -->|clean Markdown| A
+```
+
+This works perfectly for public content. It fails entirely for anything behind
+authentication — paywalled articles, institutional access, personal dashboards. For those,
+there is no equivalent service, because no third party can safely hold a user's
+credentials.
+
+## The Problem — Authenticated Web
 
 Local AI agents need to retrieve web content on behalf of users — including content behind
 authentication: paywalled journalism, institutional research, personal dashboards. No safe,
@@ -43,13 +61,15 @@ the session ever crossing the process boundary.
 flowchart LR
     subgraph proposed["Proposed — Safari Authenticated Fetch"]
         A2[AI Agent] -->|TCC-gated request| B2[Safari API]
-        B2 -->|content only| A2
+        B2 -->|rendered HTML| C2[Markdown conversion]
+        C2 -->|clean Markdown| A2
     end
 ```
 
 Credential custody stays inside Safari's process and secure store. The requesting
-application receives only the rendered text of the page the user authorized — no cookie,
-no token, no session identifier.
+application receives rendered content — optionally converted to Markdown by the caller —
+with no cookie, token, or session identifier ever crossing the process boundary. The
+output format mirrors the public-web workflow exactly; the credential handling does not.
 
 ## Why Apple, and Why Now
 
