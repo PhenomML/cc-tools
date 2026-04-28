@@ -80,7 +80,7 @@ The output format mirrors the public-web workflow exactly. The credential handli
 
 ---
 
-## Proposed API: `SAAuthenticatedFetch`
+## Proposed API: `SFAuthenticatedFetch`
 
 A system API scoped to applications the user has explicitly granted "Authenticated Web
 Fetch" access via TCC — the same model as microphone, camera, and contacts:
@@ -88,12 +88,12 @@ Fetch" access via TCC — the same model as microphone, camera, and contacts:
 ```swift
 import SafariServices
 
-let request = SAAuthenticatedFetchRequest(
+let request = SFAuthenticatedFetchRequest(
     url: URL(string: "https://www.stratechery.com/2026/article")!,
     extracting: .markdown          // .bodyText | .structuredData | .markdown
 )
 
-let result = try await SAAuthenticatedFetch.fetch(request)
+let result = try await SFAuthenticatedFetch.fetch(request)
 // result.content: String — rendered page content
 // result.domain: String — confirmed origin
 // Credentials: never exposed to the calling application
@@ -183,6 +183,6 @@ it, and providing a platform-level revocation mechanism.
 
 The gap is real, the workarounds are dangerous, and Apple is the only vendor with the
 architectural position to close it properly. `SFSafariViewController` already demonstrates
-the isolation model. `SAAuthenticatedFetch` extends it by one step — returning content
+the isolation model. `SFAuthenticatedFetch` extends it by one step — returning content
 instead of rendering a view — and in doing so gives local AI agents the same clean,
 credential-safe workflow that `markdown.new` provides for the public web.
