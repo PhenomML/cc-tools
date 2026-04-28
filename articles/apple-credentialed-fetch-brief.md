@@ -13,14 +13,15 @@ the browser and execute arbitrary JavaScript in any open tab — banking session
 OAuth tokens — not just the content the AI agent was trying to fetch. The permission cannot
 be scoped. It is a blanket capability.
 
-**The architectural failure is the same in every workaround: the AI agent receives access
-to the full credential surface, when it only needs the content.**
+**The architectural failure is the same in every workaround: the AI agent receives the
+ability to act as the authenticated user across every open tab, when it only needs the
+content of one page.**
 
 ```mermaid
 flowchart LR
     subgraph current["Current State — Apple Events / CDP"]
         A[AI Agent] -->|machine-wide permission| B[Chrome]
-        B -->|credentials AND content returned| A
+        B -->|full session access — any tab| A
     end
 ```
 
