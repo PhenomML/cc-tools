@@ -9,6 +9,7 @@ dependencies = [
     "markitdown>=0.1.5",
     "nbconvert>=7.17.1",
     "pdfplumber>=0.11.9",
+    "trafilatura>=2.0",
 ]
 
 [project.scripts]
@@ -18,6 +19,7 @@ cc-nbconvert  = "nbconvert.nbconvertapp:main"
 cc-pdfplumber = "pdfplumber.cli:main"
 cc-webfetch   = "cc_tools.webfetch:main"
 cc-arxiv      = "cc_tools.arxiv_fetch:main"
+cc-fetch      = "cc_tools.fetch:main"
 
 [tool.setuptools.packages.find]
 include = ["cc_tools*"]
