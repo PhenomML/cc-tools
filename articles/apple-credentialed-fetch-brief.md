@@ -6,6 +6,8 @@ For public web content, the developer workflow is already clean. Services like
 [markdown.new](https://markdown.new) accept a URL, fetch the page, and return clean
 Markdown — stripping navigation, ads, and markup to leave only the content. A local AI
 agent calls a single endpoint, receives readable text, and never needs to touch the DOM.
+The open-source tooling built on this pattern is at
+[github.com/PhenomML/cc-tools](https://github.com/PhenomML/cc-tools).
 
 ```mermaid
 flowchart LR
