@@ -124,6 +124,26 @@ Blockquotes render as indented text in both PDF and Obsidian.
 
 ---
 
+## Line wrapping
+
+**Rule: do not hard-wrap prose paragraphs at a fixed column width.**
+
+Let the Markdown renderer handle wrapping. Each prose paragraph should be a single line in the source file, however long. Obsidian, GitHub, and cc-md2pdf all reflow text to fit the viewport or page width — manually inserted line breaks create ragged output in some renderers and make prose harder to edit.
+
+### What this applies to
+
+Articles, wiki concept pages, syntheses, and any other output document intended for human readers.
+
+### What this does not apply to
+
+Skill instruction files (`.md` files that Claude reads as task instructions). In skill files, shorter lines and deliberate wrapping can aid Claude's parsing of structured instructions, especially for tables and multi-step procedures. The no-hard-wrap rule is about reader-facing prose, not instruction text.
+
+### Code blocks and tables
+
+Code blocks and Markdown tables are exempt — their formatting is structural, not presentational, and must not be reflowed.
+
+---
+
 ## General tips
 
 - **Blank lines for student space**: use `&nbsp;` on its own line between questions.
