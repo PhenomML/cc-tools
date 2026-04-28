@@ -15,17 +15,12 @@ flowchart LR
     B -->|clean Markdown| A
 ```
 
-This works perfectly for public content. It fails entirely for anything behind
-authentication — paywalled articles, institutional access, personal dashboards. For those,
-there is no equivalent service, because no third party can safely hold a user's
-credentials.
+For authenticated content — paywalled journalism, institutional research, personal
+dashboards — no equivalent service exists. No third party can safely hold a user's
+credentials, so developers are filling the vacuum with mechanisms that expose far more
+than the content they need.
 
 ## The Problem — Authenticated Web
-
-Local AI agents need to retrieve web content on behalf of users — including content behind
-authentication: paywalled journalism, institutional research, personal dashboards. No safe,
-sanctioned API exists for this today. Developers are filling the vacuum with mechanisms that
-expose far more than the content they need.
 
 The dominant workaround on macOS is Apple Events. Enabling "Allow JavaScript from Apple
 Events" in Chrome opens a **machine-wide** surface: any process on the machine can drive
