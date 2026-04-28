@@ -18,11 +18,10 @@ to the full credential surface, when it only needs the content.**
 
 ```mermaid
 flowchart LR
-    subgraph current["Current State (Apple Events / CDP)"]
-        direction LR
-        A[AI Agent] -->|machine-wide\npermission| B[Chrome]
-        B -->|full session\nexposed| C[(Credentials\n+ Content)]
-        C --> A
+    subgraph current["Current State — Apple Events / CDP"]
+        A[AI Agent] -->|machine-wide permission| B[Chrome]
+        B -->|full credential surface exposed| A
+        C[(All credentials visible to app)] -. .- B
     end
 ```
 
@@ -35,11 +34,10 @@ session.**
 
 ```mermaid
 flowchart LR
-    subgraph proposed["Proposed (Safari Authenticated Fetch)"]
-        direction LR
-        A2[AI Agent] -->|TCC-gated\nrequest| B2[Safari API]
-        B2 --- C2[(Credentials\nstay inside\nSafari)]
-        B2 -->|content only\ncrosses boundary| A2
+    subgraph proposed["Proposed — Safari Authenticated Fetch"]
+        A2[AI Agent] -->|TCC-gated request| B2[Safari API]
+        B2 -->|content only| A2
+        C2[(Credentials stay inside Safari)] -. .- B2
     end
 ```
 
