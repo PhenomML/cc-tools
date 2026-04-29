@@ -106,6 +106,7 @@ missing concept pages, stale claims, math notation violations, and stale queue e
 - **Target:** <sub-wiki(s)>
 - **Why:** one sentence on what gap this fills
 - **Source:** where this candidate was discovered
+- **Access:** open | institutional login | ILL request | embargoed until <date>
 
 ## Preprints
 
