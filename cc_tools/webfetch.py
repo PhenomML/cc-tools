@@ -7,6 +7,40 @@ MIN_CONTENT_BYTES = 500
 CLOUDFLARE_MARKERS = [b"just a moment", b"cf-ray", b"cloudflare", b"checking your browser"]
 
 
+def _strip_wayback_boilerplate(content: bytes) -> bytes:
+    """Strip Archive.org toolbar boilerplate that precedes the archived content.
+
+    markdown.new renders the full Wayback page, including Archive.org navigation
+    and notices, before the actual article. We keep the URL Source header and
+    everything from the first markdown heading onward.
+    """
+    try:
+        text = content.decode("utf-8", errors="replace")
+    except Exception:
+        return content
+
+    lines = text.splitlines(keepends=True)
+    if not lines:
+        return content
+
+    # Preserve URL Source header lines at the top (up to the first blank line).
+    header: list[str] = []
+    body_start = 0
+    for i, line in enumerate(lines[:3]):
+        if line.startswith("URL Source:") or (header and not line.strip()):
+            header.append(line)
+            body_start = i + 1
+        else:
+            break
+
+    # Find the first markdown heading in the body and drop everything before it.
+    for i, line in enumerate(lines[body_start:], body_start):
+        if line.startswith("#"):
+            return "".join(header + lines[i:]).encode("utf-8")
+
+    return content  # No heading found; return unchanged.
+
+
 def _fetch_via_markdown_new(url: str) -> bytes:
     req = urllib.request.Request(
         MARKDOWN_NEW + url,
@@ -59,7 +93,8 @@ def main():
                 file=sys.stderr,
             )
             sys.exit(1)
-        print(f"cc-webfetch: served from Wayback Machine ({len(wayback_content)} bytes)", file=sys.stderr)
+        wayback_content = _strip_wayback_boilerplate(wayback_content)
+        print(f"cc-webfetch: served from Wayback Machine ({len(wayback_content)} bytes, boilerplate stripped)", file=sys.stderr)
         content = wayback_content
 
     sys.stdout.buffer.write(content)

@@ -45,11 +45,35 @@ The source file stays where it is; only the converted markdown lands in `raw/`.
 In all cases the saved `.md` file in `raw/` is the working copy for all subsequent
 steps — do not re-run the conversion.
 
+**After saving any arXiv file, verify the title.** Read the first 10 lines of the saved
+file and confirm the title matches the intended paper. A fetch can silently return the
+wrong paper (bad redirect, ID collision, cached error page) — a mismatch caught here
+prevents wrong content from propagating into the wiki.
+
 ## Step 2 — Read and discuss
+
+**Read the raw file directly** — do not rely on brief summaries, frontmatter, or
+session notes. Brief-level descriptions can be stale or wrong; the raw file is the
+ground truth. This catches wrong-content fetches (e.g. an arXiv file saved under the
+right slug but containing a different paper) before bad content propagates into the wiki.
 
 Read the full converted text from the saved `.md` file. Briefly summarise the paper's
 contribution and ask the researcher to confirm emphasis or redirect focus before writing
 anything.
+
+**Note cited works that would fill wiki gaps.** While reading, flag any cited paper,
+book, or source that addresses a known gap in the wiki or is referenced in existing
+concept pages without a corresponding source page. Offer to add candidates to `queue.md`
+using the standard entry format (title, authors, target sub-wiki, why it matters, source
+of discovery). Do not add automatically — confirm with the researcher first.
+
+**When promoting from a brief:** apply the editorial test at item granularity, not
+brief granularity. Ask for each concept or result: does this generalize beyond the
+specific subject of the brief? Biographical detail, company-specific strategy, and
+subject-specific career context belong in the brief. Frameworks, methods, and findings
+that inform the broader research domain belong in the wiki. A brief will typically
+yield a mix of promotable and non-promotable content — do not treat the brief as a
+unit.
 
 **Large files:** the Read tool enforces a 256KB limit. If a file in `raw/` exceeds
 this, use `offset` and `limit` to read it in sections — read the first 200 lines to
@@ -66,12 +90,33 @@ will write into and why; confirm with the researcher before proceeding.
 For **each** sub-wiki identified in Step 3:
 
 **4a. Source summary page** → `<wiki>/papers/<author>-<year>-<slug>.md`
-YAML frontmatter: `title: "<quoted title>", type: paper, wikis: [list], sources: [raw path],
-related: [], created: <today>, updated: <today>, confidence: high`
+
+YAML frontmatter:
+```yaml
+title: "<quoted title>"
+type: paper          # allowed: paper | essay | manifesto | concept | method | project | comparison | synthesis
+wikis: [list]
+sources: [../../raw/filename.md]   # always ../../raw/ — pages sit two levels from root
+related: []
+created: <today>
+updated: <today>
+confidence: high     # high = primary source read directly; medium = secondhand/abstract only; low = inferred
+```
+
+**Before writing any pages, verify one `sources:` path resolves** by checking the file
+exists — path errors are silent at write time and propagate to every page in the session.
+
 Content: citation, research question, methods, key results, limitations.
 Use `$...$` LaTeX for all math. In the Sources section, link to `raw/` files
 using relative markdown links — not code spans — since pages are two levels
 from the wiki root: `[raw/file.md](../../raw/file.md)`.
+
+**Non-peer-reviewed sources:** credible researcher essays and manifestos (position
+papers, research program articulations, practitioner-authored arguments) are promotable
+when they capture the *why* behind a research direction in a way technical papers don't.
+Use `type: essay` or `type: manifesto` rather than `paper`. Apply the same confidence
+rubric: `high` if the full text was read directly, `medium` if only excerpts or
+summaries were used.
 
 **4b. Concept and method pages** — update or create pages in `<wiki>/concepts/` and
 `<wiki>/methods/` touched by this source. Add a citation back to the paper page.
@@ -93,3 +138,7 @@ Sub-wikis: <list>. Pages written: <count>. Key concepts updated: <list>.
 
 List every file created or modified, grouped by sub-wiki. Note any cross-wiki links
 created. Flag any concepts that warrant their own page but don't have one yet.
+
+If this source was listed in `queue.md`, note that it should be removed now that it has
+been ingested. Do not remove it automatically — confirm with the researcher, as they may
+want to keep the entry for reference or update it to point to the wiki page created.

@@ -4,7 +4,9 @@ Create a research brief for a subject: $ARGUMENTS
 - `/wiki-brief "Ilya Sutskever"` — brief only
 - `/wiki-brief "Ilya Sutskever" "Why would a Stanford signal processing mathematician interest a superintelligence researcher?"` — brief with purpose
 
-**Run from inside the brief directory, not the parent.** Each brief should be its own
+**Run from inside the brief directory, not the parent.** If you find yourself at the
+parent directory rather than the brief root, stop and confirm location before writing
+any files — an entire brief scaffolded one level too high has no obvious error signal. Each brief should be its own
 Claude Code session anchored at the brief root — this keeps its memory isolated from
 other briefs in the same parent directory.
 
@@ -102,6 +104,11 @@ A person without public ventures gets `biography/`, `research/`, `views/` only. 
 technology company may need `technology/` alongside `products/`. Use judgment; the
 driving question is often the best guide to which dimensions matter most.
 
+Before finalizing, read the driving question and ask: which defaults does it make
+mandatory, and which does it suggest adding or dropping? A question about tools and
+frameworks warrants `frameworks/` and `tools/` even if the type default doesn't list
+them. A question about a single product doesn't need `history/`.
+
 If operating in batch mode (driving question provided, type unambiguous), proceed with
 your chosen dimensions. Otherwise confirm the final list with the researcher.
 
@@ -182,25 +189,13 @@ For each sub-wiki, create if not already present:
 Also create at the brief root if not already present:
 - `raw/` directory
 - `.gitignore` containing `raw/`
-- `index.md` with a brief heading, Research Questions section (Q1), and sub-wiki list
-  (do not add the syntheses entry yet — write it after the synthesis exists, in Step 7):
+- `index.md` with a brief heading, Research Questions section, sub-wiki list, and a
+  commented syntheses placeholder (do not add a live syntheses entry yet — write it
+  after the synthesis exists, in Step 7):
 ```markdown
-# <Subject Name> — Research Brief
-
-**Created:** <YYYY-MM-DD>
-
-## Research Questions
-
-1. (<YYYY-MM-DD>) <driving question verbatim>
-
-## Sub-wikis
-
-- [biography/](biography/index.md) — Career history, education, intellectual lineage
-...
-
 ## Syntheses
 
-<!-- added after each synthesis is written -->
+<!-- add links here after each synthesis is written -->
 ```
 - `log.md` with the standard header
 
@@ -225,6 +220,16 @@ overwrite work from a prior session or a concurrent fetch.
 **EXTEND mode:** existing `raw/` files are available and should be reused where
 relevant to the new question. Focus new fetches on sources specific to the new question
 that are not already covered. Do not re-fetch sources already in `raw/`.
+
+**Check the brief library before fetching.** Before fetching any URL, grep for its
+domain across all other briefs' raw/ directories:
+```bash
+grep -rl "<domain.com>" ~/Research/**/raw/
+```
+If a matching file exists in another brief, read it directly rather than re-fetching.
+This reuses validated sources and avoids burning the cc-webfetch daily limit on
+duplicates. Common overlap: Wikipedia articles, foundational papers, and key people
+who appear in multiple briefs.
 
 **Discover sources before fetching.** Use WebSearch to find URLs rather than
 constructing them from guesses — guessed URLs produce 404s. Search for the subject
@@ -292,6 +297,12 @@ are all you need for a citation. Fetch the full text (HTML preferred; PDF via
 `cc-markitdown` as fallback) only when you need specific claims, methodology, or data
 not visible in the abstract.
 
+**After saving any arXiv file, verify the title.** Read the first 10 lines of the saved
+file and confirm the title matches the intended paper before proceeding. A fetch can
+silently return the wrong paper (bad redirect, ID collision, cached error page) — a
+title mismatch caught here prevents wrong content from propagating into concept pages
+and citations.
+
 **Large fetched files:** the Read tool enforces a 256KB limit. Files larger than this
 (long essays, Wikipedia pages for major topics) will be refused. Use `offset` and
 `limit` parameters to read relevant sections: read the first 200 lines to assess
@@ -322,7 +333,10 @@ Follow /wiki-ingest conventions:
   `<subwiki>/concepts/`). **Before writing all pages, verify one `sources:` path
   resolves by checking the file exists** — path errors are silent at write time and
   propagate to every page in the brief before anyone notices.
-- `confidence: high | medium | low` reflecting source quality
+- `confidence: high | medium | low` reflecting source quality — use a consistent rubric:
+  - `high`: primary sources read directly (paper full text, official transcript, EDGAR filing)
+  - `medium`: sourced through citations or secondhand (abstract only, paywalled primary cited via review)
+  - `low`: inferred from context or single indirect mention
 - `related:` cross-linking to pages in sibling sub-wikis where connections exist —
   cross-wiki paths from `<subwiki>/concepts/` are always `../../<other>/concepts/<page>.md`
 
@@ -396,15 +410,17 @@ Update each sub-wiki's `index.md` with links to the pages just written.
 
 ## Step 7 — Answer the driving question
 
-**Check for relevant sibling briefs before synthesizing.** List the parent directory
-(the directory containing this brief) to see what other briefs exist. A sibling is
-relevant if it shares the same market, the same customer type, or the same technology
-layer as the subject — scan past others quickly. If relevant siblings exist, read their
-`syntheses/` directory and reference useful analysis with relative links
-(`../../<sibling-brief>/syntheses/<page>.md`). A brief library grows more valuable than
-the sum of its parts when syntheses reference each other; a Databricks synthesis that can
-cite an existing Snowflake analysis is stronger than one that reconstructs the comparison
-from scratch.
+**Check for relevant briefs across the full library before synthesizing.** List all
+subdirectories under `~/Research/` recursively (People/, Companies/, Topics/, and any
+other category directories) to see what briefs exist. A brief is relevant if it shares
+the same market, the same customer type, the same technology layer, or the same
+intellectual lineage as the subject — topic briefs routinely connect to person and
+company briefs, and vice versa. Scan past others quickly. If relevant briefs exist,
+read their `syntheses/` directory and reference useful analysis with an absolute path
+or a relative path from the current brief root. A brief library grows more valuable than
+the sum of its parts when syntheses reference each other; an RCS synthesis that can cite
+an existing Donoho analysis is stronger than one that reconstructs the connection from
+scratch.
 
 **If the driving question contains a factual error, correct it before answering.**
 The researcher may have acted on an incorrect premise — a wrong date, a misattributed
@@ -422,8 +438,10 @@ it consistently. A synthesis that answers a well-framed question at the end but 
 use the frame to organize the argument is weaker than one where the frame runs through it.
 
 If a driving question was provided in `$ARGUMENTS`, synthesize an answer now by reading
-across the concept pages just written. File the result as `syntheses/<slug>.md` with
-appropriate frontmatter (`type: synthesis`).
+across the concept pages just written. File the result as `syntheses/<slug>.md` using
+`~/Projects/PhenomML/cc-tools/templates/synthesis.md` as the structural template —
+fill every section, including the Gaps and Absence block even if adversarial search
+returned nothing.
 
 **EXTEND mode:** write a new synthesis page scoped to the new question (Q_N). Reference
 existing concept pages from prior questions where relevant — cross-question synthesis is
@@ -457,7 +475,16 @@ Run `/wiki-lint` to catch path errors, broken links, and orphaned pages before c
 the session. Path convention failures are silent at write time — lint is the checkpoint
 that catches them while the session is still warm and fixes are cheap.
 
-List every file created or updated, grouped by sub-wiki. State whether the session ran
-in CREATE or EXTEND mode. If a synthesis was written, report its path and a one-sentence
-summary of the answer. Note any sub-wikis that warrant further ingestion before the next
-session.
+List every file and directory created, grouped by sub-wiki. State whether the session
+ran in CREATE or EXTEND mode. If a synthesis was written, report its path and a
+one-sentence summary of the answer. Note any sub-wikis that warrant further ingestion
+before the next session.
+
+**Track wiki promotion status in index.md.** When a concept, result, or synthesis from
+this brief is promoted to the research wiki, add a comment to the relevant entry in
+`index.md`:
+```markdown
+- [syntheses/fr-leading-framework-or-vision.md](syntheses/fr-leading-framework-or-vision.md) — ... <!-- promoted: wiki/tsa/concepts/frictionless-reproducibility.md -->
+```
+This prevents accidental double-promotion on repeat visits and makes the brief's
+contribution to the wiki traceable without re-reading everything.

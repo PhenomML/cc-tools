@@ -1,0 +1,41 @@
+#!/usr/bin/env bash
+# Check staged .md files for math notation violations:
+#   - Unicode subscript digits (₀₁₂₃₄₅₆₇₈₉)
+#   - Unicode Greek letters used as math variables (αβγδεθλμσφω and uppercase)
+# Both are trivially greppable and have zero false-positive risk.
+# Bare x_t subscripts (harder, context-dependent) are left to periodic lint passes.
+
+set -euo pipefail
+
+STAGED=$(git diff --cached --name-only --diff-filter=ACM | grep '\.md$' || true)
+[ -z "$STAGED" ] && exit 0
+
+SUBSCRIPT_DIGITS='[₀₁₂₃₄₅₆₇₈₉]'
+GREEK_MATH='[αβγδεζηθικλμνξπρστυφχψωΑΒΓΔΕΖΗΘΙΚΛΜΝΞΠΡΣΤΥΦΧΨΩ]'
+
+ERRORS=0
+
+for FILE in $STAGED; do
+    [ -f "$FILE" ] || continue
+
+    if grep -Pn "$SUBSCRIPT_DIGITS" "$FILE" >/dev/null 2>&1; then
+        echo "MATH: Unicode subscript digits in $FILE"
+        grep -Pn "$SUBSCRIPT_DIGITS" "$FILE" | head -5 | sed 's/^/  /'
+        ERRORS=1
+    fi
+
+    if grep -Pn "$GREEK_MATH" "$FILE" >/dev/null 2>&1; then
+        echo "MATH: Unicode Greek letters in $FILE"
+        grep -Pn "$GREEK_MATH" "$FILE" | head -5 | sed 's/^/  /'
+        ERRORS=1
+    fi
+done
+
+if [ "$ERRORS" -eq 1 ]; then
+    echo ""
+    echo "Use \$...\$ LaTeX notation instead of Unicode math characters."
+    echo "See cc-tools AUTHORING.md for the full standard."
+    exit 1
+fi
+
+exit 0
