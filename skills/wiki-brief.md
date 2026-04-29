@@ -322,15 +322,17 @@ Update each sub-wiki's `index.md` with links to the pages just written.
 
 ## Step 7 — Answer the driving question
 
-**Check for relevant sibling briefs before synthesizing.** List the parent directory
-(the directory containing this brief) to see what other briefs exist. A sibling is
-relevant if it shares the same market, the same customer type, or the same technology
-layer as the subject — scan past others quickly. If relevant siblings exist, read their
-`syntheses/` directory and reference useful analysis with relative links
-(`../../<sibling-brief>/syntheses/<page>.md`). A brief library grows more valuable than
-the sum of its parts when syntheses reference each other; a Databricks synthesis that can
-cite an existing Snowflake analysis is stronger than one that reconstructs the comparison
-from scratch.
+**Check for relevant briefs across the full library before synthesizing.** List all
+subdirectories under `~/Research/` recursively (People/, Companies/, Topics/, and any
+other category directories) to see what briefs exist. A brief is relevant if it shares
+the same market, the same customer type, the same technology layer, or the same
+intellectual lineage as the subject — topic briefs routinely connect to person and
+company briefs, and vice versa. Scan past others quickly. If relevant briefs exist,
+read their `syntheses/` directory and reference useful analysis with an absolute path
+or a relative path from the current brief root. A brief library grows more valuable than
+the sum of its parts when syntheses reference each other; an RCS synthesis that can cite
+an existing Donoho analysis is stronger than one that reconstructs the connection from
+scratch.
 
 **If the driving question contains a factual error, correct it before answering.**
 The researcher may have acted on an incorrect premise — a wrong date, a misattributed
