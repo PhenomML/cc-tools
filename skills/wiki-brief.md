@@ -4,7 +4,9 @@ Create a research brief for a subject: $ARGUMENTS
 - `/wiki-brief "Ilya Sutskever"` — brief only
 - `/wiki-brief "Ilya Sutskever" "Why would a Stanford signal processing mathematician interest a superintelligence researcher?"` — brief with purpose
 
-**Run from inside the brief directory, not the parent.** Each brief should be its own
+**Run from inside the brief directory, not the parent.** If you find yourself at the
+parent directory rather than the brief root, stop and confirm location before writing
+any files — an entire brief scaffolded one level too high has no obvious error signal. Each brief should be its own
 Claude Code session anchored at the brief root — this keeps its memory isolated from
 other briefs in the same parent directory.
 
@@ -81,6 +83,11 @@ A person without public ventures gets `biography/`, `research/`, `views/` only. 
 technology company may need `technology/` alongside `products/`. Use judgment; the
 driving question is often the best guide to which dimensions matter most.
 
+Before finalizing, read the driving question and ask: which defaults does it make
+mandatory, and which does it suggest adding or dropping? A question about tools and
+frameworks warrants `frameworks/` and `tools/` even if the type default doesn't list
+them. A question about a single product doesn't need `history/`.
+
 If operating in batch mode (driving question provided, type unambiguous), proceed with
 your chosen dimensions. Otherwise confirm the final list with the researcher.
 
@@ -143,8 +150,14 @@ For each sub-wiki, create if not already present:
 Also create at the brief root if not already present:
 - `raw/` directory
 - `.gitignore` containing `raw/`
-- `index.md` with a brief heading and sub-wiki list (do not add the syntheses entry yet
-  — write it after the synthesis exists, in Step 7)
+- `index.md` with a brief heading, Research Questions section, sub-wiki list, and a
+  commented syntheses placeholder (do not add a live syntheses entry yet — write it
+  after the synthesis exists, in Step 7):
+```markdown
+## Syntheses
+
+<!-- add links here after each synthesis is written -->
+```
 - `log.md` with the standard header
 
 Skip any file or directory that already exists without overwriting.
@@ -157,6 +170,16 @@ must be saved to `raw/` before reading — do not use transient fetch results.
 **Check for existing files before fetching.** Run `ls raw/` before each fetch. If a
 slug already exists (e.g. `raw/wikipedia-databricks.md`), skip the fetch — do not
 overwrite work from a prior session or a concurrent fetch.
+
+**Check the brief library before fetching.** Before fetching any URL, grep for its
+domain across all other briefs' raw/ directories:
+```bash
+grep -rl "<domain.com>" ~/Research/**/raw/
+```
+If a matching file exists in another brief, read it directly rather than re-fetching.
+This reuses validated sources and avoids burning the cc-webfetch daily limit on
+duplicates. Common overlap: Wikipedia articles, foundational papers, and key people
+who appear in multiple briefs.
 
 **Discover sources before fetching.** Use WebSearch to find URLs rather than
 constructing them from guesses — guessed URLs produce 404s. Search for the subject
@@ -248,7 +271,10 @@ sources. Follow /wiki-ingest conventions:
   `<subwiki>/concepts/`). **Before writing all pages, verify one `sources:` path
   resolves by checking the file exists** — path errors are silent at write time and
   propagate to every page in the brief before anyone notices.
-- `confidence: high | medium | low` reflecting source quality
+- `confidence: high | medium | low` reflecting source quality — use a consistent rubric:
+  - `high`: primary sources read directly (paper full text, official transcript, EDGAR filing)
+  - `medium`: sourced through citations or secondhand (abstract only, paywalled primary cited via review)
+  - `low`: inferred from context or single indirect mention
 - `related:` cross-linking to pages in sibling sub-wikis where connections exist —
   cross-wiki paths from `<subwiki>/concepts/` are always `../../<other>/concepts/<page>.md`
 
@@ -350,8 +376,10 @@ it consistently. A synthesis that answers a well-framed question at the end but 
 use the frame to organize the argument is weaker than one where the frame runs through it.
 
 If a driving question was provided in `$ARGUMENTS`, synthesize an answer now by reading
-across the concept pages just written. File the result as `syntheses/<slug>.md` with
-appropriate frontmatter (`type: synthesis`).
+across the concept pages just written. File the result as `syntheses/<slug>.md` using
+`~/Projects/PhenomML/cc-tools/templates/synthesis.md` as the structural template —
+fill every section, including the Gaps and Absence block even if adversarial search
+returned nothing.
 
 Note: synthesis pages are one level from the wiki root, so `raw/` links use `../raw/`
 and cross-wiki links use `../<subwiki>/concepts/<page>.md`.
