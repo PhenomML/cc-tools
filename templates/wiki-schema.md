@@ -88,7 +88,7 @@ Use `/wiki-lint` periodically. Claude checks for orphaned pages, broken cross-wi
 missing concept pages, stale claims, math notation violations, and stale queue entries
 (works listed in `queue.md` that are already present in a sub-wiki index).
 
-**queue.md** tracks candidate books and papers for future ingestion. Entry format:
+**queue.md** tracks candidate sources for future ingestion. Entry format:
 
 ```markdown
 ## Books
@@ -98,6 +98,29 @@ missing concept pages, stale claims, math notation violations, and stale queue e
 - **Target:** <sub-wiki(s)>
 - **Why:** one sentence on what gap this fills
 - **Source:** where this candidate was discovered
+
+## Dissertations
+
+### <Title>
+- **Author:** <Author> (<Institution>, <Year>)
+- **Target:** <sub-wiki(s)>
+- **Why:** one sentence on what gap this fills
+- **Source:** where this candidate was discovered
+
+## Preprints
+
+### <Title>
+- **Authors:** <Authors> (<arXiv ID or URL>)
+- **Target:** <sub-wiki(s)>
+- **Why:** one sentence on what gap this fills
+
+## Paywalled Papers
+
+### <Title>
+- **Authors:** <Authors> (<Journal>, <Year>)
+- **Target:** <sub-wiki(s)>
+- **Why:** one sentence on what gap this fills
+- **Access:** institutional login / cc-credentialed-fetch / ILL request
 ```
 
 Claude adds entries when a cited work would fill a wiki gap (discovered during ingest)
