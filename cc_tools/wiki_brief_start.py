@@ -22,6 +22,10 @@ _COMPANY_WORDS = {
     "capital", "ventures", "group", "partners", "therapeutics", "robotics",
 }
 
+# Suffixes that appear in abstract nouns and technical terms but not person names.
+# "Compressed Sensing" → "sensing" ends in "ing" → not a person name.
+_ABSTRACT_SUFFIXES = ("ing", "tion", "sion", "ence", "ance", "ics", "ism", "ity", "ogy")
+
 
 def to_slug(name: str) -> str:
     s = name.lower()
@@ -31,13 +35,18 @@ def to_slug(name: str) -> str:
 
 
 def infer_category(name: str) -> str:
-    """Heuristic: multi-word names with no corporate keywords → People."""
+    """Heuristic: multi-word title-cased names with no corporate keywords or abstract
+    noun suffixes are treated as People; everything else falls to Companies.
+    Use --topic, --person, --company, or --dir to override."""
     words = name.strip().split()
     if len(words) < 2:
         return "Companies"
     if {w.lower() for w in words} & _COMPANY_WORDS:
         return "Companies"
     if all(w[0].isupper() for w in words):
+        # Reject if any word ends in a suffix common to abstract nouns/concepts.
+        if any(w.lower().endswith(s) for w in words for s in _ABSTRACT_SUFFIXES):
+            return "Companies"
         return "People"
     return "Companies"
 
@@ -59,6 +68,10 @@ def main() -> None:
         help="Place under ~/Research/Companies/ (default: auto-detected)",
     )
     placement.add_argument(
+        "--topic", action="store_true",
+        help="Place under ~/Research/Topics/",
+    )
+    placement.add_argument(
         "--dir", metavar="DIR",
         help="Explicit parent directory; slug appended automatically",
     )
@@ -72,6 +85,8 @@ def main() -> None:
         parent = RESEARCH_DIR / "People"
     elif args.company:
         parent = RESEARCH_DIR / "Companies"
+    elif args.topic:
+        parent = RESEARCH_DIR / "Topics"
     else:
         parent = RESEARCH_DIR / infer_category(args.subject)
 
