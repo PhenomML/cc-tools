@@ -16,6 +16,7 @@ and opens Claude inside it in one step:
 ```bash
 cc-wiki-brief "Ilya Sutskever" "driving question"        # auto-detects People/
 cc-wiki-brief "Databricks" "driving question" --company  # explicit category
+cc-wiki-brief "Compressed Sensing" "question" --topic    # explicit Topics/
 cc-wiki-brief "CRISPR" --dir ~/Research/Topics           # explicit parent dir
 ```
 
@@ -59,6 +60,12 @@ Infer the subject type from the name and any available context:
 | Topic / debate | AI consciousness, the replication crisis |
 | Policy / legislation | EU AI Act, a specific regulation |
 
+**Verify category before writing.** Check that the working directory path contains the
+expected category for the inferred type: Person → `People/`, Company → `Companies/`,
+Topic or Policy → `Topics/`. If the path does not match, stop and alert the researcher
+before writing any files — a brief scaffolded in the wrong category has no error signal
+until the entire tree is in the wrong place.
+
 **Batch mode:** if a driving question was provided and the subject type is unambiguous
 from the name alone, proceed without stopping to confirm — asking "is Cycorp a company?"
 is friction the researcher does not need. Only pause to confirm if the request is vague
@@ -71,13 +78,14 @@ subject warrants it — for a technology company, a `technology/` sub-wiki may b
 essential as `products/`. Err on the side of more dimensions; they are cheap to create
 and expensive to retrofit.
 
-| Type | Default directories |
-|---|---|
-| Person | `biography/`, `research/`, `views/`, `ventures/` |
-| Company | `history/`, `products/`, `strategy/`, `financials/`, `team/` |
-| Conference | `program/`, `speakers/`, `themes/`, `papers/` |
-| Topic | `positions/`, `evidence/`, `key-figures/`, `history/` |
-| Policy | `text/`, `sponsors/`, `arguments/`, `status/` |
+| Type | Examples | Default directories |
+|---|---|---|
+| Person | researcher, executive | `biography/`, `research/`, `views/`, `ventures/` |
+| Company | lab, institute | `history/`, `products/`, `strategy/`, `financials/`, `team/` |
+| Conference | NeurIPS 2025 | `program/`, `speakers/`, `themes/`, `papers/` |
+| Topic — technical/mathematical | Compressed Sensing, MCMC, Transformers | `history/`, `theory/`, `algorithms/`, `applications/`, `key-figures/` |
+| Topic — debate/policy | AI consciousness, replication crisis | `positions/`, `evidence/`, `key-figures/`, `history/` |
+| Policy | EU AI Act | `text/`, `sponsors/`, `arguments/`, `status/` |
 
 A person without public ventures gets `biography/`, `research/`, `views/` only. A
 technology company may need `technology/` alongside `products/`. Use judgment; the
