@@ -44,6 +44,11 @@ clearly informs another sub-wiki that has no corresponding page for it. Suggest 
 **index.md gaps** — pages that exist in the filesystem but are absent from the sub-wiki's
 `index.md`. List them.
 
+**Stale queue entries** — entries in `queue.md` whose titles or slugs already appear in
+a sub-wiki `index.md` or `papers/` directory. These were ingested but never removed from
+the queue. List them so the researcher can confirm removal or update the entry to point
+to the wiki page created.
+
 **Math notation** — flag two classes of issue, both for `/math-review`:
 - Bare Unicode Greek letters or Unicode subscript digits used as math notation outside `$...$`
 - Inline `$...$` expressions containing `_` (subscript) where content follows the subscript before the closing `$`, or multiple such expressions on the same line — GitHub italic conflict risk (see AUTHORING.md)

@@ -61,6 +61,12 @@ Read the full converted text from the saved `.md` file. Briefly summarise the pa
 contribution and ask the researcher to confirm emphasis or redirect focus before writing
 anything.
 
+**Note cited works that would fill wiki gaps.** While reading, flag any cited paper,
+book, or source that addresses a known gap in the wiki or is referenced in existing
+concept pages without a corresponding source page. Offer to add candidates to `queue.md`
+using the standard entry format (title, authors, target sub-wiki, why it matters, source
+of discovery). Do not add automatically — confirm with the researcher first.
+
 **When promoting from a brief:** apply the editorial test at item granularity, not
 brief granularity. Ask for each concept or result: does this generalize beyond the
 specific subject of the brief? Biographical detail, company-specific strategy, and
@@ -132,3 +138,7 @@ Sub-wikis: <list>. Pages written: <count>. Key concepts updated: <list>.
 
 List every file created or modified, grouped by sub-wiki. Note any cross-wiki links
 created. Flag any concepts that warrant their own page but don't have one yet.
+
+If this source was listed in `queue.md`, note that it should be removed now that it has
+been ingested. Do not remove it automatically — confirm with the researcher, as they may
+want to keep the entry for reference or update it to point to the wiki page created.

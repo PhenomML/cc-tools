@@ -6,6 +6,7 @@ wiki/                   ← repo root (this file lives here)
   CLAUDE.md             ← this file
   index.md              ← cross-wiki catalog (Claude maintains)
   log.md                ← chronological record of all operations (Claude maintains)
+  queue.md              ← candidate books and papers for future ingestion (Claude maintains)
   raw/                  ← source documents — local only, never committed
   <subwiki>/            ← one directory per research domain (see Sub-wikis above)
     CLAUDE.md           ← scope definition for this sub-wiki
@@ -84,7 +85,23 @@ as new pages in `syntheses/`.
 ## Maintenance
 
 Use `/wiki-lint` periodically. Claude checks for orphaned pages, broken cross-wiki links,
-missing concept pages, stale claims, and math notation violations.
+missing concept pages, stale claims, math notation violations, and stale queue entries
+(works listed in `queue.md` that are already present in a sub-wiki index).
+
+**queue.md** tracks candidate books and papers for future ingestion. Entry format:
+
+```markdown
+## Books
+
+### <Title>
+- **Authors:** <Authors> (<Publisher>, <Year>)
+- **Target:** <sub-wiki(s)>
+- **Why:** one sentence on what gap this fills
+- **Source:** where this candidate was discovered
+```
+
+Claude adds entries when a cited work would fill a wiki gap (discovered during ingest)
+and removes entries when a work is ingested.
 
 ## Projects
 
