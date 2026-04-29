@@ -71,3 +71,14 @@ for skill in "$SKILLS_SRC"/*.md; do
     (( count++ )) || true
 done
 echo "setup-claude: $count skill(s) linked to $COMMANDS_DIR"
+
+# ── Git hooks ─────────────────────────────────────────────────────────────────
+
+HOOK_SRC="$SCRIPT_DIR/hooks/pre-commit"
+HOOK_DST="$SCRIPT_DIR/.git/hooks/pre-commit"
+
+if [[ -f "$HOOK_SRC" ]]; then
+    cp "$HOOK_SRC" "$HOOK_DST"
+    chmod +x "$HOOK_DST"
+    echo "setup-claude: installed pre-commit hook (math notation check)"
+fi

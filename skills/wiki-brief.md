@@ -247,6 +247,12 @@ are all you need for a citation. Fetch the full text (HTML preferred; PDF via
 `cc-markitdown` as fallback) only when you need specific claims, methodology, or data
 not visible in the abstract.
 
+**After saving any arXiv file, verify the title.** Read the first 10 lines of the saved
+file and confirm the title matches the intended paper before proceeding. A fetch can
+silently return the wrong paper (bad redirect, ID collision, cached error page) — a
+title mismatch caught here prevents wrong content from propagating into concept pages
+and citations.
+
 **Large fetched files:** the Read tool enforces a 256KB limit. Files larger than this
 (long essays, Wikipedia pages for major topics) will be refused. Use `offset` and
 `limit` parameters to read relevant sections: read the first 200 lines to assess
@@ -410,3 +416,12 @@ that catches them while the session is still warm and fixes are cheap.
 List every file and directory created, grouped by sub-wiki. If a synthesis was written,
 report its path and a one-sentence summary of the answer. Note any sub-wikis that
 warrant further ingestion before the next session.
+
+**Track wiki promotion status in index.md.** When a concept, result, or synthesis from
+this brief is promoted to the research wiki, add a comment to the relevant entry in
+`index.md`:
+```markdown
+- [syntheses/fr-leading-framework-or-vision.md](syntheses/fr-leading-framework-or-vision.md) — ... <!-- promoted: wiki/tsa/concepts/frictionless-reproducibility.md -->
+```
+This prevents accidental double-promotion on repeat visits and makes the brief's
+contribution to the wiki traceable without re-reading everything.
