@@ -6,8 +6,18 @@ Create a research brief for a subject: $ARGUMENTS
 
 **Run from inside the brief directory, not the parent.** Each brief should be its own
 Claude Code session anchored at the brief root — this keeps its memory isolated from
-other briefs in the same parent directory. Create the directory first, then open Claude
-inside it:
+other briefs in the same parent directory.
+
+The preferred way to start a new brief is `cc-wiki-brief`, which creates the directory
+and opens Claude inside it in one step:
+
+```bash
+cc-wiki-brief "Ilya Sutskever" "driving question"        # auto-detects People/
+cc-wiki-brief "Databricks" "driving question" --company  # explicit category
+cc-wiki-brief "CRISPR" --dir ~/Research/Topics           # explicit parent dir
+```
+
+To start manually instead:
 
 ```bash
 mkdir -p ~/Research/People/ilya-sutskever
@@ -52,7 +62,28 @@ from the name alone, proceed without stopping to confirm — asking "is Cycorp a
 is friction the researcher does not need. Only pause to confirm if the request is vague
 or the type is genuinely unclear.
 
+## Step 1b — Detect mode (CREATE or EXTEND)
+
+After parsing the subject name, derive the expected slug (kebab-case) and check whether
+`CLAUDE.md` already exists in the current directory.
+
+**If `CLAUDE.md` does not exist:** enter **CREATE mode**. Proceed through all steps.
+
+**If `CLAUDE.md` exists and contains a brief header:** enter **EXTEND mode**.
+Announce to the researcher:
+
+> Brief already exists — adding Question N and running research focused on the new question.
+
+A driving question is required in EXTEND mode. If none was provided, ask for one before
+proceeding.
+
+In EXTEND mode, skip Steps 2 and 4 (sub-wiki dimensions and scaffolding already exist).
+All other steps run but are scoped to the new question only. See each step for EXTEND
+mode specifics.
+
 ## Step 2 — Determine sub-wiki dimensions
+
+*Skip in EXTEND mode — sub-wikis are already established.*
 
 The defaults below are starting points, not constraints. Add dimensions freely when the
 subject warrants it — for a technology company, a `technology/` sub-wiki may be as
@@ -74,12 +105,9 @@ driving question is often the best guide to which dimensions matter most.
 If operating in batch mode (driving question provided, type unambiguous), proceed with
 your chosen dimensions. Otherwise confirm the final list with the researcher.
 
-## Step 3 — Create directory and write CLAUDE.md
+## Step 3 — Create or update CLAUDE.md
 
-Create `<subject-slug>/` in the current directory if it does not exist.
-Use kebab-case for the directory name: "Ilya Sutskever" → `ilya-sutskever/`.
-
-Write `<subject-slug>/CLAUDE.md` with three sections in order:
+**CREATE mode:** create `CLAUDE.md` with three sections in order:
 
 **Section 1 — Title and Purpose:**
 ```markdown
@@ -90,7 +118,10 @@ Write `<subject-slug>/CLAUDE.md` with three sections in order:
 **Subject:** <Subject Name> (<type>)
 **Created:** <YYYY-MM-DD>
 **Occasion:** <infer from the driving question context, or leave blank>
-**Question:** <driving question verbatim, or "—" if none provided>
+
+## Research Questions
+
+1. (<YYYY-MM-DD>) <driving question verbatim, or "—" if none provided>
 ```
 
 **Section 2 — Sub-wikis table** (user-owned; never overwritten by /wiki-upgrade):
@@ -114,7 +145,25 @@ Write specific, concrete scope descriptions. Related should be symmetric.
 <!-- cc-tools:wiki:end -->
 ```
 
+---
+
+**EXTEND mode:** append the new question to the `## Research Questions` section in
+`CLAUDE.md`. Determine N (the next question number) by counting existing entries.
+
+If the existing `CLAUDE.md` uses the legacy `**Question:**` field instead of a
+`## Research Questions` section, migrate it first: remove `**Question:** <text>` from the
+Purpose block and replace it with a `## Research Questions` section containing
+`1. (<original-date>) <text>` before appending the new entry. Use the `**Created:**` date
+as the date for Q1 when migrating. Do not otherwise alter `CLAUDE.md`.
+
+Append:
+```
+N. (<YYYY-MM-DD>) <new question verbatim>
+```
+
 ## Step 4 — Scaffold directories
+
+*Skip in EXTEND mode — all directories and root files already exist.*
 
 For each sub-wiki, create if not already present:
 - `<dir>/` directory
@@ -133,13 +182,38 @@ For each sub-wiki, create if not already present:
 Also create at the brief root if not already present:
 - `raw/` directory
 - `.gitignore` containing `raw/`
-- `index.md` with a brief heading and sub-wiki list (do not add the syntheses entry yet
-  — write it after the synthesis exists, in Step 7)
+- `index.md` with a brief heading, Research Questions section (Q1), and sub-wiki list
+  (do not add the syntheses entry yet — write it after the synthesis exists, in Step 7):
+```markdown
+# <Subject Name> — Research Brief
+
+**Created:** <YYYY-MM-DD>
+
+## Research Questions
+
+1. (<YYYY-MM-DD>) <driving question verbatim>
+
+## Sub-wikis
+
+- [biography/](biography/index.md) — Career history, education, intellectual lineage
+...
+
+## Syntheses
+
+<!-- added after each synthesis is written -->
+```
 - `log.md` with the standard header
 
 Skip any file or directory that already exists without overwriting.
 
-## Step 5 — Initial fetch
+---
+
+**EXTEND mode — update index.md:** append the new question to the `## Research Questions`
+section in `index.md`. If the existing `index.md` uses a legacy `**Focus:**` field,
+remove it and replace it with a `## Research Questions` section containing Q1 (migrated
+from `CLAUDE.md`) before appending the new entry.
+
+## Step 5 — Fetch sources
 
 Search for and fetch the most informative public sources for the subject. Every source
 must be saved to `raw/` before reading — do not use transient fetch results.
@@ -147,6 +221,10 @@ must be saved to `raw/` before reading — do not use transient fetch results.
 **Check for existing files before fetching.** Run `ls raw/` before each fetch. If a
 slug already exists (e.g. `raw/wikipedia-databricks.md`), skip the fetch — do not
 overwrite work from a prior session or a concurrent fetch.
+
+**EXTEND mode:** existing `raw/` files are available and should be reused where
+relevant to the new question. Focus new fetches on sources specific to the new question
+that are not already covered. Do not re-fetch sources already in `raw/`.
 
 **Discover sources before fetching.** Use WebSearch to find URLs rather than
 constructing them from guesses — guessed URLs produce 404s. Search for the subject
@@ -230,10 +308,16 @@ a paywall or login page, save a stub file named `raw/<slug>-paywalled.md` with t
 title, URL, and a one-sentence note that it was unavailable. Reference these stubs in
 the synthesis's absence notation so the researcher knows what was found but not read.
 
-## Step 6 — Write initial concept pages
+## Step 6 — Write concept pages
 
-For each sub-wiki, write at least one concept page synthesizing the relevant fetched
-sources. Follow /wiki-ingest conventions:
+For each sub-wiki, write concept pages synthesizing the relevant fetched sources.
+
+**EXTEND mode:** write new concept pages for claims specific to the new question. Update
+existing concept pages only if the new sources materially change or contradict what is
+already there — do not rewrite pages that remain accurate. Prefer adding a new section
+to an existing page over rewriting it.
+
+Follow /wiki-ingest conventions:
 - Frontmatter with `sources:` pointing to `../../raw/` files (two levels up from
   `<subwiki>/concepts/`). **Before writing all pages, verify one `sources:` path
   resolves by checking the file exists** — path errors are silent at write time and
@@ -341,6 +425,12 @@ If a driving question was provided in `$ARGUMENTS`, synthesize an answer now by 
 across the concept pages just written. File the result as `syntheses/<slug>.md` with
 appropriate frontmatter (`type: synthesis`).
 
+**EXTEND mode:** write a new synthesis page scoped to the new question (Q_N). Reference
+existing concept pages from prior questions where relevant — cross-question synthesis is
+valuable — but the new synthesis page stands alone as the answer to Q_N. Name the file
+to reflect the question, not the question number (e.g., `syntheses/wavelet-revival.md`
+not `syntheses/q2.md`).
+
 Note: synthesis pages are one level from the wiki root, so `raw/` links use `../raw/`
 and cross-wiki links use `../<subwiki>/concepts/<page>.md`.
 
@@ -367,6 +457,7 @@ Run `/wiki-lint` to catch path errors, broken links, and orphaned pages before c
 the session. Path convention failures are silent at write time — lint is the checkpoint
 that catches them while the session is still warm and fixes are cheap.
 
-List every file and directory created, grouped by sub-wiki. If a synthesis was written,
-report its path and a one-sentence summary of the answer. Note any sub-wikis that
-warrant further ingestion before the next session.
+List every file created or updated, grouped by sub-wiki. State whether the session ran
+in CREATE or EXTEND mode. If a synthesis was written, report its path and a one-sentence
+summary of the answer. Note any sub-wikis that warrant further ingestion before the next
+session.
