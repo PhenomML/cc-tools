@@ -6,8 +6,18 @@ Create a research brief for a subject: $ARGUMENTS
 
 **Run from inside the brief directory, not the parent.** Each brief should be its own
 Claude Code session anchored at the brief root — this keeps its memory isolated from
-other briefs in the same parent directory. Create the directory first, then open Claude
-inside it:
+other briefs in the same parent directory.
+
+The preferred way to start a new brief is `cc-wiki-brief`, which creates the directory
+and opens Claude inside it in one step:
+
+```bash
+cc-wiki-brief "Ilya Sutskever" "driving question"        # auto-detects People/
+cc-wiki-brief "Databricks" "driving question" --company  # explicit category
+cc-wiki-brief "CRISPR" --dir ~/Research/Topics           # explicit parent dir
+```
+
+To start manually instead:
 
 ```bash
 mkdir -p ~/Research/People/ilya-sutskever
