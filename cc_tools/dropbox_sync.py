@@ -2,13 +2,17 @@
 Mirror the current project or wiki to a shared Dropbox folder.
 
 Setup (run once from the project root):
-    cc-dropbox-sync --setup ~/Dropbox/Dave-Andrew-Shared/sync
+    cc-dropbox-sync --setup ~/Dropbox/Shared_DLD_AWD/Projects
 
 Sync (run after git push):
     cc-dropbox-sync
 
+Preview without transferring:
+    cc-dropbox-sync --dry-run
+
 Config is stored in .dropbox-sync-target in the project root (gitignored).
 The tool creates <target>/<project-name>/ and rsyncs the project into it.
+Respects .gitignore automatically — gitignored content is never transferred.
 Deletions in the source are propagated (--delete); Dropbox is a mirror,
 not an archive.
 """
@@ -20,17 +24,6 @@ from pathlib import Path
 
 CONFIG_FILENAME = ".dropbox-sync-target"
 
-RSYNC_EXCLUDES = [
-    ".git/",
-    "raw/",
-    "ideas/",
-    "*.pyc",
-    "__pycache__/",
-    ".venv/",
-    "*.egg-info/",
-    ".dropbox-sync-target",
-]
-
 
 def main() -> None:
     parser = argparse.ArgumentParser(
@@ -39,6 +32,10 @@ def main() -> None:
     parser.add_argument(
         "--setup", metavar="DIR",
         help="Set sync target directory (written to .dropbox-sync-target in cwd).",
+    )
+    parser.add_argument(
+        "--dry-run", action="store_true",
+        help="Show what would be transferred without making any changes.",
     )
     args = parser.parse_args()
 
@@ -77,18 +74,21 @@ def main() -> None:
 
     target_dir.mkdir(parents=True, exist_ok=True)
 
-    exclude_args = []
-    for exc in RSYNC_EXCLUDES:
-        exclude_args.extend(["--exclude", exc])
-
     source = str(Path.cwd()) + "/"
     dest = str(target_dir) + "/"
 
+    dry_run_flag = ["-n"] if args.dry_run else []
+    if args.dry_run:
+        print(f"Dry run — no files will be transferred.", file=sys.stderr)
     print(f"Syncing {project_name}/ → {target_dir}", file=sys.stderr)
 
-    result = subprocess.run(
-        ["rsync", "-av", "--delete", *exclude_args, source, dest]
-    )
+    result = subprocess.run([
+        "rsync", "-av", "--delete",
+        "--exclude=.git/",
+        "--filter=:- .gitignore",
+        *dry_run_flag,
+        source, dest,
+    ])
     sys.exit(result.returncode)
 
 
