@@ -48,7 +48,17 @@ def main() -> None:
         config.write_text(str(target) + "\n")
         print(f"Sync target: {target}", file=sys.stderr)
         print(f"Config:      {config}", file=sys.stderr)
-        print(f"Ensure {CONFIG_FILENAME} is in .gitignore.", file=sys.stderr)
+
+        gitignore = Path.cwd() / ".gitignore"
+        if gitignore.exists():
+            content = gitignore.read_text()
+            if CONFIG_FILENAME not in content:
+                gitignore.write_text(content.rstrip() + f"\n{CONFIG_FILENAME}\n")
+                print(f"Added {CONFIG_FILENAME} to .gitignore", file=sys.stderr)
+            else:
+                print(f"{CONFIG_FILENAME} already in .gitignore", file=sys.stderr)
+        else:
+            print(f"No .gitignore found — add {CONFIG_FILENAME} manually", file=sys.stderr)
         return
 
     config = Path.cwd() / CONFIG_FILENAME
