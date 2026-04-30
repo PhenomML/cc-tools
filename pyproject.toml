@@ -20,7 +20,8 @@ cc-pdfplumber = "pdfplumber.cli:main"
 cc-webfetch   = "cc_tools.webfetch:main"
 cc-arxiv      = "cc_tools.arxiv_fetch:main"
 cc-fetch      = "cc_tools.fetch:main"
-cc-wiki-brief = "cc_tools.wiki_brief_start:main"
+cc-wiki-brief    = "cc_tools.wiki_brief_start:main"
+cc-dropbox-sync  = "cc_tools.dropbox_sync:main"
 
 [tool.setuptools.packages.find]
 include = ["cc_tools*"]
