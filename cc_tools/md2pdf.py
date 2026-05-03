@@ -5,6 +5,8 @@ Handles Unicode text (Greek letters, math-like notation), HTML
 """
 
 import argparse
+import glob
+import os
 import re
 import shutil
 import subprocess
@@ -19,6 +21,30 @@ _DETAILS_RE = re.compile(r"</?details[^>]*>", re.IGNORECASE)
 # Convert "X₁₂" → "X$_{12}$" so XeLaTeX renders them as proper subscripts.
 _SUB_DIGIT_RE = re.compile(r"([\wͰ-Ͽ])([₀-₉]+)")
 _SUB_DIGIT_MAP = str.maketrans("₀₁₂₃₄₅₆₇₈₉", "0123456789")
+
+
+def _find_engine(name: str) -> str | None:
+    """Find a TeX engine binary, falling back to known MacTeX locations.
+
+    shutil.which() fails in non-login shells because MacTeX registers via
+    /etc/paths.d/TeX, which path_helper only processes in login shells.
+    Claude Code's Bash tool, VS Code terminals, and launchd agents are all
+    non-login shells — so we check known locations explicitly as a fallback.
+    """
+    found = shutil.which(name)
+    if found:
+        return found
+    candidates = [Path("/Library/TeX/texbin") / name]
+    for pattern in [
+        f"/usr/local/texlive/*/bin/universal-darwin/{name}",
+        f"/usr/local/texlive/*/bin/aarch64-darwin/{name}",
+        f"/usr/local/texlive/*/bin/x86_64-darwin/{name}",
+    ]:
+        candidates += [Path(p) for p in sorted(glob.glob(pattern), reverse=True)]
+    for candidate in candidates:
+        if candidate.is_file() and os.access(candidate, os.X_OK):
+            return str(candidate)
+    return None
 
 
 def _preprocess(text: str) -> str:
@@ -54,10 +80,19 @@ def main() -> None:
 
     if not shutil.which("pandoc"):
         sys.exit("cc-md2pdf: pandoc not found — install: brew install pandoc")
-    if not shutil.which(args.engine):
+    engine_path = _find_engine(args.engine)
+    if engine_path is None:
         sys.exit(
-            f"cc-md2pdf: {args.engine} not found — install: brew install --cask basictex"
+            f"cc-md2pdf: {args.engine} not found.\n"
+            f"  MacTeX:   brew install --cask mactex-no-gui\n"
+            f"  BasicTeX: brew install --cask basictex\n"
+            f"  Or add your TeX bin directory to PATH."
         )
+    # Patch subprocess PATH so pandoc can also resolve the engine.
+    # Needed in non-login shells where /etc/paths.d/TeX is not processed.
+    engine_dir = str(Path(engine_path).parent)
+    env = os.environ.copy()
+    env["PATH"] = engine_dir + os.pathsep + env.get("PATH", "")
 
     outdir = Path(args.outdir) if args.outdir else None
     if outdir:
@@ -78,7 +113,7 @@ def main() -> None:
             print(f"cc-md2pdf: rendering {src} → {out}")
             cmd = [
                 "pandoc", str(tmp),
-                f"--pdf-engine={args.engine}",
+                f"--pdf-engine={engine_path}",
                 "--from=markdown+raw_html+smart",
                 "-V", "geometry:margin=1in",
                 "-V", "papersize:letter",
@@ -105,6 +140,7 @@ def main() -> None:
                 cmd,
                 capture_output=True,
                 text=True,
+                env=env,
             )
             if result.returncode == 0:
                 print(f"cc-md2pdf: wrote {out}")
