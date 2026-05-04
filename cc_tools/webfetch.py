@@ -12,7 +12,7 @@ CLOUDFLARE_MARKERS = [b"just a moment", b"cf-ray", b"cloudflare", b"checking you
 # domains and advise alternatives instead. Remove entries here and in _CF_BLOCKED_ADVICE
 # when markdown.new resolves CF-to-CF blocking.
 # Tracked in: https://github.com/PhenomML/cc-tools/issues/3
-# Upstream bug: update this comment with the markdown.new issue URL once filed.
+# Upstream bug: https://github.com/markdown-new/url-to-markdown-skill/issues/1
 _KNOWN_CF_BLOCKED = {
     "scholar.google.com",
     "api.semanticscholar.org",
