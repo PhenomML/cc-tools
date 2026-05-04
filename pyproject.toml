@@ -6,7 +6,7 @@ readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
     "arxiv>=2.4.1",
-    "markitdown>=0.1.5",
+    "markitdown[all]>=0.1.5",
     "nbconvert>=7.17.1",
     "pdfplumber>=0.11.9",
     "trafilatura>=2.0",
