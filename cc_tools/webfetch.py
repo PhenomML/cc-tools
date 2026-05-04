@@ -1,10 +1,38 @@
 import sys
+import urllib.parse
 import urllib.request
 import urllib.error
 
 MARKDOWN_NEW = "https://markdown.new/"
 MIN_CONTENT_BYTES = 500
 CLOUDFLARE_MARKERS = [b"just a moment", b"cf-ray", b"cloudflare", b"checking your browser"]
+
+# Workaround: markdown.new (a Cloudflare service) is blocked by other CF-protected
+# sites. Skip both markdown.new and Wayback for known-blocked domains and advise
+# alternatives instead. Remove entries when markdown.new resolves CF-to-CF blocking.
+# Upstream bug filed: https://github.com/PhenomML/cc-tools/issues/3 tracks this;
+# update with the markdown.new issue URL once filed.
+_KNOWN_CF_BLOCKED = {
+    "scholar.google.com",
+    "api.semanticscholar.org",
+}
+
+_CF_BLOCKED_ADVICE = {
+    "scholar.google.com": (
+        "Google Scholar is structurally blocked (Cloudflare-to-Cloudflare).\n"
+        "Alternatives:\n"
+        "  cc-arxiv <arxiv-id>   — paper metadata by arXiv ID\n"
+        "  cc-webfetch 'https://export.arxiv.org/api/query?search_query=all:TERM&max_results=10'\n"
+        "  cc-webfetch 'https://api.semanticscholar.org/graph/v1/paper/search"
+        "?query=TERM&fields=title,authors,year,abstract,externalIds'"
+    ),
+    "api.semanticscholar.org": (
+        "Semantic Scholar is structurally blocked via markdown.new (Cloudflare-to-Cloudflare).\n"
+        "Use the API directly — it works without markdown.new:\n"
+        "  cc-webfetch 'https://api.semanticscholar.org/graph/v1/paper/search"
+        "?query=TERM&fields=title,authors,year,abstract,externalIds'"
+    ),
+}
 
 
 def _strip_wayback_boilerplate(content: bytes) -> bytes:
@@ -67,6 +95,13 @@ def main():
         sys.exit(0 if "--help" in sys.argv else 1)
 
     url = sys.argv[1]
+
+    domain = urllib.parse.urlparse(url).netloc.removeprefix("www.")
+    if domain in _KNOWN_CF_BLOCKED:
+        advice = _CF_BLOCKED_ADVICE.get(domain, "Use a direct API or alternative source.")
+        print(f"cc-webfetch: {advice}", file=sys.stderr)
+        sys.exit(1)
+
     try:
         content = _fetch_via_markdown_new(url)
     except urllib.error.HTTPError as e:
