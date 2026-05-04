@@ -37,6 +37,8 @@ confidence: high | medium | low
 **Naming:** kebab-case filenames. Paper pages: `<firstauthor>-<year>-<slug>.md`.
 Concept pages: descriptive noun phrase, e.g. `kalman-filter.md`, `state-space-models.md`.
 
+**Line wrapping:** do not hard-wrap prose paragraphs. Each paragraph is one line in the source; the renderer handles wrapping. Code blocks and tables are exempt.
+
 **Cross-wiki links:** use relative paths from the current file.
 Example from `tsa/concepts/state-space.md` to `bayes/concepts/gaussian-update.md`:
 `../../bayes/concepts/gaussian-update.md`
