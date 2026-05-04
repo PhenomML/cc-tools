@@ -7,11 +7,12 @@ MARKDOWN_NEW = "https://markdown.new/"
 MIN_CONTENT_BYTES = 500
 CLOUDFLARE_MARKERS = [b"just a moment", b"cf-ray", b"cloudflare", b"checking your browser"]
 
-# Workaround: markdown.new (a Cloudflare service) is blocked by other CF-protected
-# sites. Skip both markdown.new and Wayback for known-blocked domains and advise
-# alternatives instead. Remove entries when markdown.new resolves CF-to-CF blocking.
-# Upstream bug filed: https://github.com/PhenomML/cc-tools/issues/3 tracks this;
-# update with the markdown.new issue URL once filed.
+# Workaround (commit 424e94f): markdown.new (a Cloudflare service) is blocked by
+# other CF-protected sites. Skip both markdown.new and Wayback for known-blocked
+# domains and advise alternatives instead. Remove entries here and in _CF_BLOCKED_ADVICE
+# when markdown.new resolves CF-to-CF blocking.
+# Tracked in: https://github.com/PhenomML/cc-tools/issues/3
+# Upstream bug: update this comment with the markdown.new issue URL once filed.
 _KNOWN_CF_BLOCKED = {
     "scholar.google.com",
     "api.semanticscholar.org",
