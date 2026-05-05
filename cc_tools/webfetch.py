@@ -4,36 +4,34 @@ import urllib.request
 import urllib.error
 
 MARKDOWN_NEW = "https://markdown.new/"
+JINA = "https://r.jina.ai/"
 MIN_CONTENT_BYTES = 500
 CLOUDFLARE_MARKERS = [b"just a moment", b"cf-ray", b"cloudflare", b"checking your browser"]
 
-# Workaround (commit 424e94f): markdown.new (a Cloudflare service) is blocked by
-# other CF-protected sites. Skip both markdown.new and Wayback for known-blocked
-# domains and advise alternatives instead. Remove entries here and in _CF_BLOCKED_ADVICE
-# when markdown.new resolves CF-to-CF blocking.
-# Tracked in: https://github.com/PhenomML/cc-tools/issues/3
-# Upstream bug: https://github.com/markdown-new/url-to-markdown-skill/issues/1
-_KNOWN_CF_BLOCKED = {
-    "scholar.google.com",
-    "api.semanticscholar.org",
-}
 
-_CF_BLOCKED_ADVICE = {
-    "scholar.google.com": (
-        "Google Scholar is structurally blocked (Cloudflare-to-Cloudflare).\n"
-        "Alternatives:\n"
-        "  cc-arxiv <arxiv-id>   — paper metadata by arXiv ID\n"
-        "  cc-webfetch 'https://export.arxiv.org/api/query?search_query=all:TERM&max_results=10'\n"
-        "  cc-webfetch 'https://api.semanticscholar.org/graph/v1/paper/search"
-        "?query=TERM&fields=title,authors,year,abstract,externalIds'"
-    ),
-    "api.semanticscholar.org": (
-        "Semantic Scholar is structurally blocked via markdown.new (Cloudflare-to-Cloudflare).\n"
-        "Use the API directly — it works without markdown.new:\n"
-        "  cc-webfetch 'https://api.semanticscholar.org/graph/v1/paper/search"
-        "?query=TERM&fields=title,authors,year,abstract,externalIds'"
-    ),
-}
+def _fetch_via_markdown_new(url: str) -> bytes:
+    req = urllib.request.Request(
+        MARKDOWN_NEW + url,
+        headers={"User-Agent": "cc-tools/cc-webfetch"},
+    )
+    with urllib.request.urlopen(req) as response:
+        return response.read()
+
+
+def _fetch_via_jina(url: str) -> bytes:
+    req = urllib.request.Request(
+        JINA + url,
+        headers={"User-Agent": "cc-tools/cc-webfetch"},
+    )
+    with urllib.request.urlopen(req) as response:
+        return response.read()
+
+
+def _is_blocked(content: bytes) -> bool:
+    if len(content) < MIN_CONTENT_BYTES:
+        return True
+    lower = content.lower()
+    return any(marker in lower for marker in CLOUDFLARE_MARKERS)
 
 
 def _strip_wayback_boilerplate(content: bytes) -> bytes:
@@ -70,38 +68,16 @@ def _strip_wayback_boilerplate(content: bytes) -> bytes:
     return content  # No heading found; return unchanged.
 
 
-def _fetch_via_markdown_new(url: str) -> bytes:
-    req = urllib.request.Request(
-        MARKDOWN_NEW + url,
-        headers={"User-Agent": "cc-tools/cc-webfetch"},
-    )
-    with urllib.request.urlopen(req) as response:
-        return response.read()
-
-
-def _is_blocked(content: bytes) -> bool:
-    if len(content) < MIN_CONTENT_BYTES:
-        return True
-    lower = content.lower()
-    return any(marker in lower for marker in CLOUDFLARE_MARKERS)
-
-
 def main():
     if len(sys.argv) != 2 or sys.argv[1] in ("-h", "--help"):
         print("Usage: cc-webfetch <url>", file=sys.stderr)
         print("Fetch a public URL as clean Markdown via markdown.new.", file=sys.stderr)
-        print("Falls back to Wayback Machine if the direct fetch is blocked.", file=sys.stderr)
+        print("Falls back to Jina (r.jina.ai) if blocked, then Wayback Machine.", file=sys.stderr)
         print("Output is written to stdout. Redirect to save: cc-webfetch <url> > file.md", file=sys.stderr)
-        print("Rate limit: 500 requests/day per IP.", file=sys.stderr)
+        print("Rate limit: 500 requests/day per IP (markdown.new).", file=sys.stderr)
         sys.exit(0 if "--help" in sys.argv else 1)
 
     url = sys.argv[1]
-
-    domain = urllib.parse.urlparse(url).netloc.removeprefix("www.")
-    if domain in _KNOWN_CF_BLOCKED:
-        advice = _CF_BLOCKED_ADVICE.get(domain, "Use a direct API or alternative source.")
-        print(f"cc-webfetch: {advice}", file=sys.stderr)
-        sys.exit(1)
 
     try:
         content = _fetch_via_markdown_new(url)
@@ -114,7 +90,22 @@ def main():
 
     if _is_blocked(content):
         print(
-            f"cc-webfetch: BLOCKED (Cloudflare or thin response, {len(content)} bytes) — trying Wayback Machine",
+            f"cc-webfetch: BLOCKED via markdown.new ({len(content)} bytes) — trying Jina",
+            file=sys.stderr,
+        )
+        try:
+            jina_content = _fetch_via_jina(url)
+        except (urllib.error.HTTPError, urllib.error.URLError) as e:
+            print(f"cc-webfetch: Jina fetch failed: {e}", file=sys.stderr)
+            jina_content = b""
+
+        if jina_content and not _is_blocked(jina_content):
+            print(f"cc-webfetch: served via Jina ({len(jina_content)} bytes)", file=sys.stderr)
+            sys.stdout.buffer.write(jina_content)
+            return
+
+        print(
+            f"cc-webfetch: Jina also blocked or empty — trying Wayback Machine",
             file=sys.stderr,
         )
         wayback_url = f"https://web.archive.org/web/{url}"

@@ -5,7 +5,7 @@
 | Command | Usage | Purpose |
 |---|---|---|
 | `cc-markitdown` | `cc-markitdown <file>` | Convert PDFs, Office docs, HTML files → Markdown |
-| `cc-webfetch` | `cc-webfetch <url>` | Fetch a public URL as clean Markdown (via markdown.new; 500 req/day) |
+| `cc-webfetch` | `cc-webfetch <url>` | Fetch a public URL as clean Markdown; falls back to Jina then Wayback if blocked |
 | `cc-arxiv` | `cc-arxiv <arxiv-id>` | Fetch arXiv paper metadata: title, authors, year, PDF URL, HTML availability, abstract |
 | `cc-md2pdf` | `cc-md2pdf [-o DIR] [-e ENGINE] file.md ...` | Convert Markdown → PDF via pandoc + XeLaTeX |
 | `cc-nbconvert` | `cc-nbconvert --to markdown <notebook.ipynb>` | Convert Jupyter notebooks → Markdown |
