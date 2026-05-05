@@ -49,6 +49,7 @@ The following slash commands are installed in `~/.claude/commands/` and availabl
 | `/wiki-lint` | `/wiki-lint` or `/wiki-lint tsa` | Health-check wiki for orphans, broken links, stale pages |
 | `/wiki-project` | `/wiki-project ../MyProject` | Add or update a project page in the wiki |
 | `/wiki-upgrade` | `/wiki-upgrade` | Update the cc-tools managed section in CLAUDE.md without touching the Sub-wikis table |
+| `/wiki-promote` | `/wiki-promote path/to/brief/` | Crystallise settled conclusions from an active research brief into the wiki (CREATE or UPDATE) |
 
 Skills are symlinked from the cc-tools repo — they update automatically on `git pull` without re-running setup.
 

@@ -47,6 +47,7 @@ wiki/                   ← repo root (this file lives here)
     concepts/           ← concept reference pages
     methods/            ← methodological reference pages
     projects/           ← pages for related code projects
+    research/           ← research-thread anchor pages, one per promoted brief
     index.md            ← catalog for this sub-wiki (Claude maintains)
   syntheses/            ← cross-wiki analysis pages filed from /wiki-query
 ```
@@ -57,7 +58,7 @@ wiki/                   ← repo root (this file lives here)
 ```yaml
 ---
 title: "<descriptive title>"
-type: paper | concept | method | project | comparison | synthesis
+type: paper | concept | method | project | comparison | synthesis | research-thread
 wikis: [list of sub-wikis this page belongs to]
 sources: [relative paths to raw/ files that support this page]
 related: [relative paths to related pages, including cross-wiki links]
@@ -65,6 +66,12 @@ created: YYYY-MM-DD
 updated: YYYY-MM-DD
 confidence: high | medium | low
 ---
+```
+
+**Additional fields for `research-thread` pages** (add after `confidence:`):
+```yaml
+brief_path: ../Topics/compressed-sensing   # relative from wiki root to brief directory
+status: active                             # active | settled | archived
 ```
 
 **Naming:** kebab-case filenames. Paper pages: `<firstauthor>-<year>-<slug>.md`.
@@ -104,6 +111,21 @@ Use `/wiki-query <question>`. Claude reads `index.md`, drills into relevant page
 sub-wikis, synthesises an answer with citations, and offers to file valuable answers
 as new pages in `syntheses/`.
 
+## Promotion workflow
+
+Use `/wiki-promote path/to/brief/` to crystallise settled knowledge from an active research
+brief into the wiki. Promotion is not archival — a brief stays active as long as research
+continues; its settled conclusions accrete into the wiki incrementally across multiple runs.
+
+The skill detects CREATE vs UPDATE mode automatically: if no anchor page exists for the
+brief it creates one; if one exists it updates it with newly settled conclusions, newly
+answered questions, and newly promoted concepts. Run it again after each significant brief
+session.
+
+Anchor pages live in `<subwiki>/research/<slug>.md` with `type: research-thread`. The
+`brief_path` field links back to the brief directory; the brief's `index.md` carries a
+`## Wiki Anchor` section linking forward to the anchor page.
+
 ## Maintenance
 
 Use `/wiki-lint` periodically. Claude checks for orphaned pages, broken cross-wiki links,
@@ -124,7 +146,7 @@ Each entry in `log.md` follows this prefix for greppability:
 ```
 ## [YYYY-MM-DD] <operation> | <title or description>
 ```
-Operations: `ingest`, `query`, `lint`, `project`, `upgrade`.
+Operations: `ingest`, `query`, `lint`, `project`, `upgrade`, `promote`.
 
 ## Tools available
 
@@ -133,5 +155,5 @@ Claude has access to the following cc-tools commands for wiki operations:
 - `cc-webfetch <url>` — fetch any public URL as clean markdown (500 req/day); redirect to save: `cc-webfetch <url> > file.md`
 - `cc-arxiv <arxiv-id>` — fetch paper metadata: title, authors, year, PDF URL, HTML availability, abstract
 - `cc-pdfplumber <file>` — extract tables from PDFs
-- `/wiki-ingest`, `/wiki-query`, `/wiki-lint`, `/wiki-project`, `/wiki-upgrade` — wiki skills
+- `/wiki-ingest`, `/wiki-query`, `/wiki-lint`, `/wiki-project`, `/wiki-upgrade`, `/wiki-promote` — wiki skills
 <!-- cc-tools:wiki:end -->

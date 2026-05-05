@@ -18,7 +18,7 @@ table (skip the header and separator rows).
 For each sub-wiki, create the following if they do not already exist:
 
 **Directories:** `<dir>/`, `<dir>/papers/`, `<dir>/concepts/`, `<dir>/methods/`,
-`<dir>/projects/`
+`<dir>/projects/`, `<dir>/research/`
 
 **`<dir>/index.md`:**
 ```markdown
@@ -33,6 +33,19 @@ For each sub-wiki, create the following if they do not already exist:
 ## Methods
 
 ## Projects
+```
+
+**`<dir>/research/index.md`:**
+```markdown
+# Research Threads
+
+<!-- Claude maintains this file. -->
+
+## Active
+
+## Settled
+
+## Archived
 ```
 
 **`<dir>/CLAUDE.md`** — do not overwrite if it already exists:

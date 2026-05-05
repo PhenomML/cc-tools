@@ -44,6 +44,12 @@ clearly informs another sub-wiki that has no corresponding page for it. Suggest 
 **index.md gaps** — pages that exist in the filesystem but are absent from the sub-wiki's
 `index.md`. List them.
 
+**Research-thread link integrity** — for each page with `type: research-thread`, check:
+- `brief_path` resolves to an existing directory on the local filesystem
+- The brief's `index.md` contains a `## Wiki Anchor` section linking back to this anchor page
+
+Flag any page where either check fails; a broken link means the brief-wiki connection is severed and future `/wiki-promote` runs may mis-detect CREATE mode on an already-promoted brief.
+
 **Stale queue entries** — entries in `queue.md` whose titles or slugs already appear in
 a sub-wiki `index.md` or `papers/` directory. These were ingested but never removed from
 the queue. List them so the researcher can confirm removal or update the entry to point
