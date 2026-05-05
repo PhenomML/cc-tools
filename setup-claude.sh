@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 # setup-claude.sh — install or update cc-tools configuration for Claude Code
+#   - Installs/reinstalls the cc-tools Python package in editable mode (local source)
 #   - Manages the cc-tools section in ~/.claude/CLAUDE.md (sentinel-based, idempotent)
 #   - Symlinks skills from skills/ into ~/.claude/commands/ (updates on git pull)
 # Safe to run multiple times.
@@ -13,6 +14,11 @@ SECTION="$SCRIPT_DIR/claude-md-section.md"
 CLAUDE_MD="$HOME/.claude/CLAUDE.md"
 BEGIN="<!-- cc-tools:begin -->"
 END="<!-- cc-tools:end -->"
+
+# ── Python package ───────────────────────────────────────────────────────────
+
+uv tool install --editable "$SCRIPT_DIR" --quiet
+echo "setup-claude: cc-tools Python package installed (editable) from $SCRIPT_DIR"
 
 # ── CLAUDE.md ────────────────────────────────────────────────────────────────
 

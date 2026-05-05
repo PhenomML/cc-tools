@@ -42,10 +42,7 @@ The first two commands install the tools into an isolated `uv` environment — c
 When Claude adds new tools to this repository, pull, reinstall, and refresh CLAUDE.md:
 
 ```bash
-cd ~/Projects/PhenomML/cc-tools
-git pull
-uv tool upgrade cc-tools
-bash setup-claude.sh
+cd ~/Projects/PhenomML/cc-tools && git pull && bash setup-claude.sh
 ```
 
 Claude will tell you when this is needed.
