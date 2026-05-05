@@ -81,6 +81,16 @@ brew install --cask basictex    # minimal TeX (~100 MB); then:
 
 If MacTeX is already installed, only `brew install pandoc` is needed.
 
+### cc-markitdown audio support
+
+`cc-markitdown` can convert audio files (podcasts, recorded interviews) to text when ffmpeg is installed:
+
+```bash
+brew install ffmpeg
+```
+
+Without ffmpeg, PDF, Office, and HTML conversion still work; only audio input is unavailable. `setup-claude.sh` will warn if ffmpeg is missing.
+
 **Authoring standard:** use `$...$` LaTeX math for all mathematical expressions. This renders correctly as typeset math in both the PDF output and in Obsidian (which uses MathJax with the same syntax). See [AUTHORING.md](AUTHORING.md) for the full guide, including a table of common LaTeX commands and a compatibility matrix.
 
 ## MCP Servers

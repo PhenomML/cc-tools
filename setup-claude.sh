@@ -78,6 +78,14 @@ for skill in "$SKILLS_SRC"/*.md; do
 done
 echo "setup-claude: $count skill(s) linked to $COMMANDS_DIR"
 
+# ── Optional system dependencies ─────────────────────────────────────────────
+
+for tool in pandoc ffmpeg; do
+    if ! command -v "$tool" &>/dev/null; then
+        echo "setup-claude: WARNING: $tool not found — some cc-tools features will be limited (brew install $tool)"
+    fi
+done
+
 # ── Git hooks ─────────────────────────────────────────────────────────────────
 
 HOOK_SRC="$SCRIPT_DIR/hooks/pre-commit"
