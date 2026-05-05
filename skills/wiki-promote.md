@@ -173,6 +173,10 @@ For each concept or method page in the brief:
 
 Promoted concept pages should include a `related:` link back to the anchor page.
 
+**Flag imputed connections:** when writing promoted pages you may synthesize cross-domain connections or editorial interpretations that are not present in the brief's source material. Mark every such claim inline with `*[Imputed]*` immediately after it. A reader of the permanent wiki should be able to distinguish evidenced claims from synthesized ones without tracing back to the brief. When in doubt, mark it.
+
+**Citation year consistency:** cite papers using the same year as the brief's existing paper-entry filenames. If the brief has `donoho-johnstone-montanari-2011-amp-minimax.md`, cite that paper as 2011 in all promoted pages, not 2013 (the journal year). This keeps the brief and permanent wiki internally consistent. When a paper has both an arXiv year and a journal year in common use, add a parenthetical on first mention — e.g. "(arXiv 2011, *Annals of Statistics* 2013)" — then use the brief's year thereafter.
+
 ## Step 5 — Bidirectional links
 
 ### CREATE mode
