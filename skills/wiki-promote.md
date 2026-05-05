@@ -7,6 +7,10 @@ Promotion is not archival — a brief stays active as long as research continues
 `/wiki-promote` again after each significant brief session to accrete newly settled
 conclusions into the wiki incrementally.
 
+**New-session requirement:** skill files are cached at session start. If `setup-claude.sh`
+was run in this session, start a new session before invoking `/wiki-promote` — otherwise
+you are running the previous (or absent) version of the skill.
+
 ## Detect mode
 
 Derive the slug from the brief directory basename (it is already kebab-case).
@@ -32,6 +36,11 @@ Identify and note:
 - Settled conclusions — claims supported by evidence, sorted by confidence (high / medium / low)
 - Open questions — threads still being actively pursued
 - Concept and method pages that are stable, self-contained, and cross-wiki relevant
+
+**Sub-wiki mapping:** briefs often use their own internal sub-directories (e.g. `algorithms/`,
+`theory/`, `history/`) that do not correspond to wiki sub-wikis. Read the wiki root's
+`CLAUDE.md` Sub-wikis table, propose a mapping (e.g. "CS algorithms/ → sciai/"), and
+confirm with the researcher before writing any files. Do not infer silently.
 
 ## Step 2 — Read brief Claude's memories (both modes)
 
@@ -100,6 +109,12 @@ confidence: high | medium | low
 ---
 ```
 
+**`sources: []` convention:** promoted pages derive their evidence from the brief's
+`raw/` directory, which is outside the wiki. Use `sources: []` in frontmatter and add
+a prose note in the body referencing the brief: "Source material in `<brief_path>/raw/`."
+This is the canonical promotion convention — brief provenance is the source, and
+`brief_path` makes it traceable. Do not copy source files into wiki `raw/`.
+
 Body sections:
 
 **`## Driving question`** — verbatim from the brief's index.
@@ -139,11 +154,17 @@ For each concept or method page in the brief:
 
 1. **Check for promotion marker** — look for `<!-- promoted: wiki/<path> -->` at the top
    of the brief's concept page. If present, skip — already promoted in a prior run.
-2. **Apply editorial judgment:**
-   - **Promote:** concepts that are stable, self-contained, and likely relevant beyond
-     this one brief. Definitions with supporting evidence that cross sub-wiki boundaries.
-   - **Leave in brief:** working notes, implementation scaffolding, speculative ideas still
-     developing, domain-specific context unlikely to be cross-wiki relevant.
+2. **Apply the promotion table** to decide what moves:
+
+   | Page type | Promote? | Rationale |
+   |---|---|---|
+   | Concept pages (stable, settled) | Yes | Core purpose of promotion |
+   | Method / algorithm pages (standalone) | Yes | Same |
+   | Paper summary pages | No | Too brief-specific; anchor page references them |
+   | Project pages | No | Stay in brief; open questions reference them |
+   | Synthesis documents | No | Distil key findings into anchor `## Settled conclusions` and `## Open questions` — do not copy synthesis files wholesale into wiki `syntheses/` |
+   | Implementation scaffolding / working notes | No | Not settled knowledge |
+
 3. **If promoting:**
    - Write the concept into `<subwiki>/concepts/<slug>.md` (or `methods/` for methods).
    - Add `<!-- promoted: wiki/<subwiki>/concepts/<slug>.md -->` to the top of the brief's
