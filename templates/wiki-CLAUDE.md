@@ -75,7 +75,7 @@ status: active                             # active | settled | archived
 ```
 
 **Naming:** kebab-case filenames. Paper pages: `<firstauthor>-<year>-<slug>.md`.
-Concept pages: descriptive noun phrase, e.g. `kalman-filter.md`, `state-space-models.md`.
+Concept pages: descriptive noun phrase, e.g. `gradient-descent.md`, `transformer-architecture.md`.
 
 **Cross-wiki links:** use relative paths from the current file.
 Example from `tsa/concepts/state-space.md` to `bayes/concepts/gaussian-update.md`:

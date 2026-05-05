@@ -42,7 +42,7 @@ status: active                             # active | settled | archived
 ```
 
 **Naming:** kebab-case filenames. Paper pages: `<firstauthor>-<year>-<slug>.md`.
-Concept pages: descriptive noun phrase, e.g. `kalman-filter.md`, `state-space-models.md`.
+Concept pages: descriptive noun phrase, e.g. `gradient-descent.md`, `transformer-architecture.md`.
 
 **Line wrapping:** do not hard-wrap prose paragraphs. Each paragraph is one line in the source; the renderer handles wrapping. Code blocks and tables are exempt.
 
@@ -57,13 +57,17 @@ Example Sources section:
 ```markdown
 ## Sources
 
-- Wikipedia, "Kalman Filter" (accessed 2026-04-26) — [raw/wikipedia-kalman.md](../../raw/wikipedia-kalman.md)
-- Kalman (1960) — [raw/kalman-1960.md](../../raw/kalman-1960.md)
+- Author (Year), "Title" — [raw/author-year-slug.md](../../raw/author-year-slug.md)
+- Wikipedia, "Topic" (accessed YYYY-MM-DD) — [raw/wikipedia-topic.md](../../raw/wikipedia-topic.md)
 ```
 
 **Math:** always use `$...$` for inline math and `$$...$$` for display math with LaTeX
 commands inside. Never use bare Unicode Greek letters or Unicode subscript digits in math.
 See cc-tools `AUTHORING.md` for the full standard.
+
+**Imputed connections:** when a page draws an inference or connection not present in its source material — a cross-domain analogy, a synthesis across briefs, an editorial interpretation — mark it inline with `*[Imputed]*` immediately after the claim. This signals to readers and future Claude instances that the claim is plausible synthesis, not evidenced fact. Example: *"The phase transition diagram is CS's version of the Common Task Framework leaderboard. \*[Imputed\]*"* Do not use `*[Imputed]*` for claims that are directly supported by a cited source.
+
+**Citation years:** use the arXiv posting year for papers with significant arXiv presence; use the journal publication year otherwise. On first mention of a paper that has both, add a parenthetical to disambiguate: "(arXiv 2011)" or "(*Annals of Statistics*, 2013)". Within a wiki, citation years must be consistent with the brief's existing paper-entry filenames — e.g., a file named `donoho-johnstone-montanari-2011-amp-minimax.md` fixes the citation year as 2011 for that paper throughout the wiki.
 
 ## Ingestion workflow
 

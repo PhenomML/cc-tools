@@ -3,7 +3,7 @@ Ingest a source into the research wiki: $ARGUMENTS
 `$ARGUMENTS` is one of:
 - An arXiv ID (e.g. `2301.07608`)
 - A public URL (e.g. `https://en.wikipedia.org/wiki/Ilya_Sutskever`)
-- A path inside `raw/` (e.g. `raw/kalman-1960.pdf`)
+- A path inside `raw/` (e.g. `raw/author-year-slug.pdf`)
 - Any filesystem path to a PDF, Office doc, or HTML file (e.g. `~/Books/textbook.pdf`)
 
 If working directory is not the wiki root, navigate there first.
