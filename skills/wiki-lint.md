@@ -48,6 +48,10 @@ clearly informs another sub-wiki that has no corresponding page for it. Suggest 
 - `brief_path` resolves to an existing directory on the local filesystem
 - The brief's `index.md` contains a `## Wiki Anchor` section linking back to this anchor page
 
+`brief_path` is relative to the **wiki root**, not to the anchor page's directory. Resolve it as
+`os.path.normpath(os.path.join(wiki_root, brief_path))`. Using the anchor file's directory as the
+base is a common implementation error and will produce false broken-link reports.
+
 Flag any page where either check fails; a broken link means the brief-wiki connection is severed and future `/wiki-promote` runs may mis-detect CREATE mode on an already-promoted brief.
 
 **Stale queue entries** — entries in `queue.md` whose titles or slugs already appear in

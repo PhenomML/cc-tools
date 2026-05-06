@@ -37,7 +37,7 @@ confidence: high | medium | low
 
 **Additional fields for `research-thread` pages** (add after `confidence:`):
 ```yaml
-brief_path: ../Topics/compressed-sensing   # relative from wiki root to brief directory
+brief_path: ../Topics/compressed-sensing   # relative from wiki root (not from this file's directory)
 status: active                             # active | settled | archived
 ```
 
