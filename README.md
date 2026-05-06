@@ -59,6 +59,7 @@ After pulling, **start a new Claude session** before invoking updated skills. Cl
 | `cc-nbconvert` | [jupyter/nbconvert](https://github.com/jupyter/nbconvert) | Convert Jupyter notebooks to Markdown and other formats |
 | `cc-pdfplumber` | [jsvine/pdfplumber](https://github.com/jsvine/pdfplumber) | Extract tables and text from PDFs with precise layout information |
 | `cc-arxiv` | [lukasschwab/arxiv.py](https://github.com/lukasschwab/arxiv.py) | Fetch arXiv paper metadata by ID: title, authors, year, PDF URL, HTML availability, abstract |
+| `cc-ocr` | cc-tools (built-in) | OCR a scanned PDF (no text layer) using pdftoppm + tesseract; fallback for historic papers that `cc-markitdown` cannot extract |
 
 More tools will be added here as the standard Claude instantiation grows.
 
@@ -90,6 +91,25 @@ brew install ffmpeg
 ```
 
 Without ffmpeg, PDF, Office, and HTML conversion still work; only audio input is unavailable. `setup-claude.sh` will warn if ffmpeg is missing.
+
+### cc-ocr: scanned PDF support
+
+Historic papers (pre-2000) are often scanned bitmap images with no text layer. `cc-markitdown` and `cc-pdfplumber` produce empty or binary output for these files. Use `cc-ocr` instead:
+
+```bash
+cc-ocr input.pdf > output.md
+```
+
+Requires two Homebrew packages:
+
+```bash
+brew install poppler    # provides pdftoppm
+brew install tesseract  # OCR engine
+```
+
+`cc-ocr` converts each page to a 300 dpi JPEG with `pdftoppm`, runs `tesseract`, and concatenates the results. Output is plain text with a one-line header noting it was OCR'd. If `cc-markitdown` detects a text layer, `cc-ocr` will warn and suggest using `cc-markitdown` instead — but will proceed.
+
+**macOS note:** `tesseract` fails with a sandboxing error when image files are in `/tmp`. `cc-ocr` uses a temp directory under `$HOME` to avoid this.
 
 **Authoring standard:** use `$...$` LaTeX math for all mathematical expressions. This renders correctly as typeset math in both the PDF output and in Obsidian (which uses MathJax with the same syntax). See [AUTHORING.md](AUTHORING.md) for the full guide, including a table of common LaTeX commands and a compatibility matrix.
 

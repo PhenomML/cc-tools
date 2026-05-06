@@ -80,9 +80,14 @@ echo "setup-claude: $count skill(s) linked to $COMMANDS_DIR"
 
 # ── Optional system dependencies ─────────────────────────────────────────────
 
-for tool in pandoc ffmpeg; do
+for tool in pandoc ffmpeg pdftoppm tesseract; do
     if ! command -v "$tool" &>/dev/null; then
-        echo "setup-claude: WARNING: $tool not found — some cc-tools features will be limited (brew install $tool)"
+        case "$tool" in
+            pdftoppm)  hint="brew install poppler" ;;
+            tesseract) hint="brew install tesseract" ;;
+            *)         hint="brew install $tool" ;;
+        esac
+        echo "setup-claude: WARNING: $tool not found — some cc-tools features will be limited ($hint)"
     fi
 done
 
