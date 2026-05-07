@@ -54,12 +54,14 @@ After pulling, **start a new Claude session** before invoking updated skills. Cl
 | Command | Source | Purpose |
 |---|---|---|
 | `cc-markitdown` | [microsoft/markitdown](https://github.com/microsoft/markitdown) | Convert PDFs, Office docs, and HTML files on disk to Markdown |
-| `cc-webfetch` | [markdown.new](https://markdown.new) | Fetch any public URL as clean Markdown to stdout (500 req/day free); redirect to save: `cc-webfetch <url> > file.md` |
+| `cc-webfetch` | [markdown.new](https://markdown.new) | Fetch any public URL as clean Markdown; detects Cloudflare blocks and falls back to Jina (r.jina.ai) then Wayback Machine automatically. 500 req/day free. |
+| `cc-fetch` | cc-tools (built-in) | Fetch a URL as clean Markdown via local Readability extraction (trafilatura). No rate limit; no JS rendering. First attempt for simple static pages; fall back to `cc-webfetch` for JS-heavy or blocked sites. |
 | `cc-md2pdf` | cc-tools (built-in) | Convert Markdown to PDF via pandoc + XeLaTeX |
 | `cc-nbconvert` | [jupyter/nbconvert](https://github.com/jupyter/nbconvert) | Convert Jupyter notebooks to Markdown and other formats |
 | `cc-pdfplumber` | [jsvine/pdfplumber](https://github.com/jsvine/pdfplumber) | Extract tables and text from PDFs with precise layout information |
 | `cc-arxiv` | [lukasschwab/arxiv.py](https://github.com/lukasschwab/arxiv.py) | Fetch arXiv paper metadata by ID: title, authors, year, PDF URL, HTML availability, abstract |
 | `cc-ocr` | cc-tools (built-in) | OCR a scanned PDF (no text layer) using pdftoppm + tesseract; fallback for historic papers that `cc-markitdown` cannot extract |
+| `cc-wiki-brief` | cc-tools (built-in) | Scaffold a research brief directory and launch Claude inside it, scoping memory and settings to that subject. Auto-detects People vs. Companies; supports `--person`, `--company`, `--topic`, `--dir`. |
 
 More tools will be added here as the standard Claude instantiation grows.
 
@@ -112,6 +114,27 @@ brew install tesseract  # OCR engine
 **macOS note:** `tesseract` fails with a sandboxing error when image files are in `/tmp`. `cc-ocr` uses a temp directory under `$HOME` to avoid this.
 
 **Authoring standard:** use `$...$` LaTeX math for all mathematical expressions. This renders correctly as typeset math in both the PDF output and in Obsidian (which uses MathJax with the same syntax). See [AUTHORING.md](AUTHORING.md) for the full guide, including a table of common LaTeX commands and a compatibility matrix.
+
+### cc-wiki-brief: brief launcher
+
+`cc-wiki-brief` creates the brief directory and launches Claude from inside it, so memory and accumulated permissions are scoped to that subject rather than the parent `People/` or `Companies/` directory.
+
+```bash
+cc-wiki-brief "David Donoho" "How well has Frictionless Reproducibility been adopted?"
+cc-wiki-brief "Databricks" --company "Is Databricks winning the data lakehouse war?"
+cc-wiki-brief "CRISPR" --topic
+cc-wiki-brief "Jane Smith" --dir ~/Research/Advisors
+```
+
+Subject type is inferred automatically (multi-word title-cased names without corporate keywords → People; everything else → Companies). Override with `--person`, `--company`, `--topic`, or `--dir`.
+
+## Unsupported tools
+
+The following tools ship in this repository but are **not supported** — no bug reports or feature requests. Use at your own risk.
+
+| Command | Purpose |
+|---|---|
+| `cc-dropbox-sync` | Sync research files via Dropbox for collaborators not using GitHub |
 
 ## MCP Servers
 
