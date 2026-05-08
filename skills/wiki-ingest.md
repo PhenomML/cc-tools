@@ -123,8 +123,15 @@ summaries were used.
 For concepts that appear in multiple sub-wikis, add a cross-wiki link:
 `../../<other-wiki>/concepts/<page>.md`
 
-**4c. Update `<wiki>/index.md`** — add the new paper page and any new concept/method
-pages under the appropriate category headings.
+**4c. Update index files for all wikis listed in `wikis:`** — add the new paper page to
+the primary sub-wiki's `index.md` under the appropriate category heading. Then iterate
+over every remaining wiki in the `wikis:` list and add a cross-reference entry to each
+secondary sub-wiki's `index.md`:
+```
+- [../architecture/papers/vaswani-2017-attention.md](../architecture/papers/vaswani-2017-attention.md) — cross-filed from architecture/
+```
+The `wikis:` frontmatter field specifies exactly where to cross-file — do not skip
+secondary wikis and leave them for a manual pass.
 
 ## Step 5 — Update root log
 
@@ -139,6 +146,8 @@ Sub-wikis: <list>. Pages written: <count>. Key concepts updated: <list>.
 List every file created or modified, grouped by sub-wiki. Note any cross-wiki links
 created. Flag any concepts that warrant their own page but don't have one yet.
 
-If this source was listed in `queue.md`, note that it should be removed now that it has
-been ingested. Do not remove it automatically — confirm with the researcher, as they may
-want to keep the entry for reference or update it to point to the wiki page created.
+If this source was listed in `queue.md`, check whether the entry's title or slug matches
+the ingested source. If it does, offer to remove it now: state the matching line and ask
+the researcher to confirm ("Remove this queue entry? y/n"). If confirmed, remove it in
+the same response — do not defer to a separate cleanup pass. If the researcher wants to
+keep the entry for reference, leave it and note it in the report.

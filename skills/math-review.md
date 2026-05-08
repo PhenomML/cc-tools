@@ -21,6 +21,14 @@ Flag each of the following, with line number and a suggested fix:
    At-risk patterns: `$\hat{w}_t^2$`, `$\sum_{h=1}^H ...$`, `$\nabla^d x_t$` alongside other subscripted expressions on the same line.
    Safe inline: bare subscripted variables like `$x_t$`, `$\sigma_w^2$`.
 
+6. **Bare multi-token superscripts/subscripts — XeLaTeX compilation failures** — `^` or
+   `_` followed directly by a multi-character LaTeX command without braces. These render
+   correctly in Obsidian/MathJax but fail XeLaTeX compilation.
+   At-risk patterns (inside `$...$`):
+   - `$s_\max$`, `$f_\min$`, `$x_\sup$` — named operators as bare subscripts. Fix: `$s_{\max}$`
+   - `$W_d^\mathcal{G}$`, `$x^\mathrm{T}$` — multi-token commands as bare superscripts. Fix: `$W_d^{\mathcal{G}}$`
+   Detection: flag any `[\^_]\\[a-zA-Z]+` not immediately followed by `{` inside `$...$`.
+
 Do NOT flag:
 - Unicode used in prose (∇ as a name, ×, —, ≥, ∞, → in non-math context)
 - Correctly formatted $...$ math, even if it contains Unicode inside (though LaTeX commands are preferred)

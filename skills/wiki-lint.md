@@ -59,6 +59,10 @@ a sub-wiki `index.md` or `papers/` directory. These were ingested but never remo
 the queue. List them so the researcher can confirm removal or update the entry to point
 to the wiki page created.
 
+Match on both slug overlap (filename) AND title substring (case-insensitive) — queue
+entries and ingested pages are often named by different sessions and may not share a slug
+even when they refer to the same source.
+
 **Math notation** — flag two classes of issue, both for `/math-review`:
 - Bare Unicode Greek letters or Unicode subscript digits used as math notation outside `$...$`
 - Inline `$...$` expressions containing `_` (subscript) where content follows the subscript before the closing `$`, or multiple such expressions on the same line — GitHub italic conflict risk (see AUTHORING.md)
