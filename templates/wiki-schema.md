@@ -75,7 +75,8 @@ See cc-tools `AUTHORING.md` for the full standard.
 
 | Source type | Acquire | Save to raw/ |
 |---|---|---|
-| arXiv paper | `cc-arxiv <id>` for metadata; fetch HTML or PDF | `raw/<author>-<year>-<slug>.md` or `.pdf` |
+| arXiv paper (HTML) | `cc-webfetch https://arxiv.org/html/<id>` | `raw/<author>-<year>-<slug>.md` |
+| arXiv paper (PDF fallback) | `curl -L <pdf-url>` then `cc-markitdown` | PDF → `raw/pdf/<author>-<year>-<slug>.pdf`; markdown → `raw/<author>-<year>-<slug>.md` |
 | Web page (Wikipedia, blog, company page) | `cc-webfetch <url>` | `raw/<slug>.md` |
 | Local PDF or document | — | already in raw/ or copy there first |
 | Podcast / interview transcript | `cc-webfetch <transcript-url>` | `raw/<speaker>-<year>-<slug>.md` |
