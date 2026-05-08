@@ -25,9 +25,11 @@ cc-webfetch https://arxiv.org/html/<id> > raw/<author>-<year>-<slug>.md
 ```
 If HTML is not available, download the PDF using the URL from cc-arxiv output and convert:
 ```bash
-curl -L <pdf-url> -o raw/<author>-<year>-<slug>.pdf
-cc-markitdown raw/<author>-<year>-<slug>.pdf > raw/<author>-<year>-<slug>.md
+mkdir -p raw/pdf
+curl -L <pdf-url> -o raw/pdf/<author>-<year>-<slug>.pdf
+cc-markitdown raw/pdf/<author>-<year>-<slug>.pdf > raw/<author>-<year>-<slug>.md
 ```
+PDFs land in `raw/pdf/`; the converted markdown lands in `raw/`. The `sources:` field cites both at their respective paths (e.g. `../../raw/author-year-slug.md` and `../../raw/pdf/author-year-slug.pdf`).
 
 **If a public URL:** fetch once and save to `raw/` with a descriptive slug:
 ```bash

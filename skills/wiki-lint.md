@@ -14,9 +14,9 @@ List them; most should be linked or deleted.
 **Broken cross-wiki links** — relative links to `../../<other-wiki>/...` that point to
 files that do not exist. List with source page and target path.
 
-**Orphaned raw files** — files in `raw/` not referenced by any `sources:` field in any
+**Orphaned raw files** — files in `raw/` (and `raw/pdf/`) not referenced by any `sources:` field in any
 page. Run `grep -r "sources:" . --include="*.md" | grep -o "raw/[^'\" )]*"` to collect
-all cited raw slugs, then compare against `ls raw/`. List uncited files; they were
+all cited raw slugs, then compare against `ls raw/ raw/pdf/ 2>/dev/null`. List uncited files; they were
 fetched but never wired up and should either be sourced or deleted.
 
 **Raw path depth** — pages where `sources:` paths don't match the file's depth in the
