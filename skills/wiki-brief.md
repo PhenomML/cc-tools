@@ -167,6 +167,15 @@ Also create at the brief root if not already present:
 <!-- add links here after each synthesis is written -->
 ```
 - `log.md` with the standard header
+- `queue.md` with the standard section headers (same format as the wiki queue so entries
+  move cleanly during `/wiki-promote`):
+```markdown
+# Queue
+
+## Preprints
+
+## Paywalled Papers
+```
 
 Skip any file or directory that already exists without overwriting.
 
@@ -283,6 +292,9 @@ cc-webfetch <url> > raw/<slug>.md
 a paywall or login page, save a stub file named `raw/<slug>-paywalled.md` with the
 title, URL, and a one-sentence note that it was unavailable. Reference these stubs in
 the synthesis's absence notation so the researcher knows what was found but not read.
+Also add an entry to `queue.md` under `## Paywalled Papers` using the standard format
+with a full `URL:` field — this makes the item actionable (click, log in, download) and
+ensures it travels to the wiki queue during `/wiki-promote`.
 
 ## Step 6 — Write initial concept pages
 
