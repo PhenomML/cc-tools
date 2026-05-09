@@ -141,7 +141,7 @@ missing concept pages, stale claims, math notation violations, and stale queue e
 ## Preprints
 
 ### <Title>
-- **Authors:** <Authors> (<arXiv ID or URL>)
+- **Authors:** <Authors> (<arXiv ID, bioRxiv DOI, or URL>)
 - **Target:** <sub-wiki(s)>
 - **Why:** one sentence on what gap this fills
 
