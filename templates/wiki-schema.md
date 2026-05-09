@@ -150,6 +150,7 @@ missing concept pages, stale claims, math notation violations, and stale queue e
 
 ### <Title>
 - **Authors:** <Authors> (<Journal>, <Year>)
+- **DOI/PMID:** <doi or pmid>
 - **Target:** <sub-wiki(s)>
 - **Why:** one sentence on what gap this fills
 - **Access:** institutional login / cc-credentialed-fetch / ILL request
