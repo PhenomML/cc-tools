@@ -59,7 +59,7 @@ After pulling, **start a new Claude session** before invoking updated skills. Cl
 | `cc-md2pdf` | cc-tools (built-in) | Convert Markdown to PDF via pandoc + XeLaTeX |
 | `cc-nbconvert` | [jupyter/nbconvert](https://github.com/jupyter/nbconvert) | Convert Jupyter notebooks to Markdown and other formats |
 | `cc-pdfplumber` | [jsvine/pdfplumber](https://github.com/jsvine/pdfplumber) | Extract tables and text from PDFs with precise layout information |
-| `cc-arxiv` | [lukasschwab/arxiv.py](https://github.com/lukasschwab/arxiv.py) | Fetch arXiv paper metadata by ID: title, authors, year, PDF URL, HTML availability, abstract |
+| `cc-arxiv` | [lukasschwab/arxiv.py](https://github.com/lukasschwab/arxiv.py) + built-in | Fetch paper metadata by ID; auto-routes: arXiv ID → arXiv, `10.1101/` DOI → bioRxiv/medRxiv, integer → PubMed (eUtils), any other DOI → CrossRef. Outputs title, authors, year, PDF URL, abstract. |
 | `cc-ocr` | cc-tools (built-in) | OCR a scanned PDF (no text layer) using pdftoppm + tesseract; fallback for historic papers that `cc-markitdown` cannot extract |
 | `cc-wiki-brief` | cc-tools (built-in) | Scaffold a research brief directory and launch Claude inside it, scoping memory and settings to that subject. Auto-detects People vs. Companies; supports `--person`, `--company`, `--topic`, `--dir`. |
 
