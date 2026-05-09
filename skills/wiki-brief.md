@@ -170,6 +170,13 @@ Also create at the brief root if not already present:
 
 Skip any file or directory that already exists without overwriting.
 
+Run:
+```bash
+bash ~/Projects/PhenomML/cc-tools/setup-claude.sh --project .
+```
+This creates or updates `.claude/settings.local.json` with the standard cc-tools
+allowlist. Idempotent — safe to run even if `cc-wiki-brief` already ran it.
+
 ## Step 5 — Initial fetch
 
 Search for and fetch the most informative public sources for the subject. Every source
