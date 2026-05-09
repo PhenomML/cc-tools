@@ -150,7 +150,7 @@ missing concept pages, stale claims, math notation violations, and stale queue e
 
 ### <Title>
 - **Authors:** <Authors> (<Journal>, <Year>)
-- **DOI/PMID:** <doi or pmid>
+- **URL:** <full publisher URL — https://doi.org/<doi> or https://pubmed.ncbi.nlm.nih.gov/<pmid>/>
 - **Target:** <sub-wiki(s)>
 - **Why:** one sentence on what gap this fills
 - **Access:** institutional login / cc-credentialed-fetch / ILL request

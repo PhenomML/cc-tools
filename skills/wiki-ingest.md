@@ -55,7 +55,7 @@ The PDF URL in the output is either a direct open-access PDF or a publisher DOI 
 cc-webfetch <pdf-url> > raw/<author>-<year>-<slug>.md
 ```
 If the result is a paywall or login page, the full text is not freely available. In that case:
-- Add the paper to `queue.md` under `## Paywalled Papers` with the DOI and access notes
+- Add the paper to `queue.md` under `## Paywalled Papers`; use the `PDF:` URL from `cc-arxiv` output as the `URL:` field so the researcher can click, log in, and download
 - You may still write a source summary page from the abstract alone — set `confidence: medium`
 
 If cc-webfetch returns a usable PDF or the PDF URL is a direct `.pdf` link, download and convert instead:
