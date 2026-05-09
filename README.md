@@ -35,7 +35,7 @@ uv tool install --editable ~/Projects/PhenomML/cc-tools
 bash ~/Projects/PhenomML/cc-tools/setup-claude.sh
 ```
 
-The first two commands install the tools into an isolated `uv` environment — completely separate from your Conda setup, no interaction between them. `uv tool` installs into `~/.local/share/uv/tools/cc-tools/`, which does not touch your `base` environment or any project environment. The third command adds the cc-tools section to `~/.claude/CLAUDE.md` (creating it if needed), so every Claude Code session on this machine automatically knows what tools are available and how to use them. Safe to run again after updates — it replaces the managed section in place without touching anything else in the file.
+The first two commands install the tools into an isolated `uv` environment — completely separate from your Conda setup, no interaction between them. `uv tool` installs into `~/.local/share/uv/tools/cc-tools/`, which does not touch your `base` environment or any project environment. The third command: reinstalls the Python package, adds the cc-tools section to `~/.claude/CLAUDE.md` (creating it if needed), and symlinks every skill from `skills/` into `~/.claude/commands/` so Claude Code can invoke them as slash commands. Safe to run again after updates — it replaces the managed section in place and refreshes all skill symlinks without touching anything else.
 
 ## Keeping it up to date
 
