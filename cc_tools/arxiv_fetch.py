@@ -1,8 +1,41 @@
+import json
 import sys
 import time
 import urllib.request
 import urllib.error
 import arxiv
+
+
+def _fetch_biorxiv(doi: str) -> None:
+    for server in ("biorxiv", "medrxiv"):
+        url = f"https://api.biorxiv.org/details/{server}/{doi}/json"
+        req = urllib.request.Request(url, headers={"User-Agent": "cc-tools/cc-arxiv"})
+        try:
+            with urllib.request.urlopen(req, timeout=15) as resp:
+                data = json.loads(resp.read())
+        except (urllib.error.HTTPError, urllib.error.URLError, json.JSONDecodeError) as e:
+            print(f"cc-arxiv: {e}", file=sys.stderr)
+            sys.exit(1)
+
+        collection = data.get("collection", [])
+        if not collection:
+            continue
+
+        paper = collection[-1]  # latest version
+        pdf_url = f"https://www.biorxiv.org/content/{doi}.full.pdf"
+        year = paper.get("date", "")[:4]
+
+        print(f"ID:       {doi}")
+        print(f"Title:    {paper.get('title', '')}")
+        print(f"Authors:  {paper.get('authors', '')}")
+        print(f"Year:     {year}")
+        print(f"PDF:      {pdf_url}")
+        print(f"HTML:     not available")
+        print(f"Abstract: {paper.get('abstract', '')}")
+        return
+
+    print(f"cc-arxiv: no paper found for DOI {doi!r}", file=sys.stderr)
+    sys.exit(1)
 
 
 def _html_available(base_id: str) -> bool:
@@ -17,12 +50,18 @@ def _html_available(base_id: str) -> bool:
 
 def main():
     if len(sys.argv) != 2 or sys.argv[1] in ("-h", "--help"):
-        print("Usage: cc-arxiv <arxiv-id>", file=sys.stderr)
-        print("Fetch metadata for an arXiv paper by ID.", file=sys.stderr)
+        print("Usage: cc-arxiv <arxiv-id|biorxiv-doi>", file=sys.stderr)
+        print("Fetch metadata for an arXiv or bioRxiv/medRxiv paper.", file=sys.stderr)
+        print("bioRxiv/medRxiv: pass the DOI, e.g. 10.1101/2024.01.01.123456", file=sys.stderr)
         print("Outputs: ID, title, authors, year, PDF URL, HTML availability, abstract.", file=sys.stderr)
         sys.exit(0 if "--help" in sys.argv else 1)
 
     paper_id = sys.argv[1]
+
+    if paper_id.startswith("10.1101/"):
+        _fetch_biorxiv(paper_id)
+        return 0
+
     client = arxiv.Client()
     results = None
     for attempt in range(3):
