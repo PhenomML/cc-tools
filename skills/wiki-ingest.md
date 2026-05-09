@@ -3,6 +3,8 @@ Ingest a source into the research wiki: $ARGUMENTS
 `$ARGUMENTS` is one of:
 - An arXiv ID (e.g. `2301.07608`)
 - A bioRxiv or medRxiv DOI (e.g. `10.1101/2024.01.12.574717`)
+- A PubMed PMID (e.g. `38987647`)
+- Any DOI (e.g. `10.1038/s41586-023-06924-6`) — resolved via CrossRef
 - A public URL (e.g. `https://en.wikipedia.org/wiki/Ilya_Sutskever`)
 - A path inside `raw/` (e.g. `raw/author-year-slug.pdf`)
 - Any filesystem path to a PDF, Office doc, or HTML file (e.g. `~/Books/textbook.pdf`)
@@ -43,6 +45,25 @@ curl -L <pdf-url> -o raw/pdf/<author>-<year>-<slug>.pdf
 cc-markitdown raw/pdf/<author>-<year>-<slug>.pdf > raw/<author>-<year>-<slug>.md
 ```
 Same `raw/pdf/` + `raw/` split and `sources:` citation pattern as arXiv PDF fallback.
+
+**If PubMed PMID or any DOI (CrossRef):** fetch metadata first:
+```bash
+cc-arxiv <pmid-or-doi>
+```
+The PDF URL in the output is either a direct open-access PDF or a publisher DOI page. Try fetching it:
+```bash
+cc-webfetch <pdf-url> > raw/<author>-<year>-<slug>.md
+```
+If the result is a paywall or login page, the full text is not freely available. In that case:
+- Add the paper to `queue.md` under `## Paywalled Papers` with the DOI and access notes
+- You may still write a source summary page from the abstract alone — set `confidence: medium`
+
+If cc-webfetch returns a usable PDF or the PDF URL is a direct `.pdf` link, download and convert instead:
+```bash
+mkdir -p raw/pdf
+curl -L <pdf-url> -o raw/pdf/<author>-<year>-<slug>.pdf
+cc-markitdown raw/pdf/<author>-<year>-<slug>.pdf > raw/<author>-<year>-<slug>.md
+```
 
 **If a public URL:** fetch once and save to `raw/` with a descriptive slug:
 ```bash

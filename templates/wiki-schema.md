@@ -78,6 +78,7 @@ See cc-tools `AUTHORING.md` for the full standard.
 | arXiv paper (HTML) | `cc-webfetch https://arxiv.org/html/<id>` | `raw/<author>-<year>-<slug>.md` |
 | arXiv paper (PDF fallback) | `curl -L <pdf-url>` then `cc-markitdown` | PDF → `raw/pdf/<author>-<year>-<slug>.pdf`; markdown → `raw/<author>-<year>-<slug>.md` |
 | bioRxiv / medRxiv paper | `cc-arxiv 10.1101/<id>` then `curl -L <pdf-url>` + `cc-markitdown` | PDF → `raw/pdf/<author>-<year>-<slug>.pdf`; markdown → `raw/<author>-<year>-<slug>.md` |
+| Published paper (PubMed / CrossRef DOI) | `cc-arxiv <pmid-or-doi>`; open-access: `cc-webfetch <pdf-url>` or `curl` + `cc-markitdown`; paywalled: queue.md | `raw/<author>-<year>-<slug>.md` (or abstract-only with `confidence: medium`) |
 | Web page (Wikipedia, blog, company page) | `cc-webfetch <url>` | `raw/<slug>.md` |
 | Local PDF or document | — | already in raw/ or copy there first |
 | Podcast / interview transcript | `cc-webfetch <transcript-url>` | `raw/<speaker>-<year>-<slug>.md` |
