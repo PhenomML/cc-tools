@@ -86,3 +86,15 @@ Create the following if they do not already exist:
 
 List every directory and file created, grouped by sub-wiki. Note anything skipped
 because it already existed.
+
+## Step 5 — Project settings
+
+After reporting, check whether `.claude/settings.local.json` exists in the wiki root.
+If it does not, tell the researcher to run:
+
+```bash
+bash ~/Projects/PhenomML/cc-tools/setup-claude.sh --project .
+```
+
+This creates the standard cc-tools allowlist so that `cc-arxiv`, `curl`, `mkdir`, and
+other ingest tools do not trigger permission prompts during wiki sessions.
