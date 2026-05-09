@@ -89,12 +89,13 @@ because it already existed.
 
 ## Step 5 — Project settings
 
-After reporting, check whether `.claude/settings.local.json` exists in the wiki root.
-If it does not, tell the researcher to run:
+Run:
 
 ```bash
 bash ~/Projects/PhenomML/cc-tools/setup-claude.sh --project .
 ```
 
-This creates the standard cc-tools allowlist so that `cc-arxiv`, `curl`, `mkdir`, and
-other ingest tools do not trigger permission prompts during wiki sessions.
+This creates or updates `.claude/settings.local.json` with the standard cc-tools
+allowlist so that `cc-arxiv`, `curl`, `mkdir`, and other ingest tools do not trigger
+permission prompts during wiki sessions. Safe to run on an existing wiki — merges
+missing entries without removing existing ones.
