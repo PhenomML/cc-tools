@@ -5,7 +5,7 @@
 | `cc-markitdown` | `cc-markitdown <file>` | Convert PDFs, Office docs, HTML → Markdown |
 | `cc-fetch` | `cc-fetch <url>` | Fetch URL as Markdown via local extraction; no rate limit; no JS |
 | `cc-webfetch` | `cc-webfetch <url>` | Fetch URL as Markdown; auto-fallback if blocked (Jina → Wayback); 500 req/day |
-| `cc-arxiv` | `cc-arxiv <arxiv-id\|biorxiv-doi>` | Fetch arXiv or bioRxiv/medRxiv paper metadata |
+| `cc-arxiv` | `cc-arxiv <id>` | Fetch paper metadata; auto-routes by ID: arXiv ID, bioRxiv/medRxiv DOI (`10.1101/`), PubMed PMID (integer), or any DOI via CrossRef |
 | `cc-md2pdf` | `cc-md2pdf file.md` | Convert Markdown → PDF via pandoc + XeLaTeX |
 | `cc-nbconvert` | `cc-nbconvert --to markdown notebook.ipynb` | Convert Jupyter notebook → Markdown |
 | `cc-pdfplumber` | `cc-pdfplumber <file.pdf>` | Extract tables and text from PDFs |

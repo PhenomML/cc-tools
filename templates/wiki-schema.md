@@ -179,6 +179,6 @@ Operations: `ingest`, `query`, `lint`, `project`, `upgrade`, `promote`.
 Claude has access to the following cc-tools commands for wiki operations:
 - `cc-markitdown <file>` — convert PDF, Office, or HTML file on disk to markdown
 - `cc-webfetch <url>` — fetch any public URL as clean markdown (500 req/day); redirect to save: `cc-webfetch <url> > file.md`
-- `cc-arxiv <arxiv-id|biorxiv-doi>` — fetch arXiv or bioRxiv/medRxiv paper metadata: title, authors, year, PDF URL, HTML availability, abstract
+- `cc-arxiv <id>` — fetch paper metadata (title, authors, year, PDF URL, abstract); auto-routes: arXiv ID → arXiv, `10.1101/` → bioRxiv/medRxiv, integer → PubMed, any DOI → CrossRef
 - `cc-pdfplumber <file>` — extract tables from PDFs
 - `/wiki-init`, `/wiki-ingest`, `/wiki-query`, `/wiki-lint`, `/wiki-project`, `/wiki-upgrade`, `/wiki-promote` — wiki skills
