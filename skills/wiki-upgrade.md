@@ -51,3 +51,15 @@ Append to `log.md`:
 ```
 ## [<YYYY-MM-DD>] upgrade | cc-tools wiki schema updated
 ```
+
+## Step 4 — Update project settings
+
+Run:
+
+```bash
+bash ~/Projects/PhenomML/cc-tools/setup-claude.sh --project .
+```
+
+This merges any new standard allowlist entries into `.claude/settings.local.json`
+so that newly added tools (e.g. `curl`, `mkdir`) do not trigger permission prompts
+after a cc-tools update. Safe to run — never removes existing entries.
