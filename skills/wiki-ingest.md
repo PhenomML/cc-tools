@@ -2,6 +2,7 @@ Ingest a source into the research wiki: $ARGUMENTS
 
 `$ARGUMENTS` is one of:
 - An arXiv ID (e.g. `2301.07608`)
+- A bioRxiv or medRxiv DOI (e.g. `10.1101/2024.01.12.574717`)
 - A public URL (e.g. `https://en.wikipedia.org/wiki/Ilya_Sutskever`)
 - A path inside `raw/` (e.g. `raw/author-year-slug.pdf`)
 - Any filesystem path to a PDF, Office doc, or HTML file (e.g. `~/Books/textbook.pdf`)
@@ -30,6 +31,18 @@ curl -L <pdf-url> -o raw/pdf/<author>-<year>-<slug>.pdf
 cc-markitdown raw/pdf/<author>-<year>-<slug>.pdf > raw/<author>-<year>-<slug>.md
 ```
 PDFs land in `raw/pdf/`; the converted markdown lands in `raw/`. The `sources:` field cites both at their respective paths (e.g. `../../raw/author-year-slug.md` and `../../raw/pdf/author-year-slug.pdf`).
+
+**If bioRxiv/medRxiv DOI (`10.1101/...`):** fetch metadata first:
+```bash
+cc-arxiv 10.1101/<id>
+```
+bioRxiv has no HTML viewer, so always download the PDF and convert:
+```bash
+mkdir -p raw/pdf
+curl -L <pdf-url> -o raw/pdf/<author>-<year>-<slug>.pdf
+cc-markitdown raw/pdf/<author>-<year>-<slug>.pdf > raw/<author>-<year>-<slug>.md
+```
+Same `raw/pdf/` + `raw/` split and `sources:` citation pattern as arXiv PDF fallback.
 
 **If a public URL:** fetch once and save to `raw/` with a descriptive slug:
 ```bash
