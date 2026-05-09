@@ -35,9 +35,13 @@ import json, sys, pathlib
 path = pathlib.Path(sys.argv[1])
 standard = [
     "Bash(cc-arxiv *)",
+    "Bash(cc-fetch *)",
     "Bash(cc-webfetch *)",
     "Bash(cc-markitdown *)",
+    "Bash(cc-md2pdf *)",
+    "Bash(cc-nbconvert *)",
     "Bash(cc-ocr *)",
+    "Bash(cc-pdfplumber *)",
     "Bash(cc-dropbox-sync *)",
     "Bash(curl *)",
     "Bash(mkdir *)",
