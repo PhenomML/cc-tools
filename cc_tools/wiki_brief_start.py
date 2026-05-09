@@ -96,6 +96,11 @@ def main() -> None:
     brief_dir.mkdir(parents=True, exist_ok=True)
     print(f"Brief directory: {brief_dir}", file=sys.stderr)
 
+    # Ensure standard cc-tools allowlist is in place before launching Claude.
+    setup_script = Path(__file__).parents[1] / "setup-claude.sh"
+    if setup_script.exists():
+        subprocess.run(["bash", str(setup_script), "--project", str(brief_dir)], check=False)
+
     # Build the /wiki-brief invocation that Claude will receive as its first message.
     if args.question:
         prompt = f'/wiki-brief "{args.subject}" "{args.question}"'
