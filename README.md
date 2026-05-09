@@ -45,6 +45,14 @@ When Claude adds new tools or skills to this repository, pull and re-run setup:
 cd ~/Projects/PhenomML/cc-tools && git pull && bash setup-claude.sh
 ```
 
+To set up a new project directory with the standard cc-tools allowlist (so Claude doesn't prompt for `cc-arxiv`, `curl`, `mkdir`, etc.):
+
+```bash
+bash ~/Projects/PhenomML/cc-tools/setup-claude.sh --project ~/Research/Topics/new-topic
+```
+
+If the directory doesn't exist yet it will be created. Safe to re-run — merges missing entries without removing existing ones.
+
 Claude will tell you when this is needed.
 
 After pulling, **start a new Claude session** before invoking updated skills. Claude Code caches skill file content within a session — a running instance will not pick up changes to skill files mid-session. A fresh session reads all skills from scratch. If a new session is not practical, you can tell Claude explicitly: "Re-read `~/.claude/commands/<skill-name>.md` before proceeding."

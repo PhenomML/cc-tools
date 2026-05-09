@@ -3,6 +3,8 @@
 #   - Installs/reinstalls the cc-tools Python package in editable mode (local source)
 #   - Manages the cc-tools section in ~/.claude/CLAUDE.md (sentinel-based, idempotent)
 #   - Symlinks skills from skills/ into ~/.claude/commands/ (updates on git pull)
+#   - With --project [dir]: create/update .claude/settings.local.json in that directory
+#     with the standard cc-tools allowlist. Safe to run again — merges, never removes.
 # Safe to run multiple times.
 #
 # MCP servers are NOT registered globally by this script. See mcp/ for reference
@@ -14,6 +16,48 @@ SECTION="$SCRIPT_DIR/claude-md-section.md"
 CLAUDE_MD="$HOME/.claude/CLAUDE.md"
 BEGIN="<!-- cc-tools:begin -->"
 END="<!-- cc-tools:end -->"
+
+# ── --project mode ────────────────────────────────────────────────────────────
+# Usage: setup-claude.sh --project [dir]
+# Creates or updates .claude/settings.local.json in the target directory with
+# the standard cc-tools allowlist. If dir is omitted, uses the current directory.
+
+if [[ "${1:-}" == "--project" ]]; then
+    PROJECT_DIR="${2:-$(pwd)}"
+    mkdir -p "$PROJECT_DIR"
+    PROJECT_DIR="$(cd "$PROJECT_DIR" && pwd)"
+    SETTINGS_DIR="$PROJECT_DIR/.claude"
+    SETTINGS_FILE="$SETTINGS_DIR/settings.local.json"
+    mkdir -p "$SETTINGS_DIR"
+    python3 - "$SETTINGS_FILE" << 'PYEOF'
+import json, sys, pathlib
+
+path = pathlib.Path(sys.argv[1])
+standard = [
+    "Bash(cc-arxiv *)",
+    "Bash(cc-webfetch *)",
+    "Bash(cc-markitdown *)",
+    "Bash(cc-ocr *)",
+    "Bash(cc-dropbox-sync *)",
+    "Bash(curl *)",
+    "Bash(mkdir *)",
+]
+
+data = json.loads(path.read_text()) if path.exists() else {}
+allow = data.setdefault("permissions", {}).setdefault("allow", [])
+added = [e for e in standard if e not in allow]
+allow.extend(added)
+path.write_text(json.dumps(data, indent=2) + "\n")
+
+if added:
+    print(f"setup-claude: added {len(added)} entr{'y' if len(added)==1 else 'ies'} to {path}")
+    for e in added:
+        print(f"  + {e}")
+else:
+    print(f"setup-claude: {path} already up to date")
+PYEOF
+    exit 0
+fi
 
 # ── Python package ───────────────────────────────────────────────────────────
 
