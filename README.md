@@ -136,6 +136,31 @@ cc-wiki-brief "Jane Smith" --dir ~/Research/Advisors
 
 Subject type is inferred automatically (multi-word title-cased names without corporate keywords → People; everything else → Companies). Override with `--person`, `--company`, `--topic`, or `--dir`.
 
+**Embedding a wiki inside a code repo:** use `--brief-dir` to target an existing directory as the brief root directly, with no slug appended. This is the right pattern when a wiki lives inside a code repo (e.g. `myrepo/wiki/`):
+
+```bash
+cc-wiki-brief "My Experiment" "driving question" --brief-dir ~/Projects/myrepo/wiki
+```
+
+`cc-wiki-brief` will automatically copy `templates/repo-CLAUDE.md` to the repo root (`../CLAUDE.md`) if none exists there yet — fill in the placeholders before launching the brief Claude. The standard cc-tools allowlist is installed into `wiki/.claude/settings.local.json`.
+
+### /wiki-codebase: codebase onboarding and issue work
+
+`/wiki-codebase` builds a structured wiki from a code repo and optionally works a GitHub issue using that wiki as context. It is the right starting point when onboarding to an unfamiliar codebase or making a targeted fix.
+
+```bash
+# 1. Launch from the wiki directory inside the repo
+cc-wiki-brief "MyProject" --brief-dir ~/Projects/myrepo/wiki
+
+# 2. Inside the session — build wiki only:
+/wiki-codebase
+
+# 3. Or build wiki and immediately work an issue:
+/wiki-codebase 12345
+```
+
+The skill surveys the repo, detects the tech stack, scaffolds sub-wikis mapped to code domains (architecture, backend, frontend, api, infrastructure, etc.), writes concept pages from key source files, then fetches the issue via `gh issue view` and implements a fix. The wiki is both the comprehension artifact and the agent's working memory during coding. Stops after the wiki-building phase if no issue number is provided.
+
 ## Unsupported tools
 
 The following tools ship in this repository but are **not supported** — no bug reports or feature requests. Use at your own risk.
