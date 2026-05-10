@@ -5,6 +5,7 @@ Usage:
     cc-wiki-brief "Databricks" "Is Databricks winning the data lakehouse war?"
     cc-wiki-brief "Ilya Sutskever" --person "What is Ilya doing after OpenAI?"
     cc-wiki-brief "CRISPR" --dir ~/Research/Topics
+    cc-wiki-brief "iSATx Experiment" "question" --brief-dir ~/Projects/myrepo/wiki
 """
 
 import argparse
@@ -75,23 +76,28 @@ def main() -> None:
         "--dir", metavar="DIR",
         help="Explicit parent directory; slug appended automatically",
     )
+    placement.add_argument(
+        "--brief-dir", metavar="DIR",
+        help="Use this directory exactly as the brief root; no slug appended",
+    )
 
     args = parser.parse_args()
 
-    # Resolve parent directory
-    if args.dir:
-        parent = Path(args.dir).expanduser().resolve()
-    elif args.person:
-        parent = RESEARCH_DIR / "People"
-    elif args.company:
-        parent = RESEARCH_DIR / "Companies"
-    elif args.topic:
-        parent = RESEARCH_DIR / "Topics"
+    # Resolve brief directory
+    if args.brief_dir:
+        brief_dir = Path(args.brief_dir).expanduser().resolve()
     else:
-        parent = RESEARCH_DIR / infer_category(args.subject)
-
-    slug = to_slug(args.subject)
-    brief_dir = parent / slug
+        if args.dir:
+            parent = Path(args.dir).expanduser().resolve()
+        elif args.person:
+            parent = RESEARCH_DIR / "People"
+        elif args.company:
+            parent = RESEARCH_DIR / "Companies"
+        elif args.topic:
+            parent = RESEARCH_DIR / "Topics"
+        else:
+            parent = RESEARCH_DIR / infer_category(args.subject)
+        brief_dir = parent / to_slug(args.subject)
 
     brief_dir.mkdir(parents=True, exist_ok=True)
     print(f"Brief directory: {brief_dir}", file=sys.stderr)
