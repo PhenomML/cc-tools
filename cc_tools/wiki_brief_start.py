@@ -102,6 +102,18 @@ def main() -> None:
     brief_dir.mkdir(parents=True, exist_ok=True)
     print(f"Brief directory: {brief_dir}", file=sys.stderr)
 
+    # When --brief-dir is used the brief sits inside a repo; copy the repo-root
+    # CLAUDE.md template to the parent directory if none exists there yet.
+    if args.brief_dir:
+        repo_root = brief_dir.parent
+        repo_claude = repo_root / "CLAUDE.md"
+        if not repo_claude.exists():
+            template = Path(__file__).parents[1] / "templates" / "repo-CLAUDE.md"
+            if template.exists():
+                import shutil
+                shutil.copy(template, repo_claude)
+                print(f"Created {repo_claude} from template — fill in placeholders before launching.", file=sys.stderr)
+
     # Ensure standard cc-tools allowlist is in place before launching Claude.
     setup_script = Path(__file__).parents[1] / "setup-claude.sh"
     if setup_script.exists():
