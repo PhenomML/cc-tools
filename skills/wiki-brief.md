@@ -30,6 +30,18 @@ mkdir -p ~/Research/People/ilya-sutskever
 
 Step 3 skips directory creation if the directory already exists.
 
+## Embedded wiki detection
+
+Before running any steps, check whether this wiki sits inside a code repo:
+
+```bash
+ls ../CLAUDE.md ../.git 2>/dev/null | head -5
+```
+
+If either path exists, this is an **embedded wiki**. Skip the standard research-brief
+workflow and jump to **Embedded Mode** at the bottom of this skill. The source-fetching,
+sub-wiki directory, and concept-page steps do not apply to an experiment-manager context.
+
 ## Step 1 — Parse arguments and determine subject type
 
 Extract the subject name from `$ARGUMENTS`. If a driving question follows, capture it.
@@ -452,3 +464,63 @@ this brief is promoted to the research wiki, add a comment to the relevant entry
 ```
 This prevents accidental double-promotion on repeat visits and makes the brief's
 contribution to the wiki traceable without re-reading everything.
+
+---
+
+## Embedded Mode
+
+Use this procedure when `../CLAUDE.md` or `../.git` is detected — the wiki is a
+subdirectory of a code repo, not a standalone research brief.
+
+### Navigation
+
+All code, conda, and git operations run from `../` (the repo root), not from `wiki/`.
+Verify your working directory before every shell command — conda and git run silently
+from the wrong directory without error.
+
+```bash
+pwd        # confirm you are in wiki/
+ls ../     # confirm repo root contents before any code work
+```
+
+### Minimal scaffold
+
+Create only what the experiment needs. Skip sub-wiki directories, biography/, products/,
+log.md, and other standalone-brief structure.
+
+Create at the brief root if not already present:
+- `syntheses/` — shared blackboard for agent-authored files and handoffs
+- `raw/` — for documents fetched during the experiment
+- `.gitignore` containing `raw/`
+
+Run:
+```bash
+bash ~/Projects/PhenomML/cc-tools/setup-claude.sh --project .
+```
+
+Do not create standalone sub-wiki directories or index.md unless the operational brief
+specifically calls for them.
+
+### Orientation synthesis
+
+Write the orientation synthesis to `syntheses/<slug>.md` using standard wiki synthesis
+frontmatter before doing any other work. This is the confirmation gate — stop and wait
+for the researcher to confirm the orientation is correct before starting any computation,
+environment setup, or code work.
+
+### Multi-agent convention
+
+When two Claude instances collaborate through the same `syntheses/` directory, use these
+conventions so each agent's contributions are traceable:
+
+**File naming:** `syntheses/<topic>-<agent-slug>.md`
+Examples: `syntheses/phase-minus1-results-emma.md`, `syntheses/sign-convention-response-xfmr.md`
+
+**Asking questions:** append a `## Questions for <Agent>` section to any synthesis file.
+The named agent responds in a new file: `syntheses/<topic>-response-<agent-slug>.md`.
+
+**Routing:** the researcher relays files between sessions — there is no direct channel
+between agents. Keep question sections short and unambiguous.
+
+**Blackboard rule:** `syntheses/` is append-only shared state. Never overwrite another
+agent's files; write responses and amendments as new files.

@@ -144,6 +144,28 @@ Code blocks and Markdown tables are exempt — their formatting is structural, n
 
 ---
 
+## Jupytext notebooks
+
+Jupytext `.py` files are Python-formatted notebooks — they look like plain Python scripts
+but contain `# %%` cell markers that Jupytext and JetBrains Scientific mode recognise.
+
+**If PyCharm Scientific mode is not active** (no cell gutter icons visible), use
+"Run File in Python Console" instead of the standard Run button. The whole file executes
+sequentially in a persistent console, which is functionally equivalent to running all
+cells top-to-bottom.
+
+**To execute and convert to a standard `.ipynb`:**
+```bash
+jupytext --to notebook --execute file.py -o file.ipynb
+```
+
+**To sync changes back** from an edited `.ipynb` to the `.py` source:
+```bash
+jupytext --sync file.ipynb
+```
+
+---
+
 ## Diagrams
 
 **Rule: use Mermaid for all flow diagrams, sequences, architecture sketches, and timelines in Markdown documents.**

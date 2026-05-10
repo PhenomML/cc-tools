@@ -125,6 +125,16 @@ def main() -> None:
     else:
         prompt = f'/wiki-brief "{args.subject}"'
 
+    # When --brief-dir is used the wiki is embedded in a code repo; warn upfront so
+    # Claude doesn't accidentally run code/conda/git commands from inside wiki/.
+    if args.brief_dir:
+        prompt += (
+            "\n\nNavigation note (embedded wiki): this wiki sits inside a code repo. "
+            "All code, conda, and git operations must run from `../` (the repo root), "
+            "not from this wiki/ directory. Confirm your working directory before every "
+            "shell command — running conda or git from inside wiki/ is a silent error."
+        )
+
     # Launch an interactive Claude Code session anchored at the brief directory.
     # Passing the prompt as a positional argument seeds it as the first user message.
     result = subprocess.run(["claude", prompt], cwd=brief_dir)
