@@ -176,7 +176,12 @@ Each entry in `log.md` follows this prefix for greppability:
 ```
 ## [YYYY-MM-DD] <operation> | <title or description>
 ```
-Operations: `ingest`, `query`, `lint`, `project`, `upgrade`, `promote`.
+
+**Research wiki operations:** `ingest`, `query`, `lint`, `project`, `upgrade`, `promote`.
+
+**Experiment wiki operations:** `experiment`, `commission`, `synthesis`, `review`, `decision`, `query`.
+
+Experiment wikis should define their operation vocabulary in their `CLAUDE.md` — the list above is a starting point, not a constraint. A worked example is more useful than a label list; see `templates/experiment-wiki-CLAUDE.md` for concrete entries covering each operation type.
 
 ## Tools available
 

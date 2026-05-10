@@ -486,12 +486,15 @@ ls ../     # confirm repo root contents before any code work
 ### Minimal scaffold
 
 Create only what the experiment needs. Skip sub-wiki directories, biography/, products/,
-log.md, and other standalone-brief structure.
+and other standalone-brief structure.
 
 Create at the brief root if not already present:
 - `syntheses/` — shared blackboard for agent-authored files and handoffs
 - `raw/` — for documents fetched during the experiment
 - `.gitignore` containing `raw/`
+- `log.md` — with a minimal header: `# <Project> Log\n\n<!-- entries appended below -->`
+- `CLAUDE.md` — copy from `~/Projects/PhenomML/cc-tools/templates/experiment-wiki-CLAUDE.md`
+  and fill in the title, date, and goal from the driving question
 
 Run:
 ```bash

@@ -32,6 +32,9 @@ Create at the wiki root if not already present:
 - `syntheses/` — shared blackboard for orientation, results, and agent handoffs
 - `raw/` — for any documents fetched during work
 - `.gitignore` containing `raw/`
+- `log.md` — with a minimal header: `# <Project> Log\n\n<!-- entries appended below -->`
+- `CLAUDE.md` — copy from `~/Projects/PhenomML/cc-tools/templates/experiment-wiki-CLAUDE.md`
+  and fill in the title, date, and goal from the operational brief
 
 Run:
 ```bash
