@@ -33,6 +33,7 @@
 | `/wiki-project` | `/wiki-project <path>` | Register project in wiki |
 | `/wiki-upgrade` | `/wiki-upgrade` | Update cc-tools section in CLAUDE.md |
 | `/wiki-promote` | `/wiki-promote <brief-path>` | Promote brief findings to wiki |
+| `/wiki-codebase` | `/wiki-codebase [issue#]` | Build codebase wiki and optionally work a GitHub issue |
 
 Skills auto-update on `git pull`. Docs: https://github.com/PhenomML/cc-tools
 
