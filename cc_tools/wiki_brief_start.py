@@ -5,7 +5,8 @@ Usage:
     cc-wiki-brief "Databricks" "Is Databricks winning the data lakehouse war?"
     cc-wiki-brief "Ilya Sutskever" --person "What is Ilya doing after OpenAI?"
     cc-wiki-brief "CRISPR" --dir ~/Research/Topics
-    cc-wiki-brief "iSATx Experiment" "question" --brief-dir ~/Projects/myrepo/wiki
+    cc-wiki-brief "iSATx Experiment" --brief-dir ~/Projects/myrepo/wiki
+    cc-wiki-brief "iSATx Experiment Manager" --agent ~/Research/.../isatx-brief.md --brief-dir ~/Projects/myrepo/wiki
 """
 
 import argparse
@@ -81,6 +82,11 @@ def main() -> None:
         help="Use this directory exactly as the brief root; no slug appended",
     )
 
+    parser.add_argument(
+        "--agent", metavar="BRIEF",
+        help="Path to operational brief; seeds /agent-brief instead of /wiki-brief",
+    )
+
     args = parser.parse_args()
 
     # Resolve brief directory
@@ -119,14 +125,17 @@ def main() -> None:
     if setup_script.exists():
         subprocess.run(["bash", str(setup_script), "--project", str(brief_dir)], check=False)
 
-    # Build the /wiki-brief invocation that Claude will receive as its first message.
-    if args.question:
+    # Build the first-message prompt.
+    if args.agent:
+        brief_path = Path(args.agent).expanduser()
+        prompt = f'/agent-brief "{brief_path}"'
+    elif args.question:
         prompt = f'/wiki-brief "{args.subject}" "{args.question}"'
     else:
         prompt = f'/wiki-brief "{args.subject}"'
 
-    # When --brief-dir is used the wiki is embedded in a code repo; warn upfront so
-    # Claude doesn't accidentally run code/conda/git commands from inside wiki/.
+    # When the wiki is embedded in a code repo, warn upfront so Claude doesn't
+    # accidentally run code/conda/git commands from inside wiki/.
     if args.brief_dir:
         prompt += (
             "\n\nNavigation note (embedded wiki): this wiki sits inside a code repo. "
