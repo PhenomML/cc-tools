@@ -144,6 +144,37 @@ Code blocks and Markdown tables are exempt — their formatting is structural, n
 
 ---
 
+## Diagrams
+
+**Rule: use Mermaid for all flow diagrams, sequences, architecture sketches, and timelines in Markdown documents.**
+
+Obsidian renders Mermaid natively; GitHub renders it in previews; the source is plain text — editable, diffable, and requires no image files.
+
+Wrap diagrams in a fenced code block with the `mermaid` language tag:
+
+````markdown
+```mermaid
+graph TD
+  A[Input] --> B[Process] --> C[Output]
+```
+````
+
+Common diagram types:
+
+| Need | Mermaid type |
+|---|---|
+| Flowchart / process flow | `graph TD` or `graph LR` |
+| Sequence diagram | `sequenceDiagram` |
+| Entity-relationship | `erDiagram` |
+| Timeline | `timeline` |
+| State machine | `stateDiagram-v2` |
+
+Reference: https://mermaid.js.org/syntax/flowchart.html
+
+**ASCII art** is acceptable only as a fallback when Mermaid cannot express the needed structure. **SVG and PNG** should be avoided in planning documents — they are not diffable and require separate files.
+
+---
+
 ## General tips
 
 - **Blank lines for student space**: use `&nbsp;` on its own line between questions.

@@ -46,6 +46,8 @@ Concept pages: descriptive noun phrase, e.g. `gradient-descent.md`, `transformer
 
 **Line wrapping:** do not hard-wrap prose paragraphs. Each paragraph is one line in the source; the renderer handles wrapping. Code blocks and tables are exempt.
 
+**Diagrams:** use Mermaid fenced code blocks (`\`\`\`mermaid`) for all flow diagrams, sequences, and architecture sketches. ASCII art is a fallback only; SVG/PNG are not used in wiki documents.
+
 **Cross-wiki links:** use relative paths from the current file.
 Example from `tsa/concepts/state-space.md` to `bayes/concepts/gaussian-update.md`:
 `../../bayes/concepts/gaussian-update.md`
