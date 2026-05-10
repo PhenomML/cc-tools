@@ -144,6 +144,22 @@ cc-wiki-brief "My Experiment" "driving question" --brief-dir ~/Projects/myrepo/w
 
 `cc-wiki-brief` will automatically copy `templates/repo-CLAUDE.md` to the repo root (`../CLAUDE.md`) if none exists there yet — fill in the placeholders before launching the brief Claude. The standard cc-tools allowlist is installed into `wiki/.claude/settings.local.json`.
 
+**Instantiating a role-defined agent:** use `--agent` to point at an operational brief written by a theory Claude. This seeds `/agent-brief` instead of `/wiki-brief`, replacing the need for a carefully crafted driving question:
+
+```bash
+cc-wiki-brief "iSATx Experiment Manager" \
+  --agent ~/Research/Topics/transformers/syntheses/isatx-experiment-manager-brief.md \
+  --brief-dir ~/Projects/iSATx-Toy-System-Experiment/wiki
+```
+
+The agent reads the operational brief, reads `../CLAUDE.md` for repo context, writes an orientation synthesis as a confirmation gate, and waits for your approval before starting any work.
+
+### /agent-brief: role instantiation from an operational brief
+
+`/agent-brief` is the skill for the dual-agent research-to-code pattern: a theory Claude writes an operational brief defining the agent's role, phase targets, constraints, and log format; `/agent-brief` instantiates a second Claude from that brief. The orientation synthesis it writes is the confirmation gate — the agent does nothing until the researcher approves it.
+
+The multi-agent file convention (`syntheses/<topic>-<agent-slug>.md`, `## Questions for <Agent>` sections) is documented in the skill and lets two Claude instances collaborate through a shared `syntheses/` directory with the researcher as relay.
+
 ### /wiki-codebase: codebase onboarding and issue work
 
 `/wiki-codebase` builds a structured wiki from a code repo and optionally works a GitHub issue using that wiki as context. It is the right starting point when onboarding to an unfamiliar codebase or making a targeted fix.
