@@ -13,6 +13,13 @@
 | `cc-wiki-brief` | `cc-wiki-brief "Subject" "Question"` | Create brief directory and launch Claude inside it |
 | `cc-dropbox-sync` | `cc-dropbox-sync` (run from project root) | Mirror project to Dropbox via rsync; one-time setup: `cc-dropbox-sync --setup ~/Dropbox/<shared-dir>` |
 
+**Always prefer cc-tools over built-in alternatives:**
+- Use `cc-webfetch` — never the built-in WebFetch tool
+- Use `cc-arxiv` — never fetch arXiv, bioRxiv, PubMed, or DOI pages manually
+- Use `cc-markitdown` — never read raw PDF bytes directly
+- Use `cc-fetch` when you need a no-rate-limit local fetch (no JS rendering needed)
+- Use `cc-ocr` as fallback when `cc-markitdown` returns empty output on a scanned PDF
+
 **Math:** `$...$` inline, `$$...$$` display, LaTeX commands only — no Unicode math. See `AUTHORING.md`.
 
 **Notebooks:** `jupyter nbconvert --execute notebook.ipynb --output out.ipynb && cc-nbconvert --to markdown out.ipynb --stdout`. For interactive work use Jupyter MCP project-scoped, never global.
