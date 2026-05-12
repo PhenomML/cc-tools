@@ -1,0 +1,21 @@
+{
+  "permissions": {
+    "allow": [
+      "WebSearch",
+      "Bash(cc-arxiv *)",
+      "Bash(cc-webfetch *)",
+      "Bash(cc-markitdown *)",
+      "Bash(cc-ocr *)",
+      "Bash(gh issue *)",
+      "Bash(gh pr *)",
+      "Bash(git *)",
+      "Bash(curl *)",
+      "Bash(mkdir *)",
+      "Bash(cc-fetch *)",
+      "Bash(cc-md2pdf *)",
+      "Bash(cc-nbconvert *)",
+      "Bash(cc-pdfplumber *)",
+      "Bash(cc-dropbox-sync *)"
+    ]
+  }
+}
