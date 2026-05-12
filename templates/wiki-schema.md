@@ -8,6 +8,8 @@ wiki/                   ← repo root (this file lives here)
   log.md                ← chronological record of all operations (Claude maintains)
   queue.md              ← candidate books and papers for future ingestion (Claude maintains)
   raw/                  ← source documents — local only, never committed
+  claims/               ← adversarial claim documents (one set per high-stakes claim or lemma)
+  failures/             ← failure records FR-NNN.md; always kept in active context
   <subwiki>/            ← one directory per research domain (see Sub-wikis above)
     CLAUDE.md           ← scope definition for this sub-wiki
     papers/             ← source summary pages, one per ingested paper
@@ -179,9 +181,27 @@ Each entry in `log.md` follows this prefix for greppability:
 
 **Research wiki operations:** `ingest`, `query`, `lint`, `project`, `upgrade`, `promote`.
 
+**Adversarial review operations:** `claim-enum`, `adversarial-review`, `synthesis`, `destroy`, `decision`.
+
 **Experiment wiki operations:** `experiment`, `commission`, `synthesis`, `review`, `decision`, `query`.
 
 Experiment wikis should define their operation vocabulary in their `CLAUDE.md` — the list above is a starting point, not a constraint. A worked example is more useful than a label list; see `templates/experiment-wiki-CLAUDE.md` for concrete entries covering each operation type.
+
+## Adversarial Review Workflow
+
+Use this pipeline for high-stakes mathematical claims — lemmas, proof sketches, and key hypotheses.
+
+**Stage order** (do not collapse):
+1. **`claim-enum`** — enumerate load-bearing steps as numbered claims with quotations and confidence ratings. File in `claims/<slug>-claims.md`. No verdict.
+2. **`adversarial-review`** — Gemini reviews claim selection independently (researcher mediates). File in `claims/<slug>-gemini-critique.md`.
+3. **`synthesis`** — adjudicate: accepted / contested / added claims. File in `claims/<slug>-synthesis.md`.
+4. **`destroy`** — Gemini stress-tests the derived hypothesis. Objections only. File in `claims/<slug>-destroy.md`.
+
+**Immutability rule:** The enumeration document is frozen once submitted. Never edit it after the Gemini critique exists. Adjudication belongs only in the synthesis.
+
+**Failure records** (`failures/FR-NNN.md`): when a proof step or approach is ruled out, encode it as a structured record and keep it in active context permanently.
+
+Templates: `~/obsidian/research-tooling/bootstrap/` — `template-claude-claim-enumeration.md`, `template-gemini-adversarial-critique.md`, `template-gemini-destroy.md`.
 
 ## Tools available
 
