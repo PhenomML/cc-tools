@@ -40,6 +40,34 @@ workspace (e.g., `../compressed-sensing`).
 
 ---
 
+## Pipeline Registry
+
+The five-state pipeline is tracked in `claims/_index.md` under `## Pipeline Status`.
+
+**States:** `triage` → `rmc-draft` → `ag-draft` → `diff-routed` → `adjudicated`
+**Skipped sources** use state `skipped` (written at triage Skip decision, not on this path).
+
+**Table format** (create section if absent):
+
+```markdown
+## Pipeline Status
+
+| Source | Prefix | Status | Triage | RMC-Draft | AG-Draft | Diff-Routed | Adjudicated |
+|--------|--------|--------|--------|-----------|---------|-------------|-------------|
+```
+
+**Update rules:**
+- On approval at triage: add row with status `triage`, Triage date filled, others `—`
+- On RMC deep completion: update status to `rmc-draft`, fill RMC-Draft date
+- On AG deep completion: update status to `ag-draft`, fill AG-Draft date
+- On diff routing complete: update status to `diff-routed`, fill Diff-Routed date
+- On adjudication complete: update status to `adjudicated`, fill Adjudicated date, fill Prefix
+
+If the source has no row and `ag-draft` state is needed (files already exist in syntheses/),
+create the row with status `ag-draft` and fill known dates from file timestamps.
+
+---
+
 ## TRIAGE mode
 
 `/wiki-claim triage <source>`
@@ -83,9 +111,10 @@ Increment TRIAGE-NNN from the last entry in the file.
 ### Step 3 — Present to human
 
 Present the triage entry and wait for human decision:
-- **Approve deep read** → add to `## Approved for Deep Read` section
-- **Skip** → write skip entry to `claims/_index.md` under `## Skip Log`
-- **Defer** → leave in triage queue for batch review
+- **Approve deep read** → add to `## Approved for Deep Read` section; proceed to Step 4
+- **Skip** → write skip entry to `claims/_index.md` under `## Skip Log`; write registry
+  row with status `skipped`; stop
+- **Defer** → leave in triage queue for batch review; stop
 
 Do not proceed to deep read without explicit human approval.
 
@@ -96,6 +125,13 @@ Append to `claims/_index.md` under `## Skip Log`:
 ```markdown
 | <YYYY-MM-DD> | <Author Year> | <Title fragment> | <one-sentence reason> |
 ```
+
+### Step 4 — Update pipeline registry
+
+On human approval for deep read, update `claims/_index.md` Pipeline Status:
+- Add row (or update existing row) for this source
+- Set Status to `triage`, Triage date to today, all other date columns to `—`
+- Prefix column: `—` (assigned at adjudication)
 
 ---
 
@@ -218,6 +254,16 @@ Promoted to syntheses/ for adjudication.
 
 Do not notify the other agent directly — the human coordinates the diff phase.
 
+### Step 7 — Update pipeline registry
+
+Update `claims/_index.md` Pipeline Status for this source:
+
+- **Primary agent:** set Status to `rmc-draft`, fill RMC-Draft date to today
+- **Adversary agent:** set Status to `ag-draft`, fill AG-Draft date to today
+
+If the row does not exist (triage step was skipped), create it with available dates filled
+and unknown dates as `—`.
+
 ---
 
 ## ADJUDICATE mode
@@ -228,56 +274,120 @@ Do not notify the other agent directly — the human coordinates the diff phase.
 after both agents have promoted their cold reads to `syntheses/`. Run by either agent
 or by Tool at human direction.
 
-### Step 1 — Verify both reads exist
+### Step 1 — Registry gate check
 
-Check that both files exist in `syntheses/` (in the brief root):
+Read `claims/_index.md` Pipeline Status for `<source>`:
+
+- Status `ag-draft` → proceed
+- Status `rmc-draft` → report: "AG draft is outstanding. AG deep read must complete
+  before adjudication." Stop.
+- Status `triage` or no row → check `syntheses/` directly for both files. If both
+  exist, create/update registry row to `ag-draft` and proceed. Otherwise report which
+  file(s) are missing and stop.
+- Status `diff-routed` → report current status; ask if re-adjudication is intended
+  before proceeding.
+- Status `adjudicated` → report: already adjudicated. Show final file location. Stop
+  unless human confirms re-adjudication.
+
+### Step 2 — Load and route claims
+
+Read both claim sets:
 - `syntheses/<source>-claims-rmc.md`
 - `syntheses/<source>-claims-ag.md`
 
-If either is missing, report which agent's read is outstanding and stop.
+Build four queues by comparing claims across both sets. Matching is by quotation
+proximity: two claims are about the same result if their supporting quotations share
+a key phrase from the same paper section (normalize: strip whitespace, treat curly/straight
+quotes as equivalent, treat `...`/`…` as equivalent).
 
-### Step 2 — Compute the diff
+**Queue A — Anchor candidates:**
+Claims where both agents enumerated the same result, quotations match after normalization,
+and **both** assigned High confidence. These are high-agreement anchors for fast-pass review.
 
-Read both claim sets. Produce a structured diff:
+**Queue B — Coverage divergences (always surface):**
+- B1: Claims RMC enumerated that AG did not
+- B2: Claims AG enumerated that RMC did not
+Coverage divergences are the primary diagnostic for operational bias — never suppress them.
 
-```markdown
-## Claim Diff: <Title>
+**Queue C — Confidence mismatches:**
+Claims both agents enumerated (quotation match) but with different confidence levels.
 
-### In both (high-confidence anchors)
-<claims where both agents enumerated the same result>
+**Queue D — Rival interpretations:**
+Claims both agents enumerated from the same passage but with materially different statements.
 
-### RMC only (check for hypothesis bias)
-<claims RMC enumerated that AG did not — candidates for scrutiny>
+**conjectures.md is never written by this pipeline.** The human may direct filing a
+specific item to conjectures during adjudication; the pipeline does not auto-file.
 
-### AG only (candidates for addition)
-<claims AG enumerated that RMC did not — candidates for wiki addition>
+### Step 3 — Present anchor fast-pass list
 
-### Confidence disagreements
-<claims both enumerated but at different confidence levels>
+Present Queue A:
+
+```
+### Anchor Fast-Pass Candidates
+Both agents enumerated these claims with matching quotations and High confidence.
+
+1. <one-line statement>
+   > "<quotation>" (<§ref>)
+   RMC: High | AG: High
+
+2. ...
+
+Decision: Accept all as anchors? Or name specific items to review individually.
 ```
 
-### Step 3 — Human-guided adjudication
+Wait for human decision. "Accept all" or list of individual exceptions (each exception
+drops to the human-review queue at the appropriate type).
 
-Present the diff to the human. Work through each divergence **one at a time**.
+### Step 4 — Present human-review queue
 
-For each item, present:
-- The claim statement
-- The supporting quotation(s)
-- Why each agent included or excluded it
-- Proposed resolution
+Work through queues B, C, D in order. Present one item at a time; wait for human
+decision before presenting the next.
 
-Wait for human decision before presenting the next:
-- **Accept (RMC version)** → enters final claim document
-- **Accept (AG version)** → enters final claim document
-- **Accept (revised)** → human edits; revised version enters document
-- **Reject** → discarded; optionally noted in structural gaps
-- **Flag for further AG scrutiny** → enters `syntheses/conjectures.md`
+**Coverage divergences (Queue B) — present first:**
 
-Do not batch decisions. One claim at a time.
+```
+### Coverage Divergence [B1/B2]: <brief description>
+Enumerated by: RMC only | AG only
+Statement: <claim statement from the enumerating agent>
+> "<quotation>" (<§ref>)
+Relevance: <why this matters to the driving question>
+Decision: Accept | Drop | Escalate (defer to focused session)
+```
 
-### Step 4 — Write final claim document
+**Confidence mismatches (Queue C) — after all B items:**
 
-After all divergences are adjudicated, write to `claims/<source>-claims.md` in the brief root:
+```
+### Confidence Mismatch: <brief description>
+RMC: <statement> [High/Medium/Low]
+AG: <statement> [High/Medium/Low]
+> "<shared quotation>" (<§ref>)
+Decision: Use RMC rating | Use AG rating | Assign: H / M / L | Escalate
+```
+
+**Rival interpretations (Queue D) — after all C items:**
+
+```
+### Rival Interpretation: <paper section / topic>
+RMC version: <statement>
+> "<RMC quotation>"
+AG version: <statement>
+> "<AG quotation>"
+Decision: Accept RMC | Accept AG | Merge (provide merged statement) | Escalate
+```
+
+**Escalate** means defer to a focused session — it does not auto-file anywhere.
+Record escalated items at the end of the diff session as open questions in `log.md`.
+
+### Step 5 — Update registry: diff-routed
+
+After all queue items have been decided, update `claims/_index.md` Pipeline Status:
+- Set Status to `diff-routed`
+- Fill Diff-Routed date to today
+
+### Step 6 — Write final claim document
+
+Assemble the final claim set from all accepted and merged decisions.
+Write to `claims/<source>-claims.md` in the brief root:
 
 ```markdown
 ---
@@ -298,9 +408,9 @@ driving_question: "<verbatim>"
 <adjudicated claim blocks>
 ```
 
-### Step 5 — Update prefix registry
+### Step 7 — Update prefix registry
 
-Update `claims/_index.md`:
+Update `claims/_index.md` Prefix Registry:
 
 ```markdown
 ## Prefix Registry
@@ -310,12 +420,17 @@ Update `claims/_index.md`:
 | <PREFIX> | <Author Year Title> | [[<source>-claims]] | <YYYY-MM-DD> |
 ```
 
-### Step 6 — Log and report
+### Step 8 — Update registry: adjudicated + log
+
+Update `claims/_index.md` Pipeline Status:
+- Set Status to `adjudicated`
+- Fill Adjudicated date to today
+- Fill Prefix column
 
 Append to `log.md`:
 ```
 ## [<YYYY-MM-DD>] claim-adjudicate | <Author Year> — <Title>
-Claims accepted: <N>. Rejected: <N>. Flagged for AG: <N>.
+Claims accepted: <N>. Rejected: <N>. Escalated: <N>.
 Final file: claims/<source>-claims.md
 ```
 
