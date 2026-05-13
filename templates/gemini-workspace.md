@@ -141,9 +141,10 @@ Responses: new file `syntheses/<topic>-response-ag.md`
 
 ## Cold Read Protocol
 
-1. Read source from its local path or symlink — `bootstrap/` for founding documents,
-   `raw/` for papers. If symlinks are not present, ask the researcher to relay the source.
-   - **Do not** read `../[brief-name]/claims/` — Tool's enumerations live there; AG must
+1. Read source from `<brief_root>/raw/<source>.md` — `brief_root` is set in
+   `.claude/settings.local.json` and resolves to `../[brief-name]`. The `/wiki-claim`
+   skill handles path resolution automatically; no symlinks are needed.
+   - **Do not** read `../[brief-name]/claims/` — RMC's enumerations live there; AG must
      not see them before her own enumeration is complete
 2. Enumerate claims to `cold-reads/<source>-claims-ag.md`
 3. When complete, promote by copying to `syntheses/<source>-claims-ag.md`
