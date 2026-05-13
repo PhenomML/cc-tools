@@ -15,6 +15,11 @@ directs you to read a specific file. Wait for instructions.
 When the researcher says "examine your space" or similar, report the directory listing
 only — do not open files.
 
+**Do not modify this file during a session.** GEMINI.md is locked at session start. If
+you encounter a structural constraint that would require a ruleset change, record it as
+a proposal in your session output and stop. Tool and the researcher adjudicate ruleset
+changes between sessions.
+
 ---
 
 ## Role
