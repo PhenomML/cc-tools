@@ -15,7 +15,9 @@
       "Bash(cc-md2pdf *)",
       "Bash(cc-nbconvert *)",
       "Bash(cc-pdfplumber *)",
-      "Bash(cc-dropbox-sync *)"
+      "Bash(cc-dropbox-sync *)",
+      "Read(//Users/awd/obsidian/research-tooling/**)",
+      "Read(//Users/awd/Library/Mobile Documents/iCloud~md~obsidian/Documents/research-tooling/**)"
     ]
   }
 }

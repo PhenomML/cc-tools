@@ -45,6 +45,26 @@
 
 Skills auto-update on `git pull`. Docs: https://github.com/PhenomML/cc-tools
 
+## Epistemic Conventions
+
+**`*[Imputed]*`** — use inline after any statement in session output that is not grounded in an enumerated wiki claim with a supporting quotation.
+
+Two forms:
+
+**Unlinked** — no known grounding claim exists:
+```
+A sub-quadratic approximation may be viable. *[Imputed]*
+```
+
+**Linked** — a specific enumerated claim would ground this statement if it existed:
+```
+This generalizes to the noisy case. *[Imputed — [[donoho-2023-claims#DON23-004]]]*
+```
+
+A linked imputed statement is a work order: it names the enumeration gap precisely so it can be tracked and filled. High `*[Imputed]*` density in session output signals the session wandered off-wiki. Low density signals it stayed grounded. The human uses density as an attention filter — do not force dense sessions to be read with the same scrutiny as grounded ones.
+
+This convention is active in all sessions, not just promotion sessions.
+
 ## Environment
 
 - Research deps: **Conda** — never uv for researcher projects
