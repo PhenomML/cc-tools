@@ -191,7 +191,25 @@ def _normalize_make4ht_html(html: str) -> str:
     )
 
 
-def _post_process_src(content: str, arxiv_id: str) -> str:
+def _extract_preamble_macros(tex_path: str) -> str:
+    """Extract math macro definitions from TeX preamble as a MathJax $$-block."""
+    macros = []
+    try:
+        with open(tex_path, encoding="utf-8", errors="replace") as f:
+            for line in f:
+                if r"\begin{document}" in line:
+                    break
+                stripped = line.strip()
+                if re.match(r"\\(newcommand|renewcommand|providecommand|DeclareMathOperator)\b|\\def\\", stripped):
+                    macros.append(stripped)
+    except OSError:
+        return ""
+    if not macros:
+        return ""
+    return "$$\n" + "\n".join(macros) + "\n$$\n\n"
+
+
+def _post_process_src(content: str, arxiv_id: str, macro_block: str = "") -> str:
     # HTML entities in raw-HTML passthrough blocks (algorithm listings, captions)
     content = content.replace("&amp;", "&").replace("&lt;", "<").replace("&gt;", ">")
     # CSS class spans from make4ht: [text]{.ClassName} -> text
@@ -204,7 +222,7 @@ def _post_process_src(content: str, arxiv_id: str) -> str:
     # Collapse excess blank lines
     content = re.sub(r"\n{3,}", "\n\n", content)
     header = f"<!-- Source: arXiv:{arxiv_id} TeX source tarball via make4ht+mathjax. Math fidelity: high. -->\n\n"
-    return header + content.strip() + "\n"
+    return header + macro_block + content.strip() + "\n"
 
 
 def _src_to_markdown(arxiv_id: str) -> str:
@@ -249,6 +267,11 @@ def _src_to_markdown(arxiv_id: str) -> str:
         if r.returncode != 0:
             print(f"cc-arxiv --src: make4ht warnings (exit {r.returncode}), continuing", file=sys.stderr)
 
+        macro_block = _extract_preamble_macros(root_tex)
+        if macro_block:
+            n = macro_block.count("\\newcommand") + macro_block.count("\\DeclareMathOperator") + macro_block.count("\\def\\")
+            print(f"cc-arxiv --src: extracted {n} math macro(s) from preamble", file=sys.stderr)
+
         with open(html_path, encoding="utf-8", errors="replace") as f:
             raw_html = f.read()
         normalized_html = _normalize_make4ht_html(raw_html)
@@ -263,7 +286,7 @@ def _src_to_markdown(arxiv_id: str) -> str:
         if p.returncode != 0:
             raise RuntimeError(f"pandoc failed: {p.stderr[:200]}")
 
-        return _post_process_src(p.stdout, arxiv_id)
+        return _post_process_src(p.stdout, arxiv_id, macro_block)
 
 
 def _html_available(base_id: str) -> bool:
