@@ -1,6 +1,17 @@
 Ingest a source into the research wiki: $ARGUMENTS
 
-`$ARGUMENTS` is one of:
+**Model flag:** `$ARGUMENTS` may begin with `--model <model>` where `<model>` is `haiku`,
+`sonnet`, or `opus`. If present, strip the flag and run the remaining steps as a
+non-interactive Agent with that model — auto-confirm all researcher checkpoints and return
+a written report. Omit the flag to run interactively in the current session (default).
+
+Example: `/wiki-ingest --model haiku 2301.07608`
+
+Use `--model haiku` for routine ingestion of applied or empirical papers where a shallow
+summary is sufficient. Use the default (Sonnet) for math-heavy theory papers where claim
+accuracy and notation fidelity matter.
+
+`$ARGUMENTS` (after stripping any `--model` flag) is one of:
 - An arXiv ID (e.g. `2301.07608`)
 - A bioRxiv or medRxiv DOI (e.g. `10.1101/2024.01.12.574717`)
 - A PubMed PMID (e.g. `38987647`)

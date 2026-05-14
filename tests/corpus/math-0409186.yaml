@@ -4,7 +4,7 @@ title: "Robust Uncertainty Principles: Exact Signal Reconstruction from Highly I
 authors: "Candes, Romberg, Tao"
 year: 2004
 pipeline: make4ht
-macro_count_min: 0
+macro_count_min: 50
 macro_file: null
 known_artifacts: []
 verified: 2026-05-14

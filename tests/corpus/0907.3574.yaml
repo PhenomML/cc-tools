@@ -4,7 +4,7 @@ title: "Message Passing Algorithms for Compressed Sensing"
 authors: "Donoho, Maleki, Montanari"
 year: 2009
 pipeline: pandoc-latex
-macro_count_min: 0
+macro_count_min: 50
 macro_file: null
 known_artifacts:
   - "IEEEtran.cls register overflow: make4ht produces no HTML; pandoc-latex fallback required"

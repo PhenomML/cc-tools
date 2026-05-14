@@ -4,7 +4,7 @@ title: "Accurate Prediction of Phase Transitions in Compressed Sensing via a Con
 authors: "Donoho, Johnstone, Montanari"
 year: 2011
 pipeline: pandoc-latex
-macro_count_min: 0
+macro_count_min: 209
 macro_file: null
 known_artifacts:
   - "IEEEtran.cls register overflow: make4ht produces no HTML; pandoc-latex fallback required"

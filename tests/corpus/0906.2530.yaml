@@ -4,7 +4,7 @@ title: "Observed Universality of Phase Transitions in High-Dimensional Geometry,
 authors: "Donoho, Tanner"
 year: 2009
 pipeline: make4ht
-macro_count_min: 0
+macro_count_min: 86
 macro_file: null
 known_artifacts: []
 verified: 2026-05-14

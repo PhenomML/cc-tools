@@ -4,7 +4,7 @@ title: "Vector Approximate Message Passing"
 authors: "Rangan, Schniter, Fletcher"
 year: 2016
 pipeline: pandoc-latex
-macro_count_min: 0
+macro_count_min: 214
 macro_file: null
 known_artifacts:
   - "IEEEtran.cls register overflow: make4ht produces no HTML; pandoc-latex fallback required"
