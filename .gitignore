@@ -17,3 +17,6 @@ ideas/
 
 # Dropbox sync config — machine-local, not committed
 .dropbox-sync-target
+
+# Test corpus cached outputs — fetched from arXiv, not committed
+tests/corpus/expected/*.md

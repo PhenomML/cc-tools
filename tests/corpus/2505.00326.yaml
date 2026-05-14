@@ -1,0 +1,12 @@
+---
+arxiv_id: "2505.00326"
+title: "SteinSense: Parameter-Free Empirical Bayes Shrinkage via Stein's Method"
+authors: "Dey, Donoho"
+year: 2025
+pipeline: make4ht
+macro_count_min: 453
+macro_file: math_commands.tex
+known_artifacts: []
+verified: 2026-05-14
+notes: "High-math theory paper; 453 macros in math_commands.tex; validated across DD25 claim set"
+---

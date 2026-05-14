@@ -1,0 +1,13 @@
+---
+arxiv_id: null
+title: "Compressed Sensing"
+authors: "Donoho"
+year: 2006
+pipeline: no-source
+macro_count_min: 0
+macro_file: null
+known_artifacts:
+  - "IEEE TIT journal-only submission; no arXiv preprint; source tarball unavailable"
+verified: 2026-05-14
+notes: "DOI 10.1109/TIT.2006.871582; foundational CS paper; expected 403 on source fetch"
+---

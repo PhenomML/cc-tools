@@ -28,4 +28,7 @@ cc-ocr           = "cc_tools.ocr:main"
 include = ["cc_tools*"]
 
 [dependency-groups]
-dev = []
+dev = [
+    "pytest>=8.0",
+    "pyyaml>=6.0",
+]

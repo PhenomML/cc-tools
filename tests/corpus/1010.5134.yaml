@@ -1,0 +1,13 @@
+---
+arxiv_id: "1010.5134"
+title: "The Noise-Sensitivity Phase Transition in Compressed Sensing"
+authors: "Donoho, Maleki, Montanari"
+year: 2011
+pipeline: pandoc-latex
+macro_count_min: 215
+macro_file: null
+known_artifacts:
+  - "IEEEtran.cls register overflow: make4ht produces no HTML; pandoc-latex fallback required"
+verified: 2026-05-14
+notes: "IEEEtran class paper; AMP minimax; dense preamble (215 macros)"
+---

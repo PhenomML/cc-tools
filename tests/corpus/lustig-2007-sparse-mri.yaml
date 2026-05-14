@@ -1,0 +1,13 @@
+---
+arxiv_id: null
+title: "Sparse MRI: The Application of Compressed Sensing for Rapid MR Imaging"
+authors: "Lustig, Donoho, Pauly"
+year: 2007
+pipeline: no-source
+macro_count_min: 0
+macro_file: null
+known_artifacts:
+  - "No arXiv preprint; MRM journal submission; source tarball unavailable"
+verified: 2026-05-14
+notes: "MRM 2007; foundational sparse MRI paper; expected 403 on source fetch"
+---
