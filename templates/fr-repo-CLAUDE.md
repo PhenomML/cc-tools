@@ -64,10 +64,10 @@ workspace can be occupied by any LLM. When the adversary changes, update or add 
 Initialize with:
 ```bash
 # Initialize RMC workspace
-bash ~/Projects/PhenomML/cc-tools/setup-claude.sh --project [brief-name]/
+bash $CC_TOOLS/setup-claude.sh --project [brief-name]/
 
 # Initialize AG workspace (also marks brief as primary)
-bash ~/Projects/PhenomML/cc-tools/setup-claude.sh --adversary [brief-name]/
+bash $CC_TOOLS/setup-claude.sh --adversary [brief-name]/
 ```
 
 ---

@@ -92,7 +92,7 @@ because it already existed.
 Run:
 
 ```bash
-bash ~/Projects/PhenomML/cc-tools/setup-claude.sh --project .
+bash $CC_TOOLS/setup-claude.sh --project .
 ```
 
 This creates or updates `.claude/settings.local.json` with the standard cc-tools

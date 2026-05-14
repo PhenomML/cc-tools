@@ -144,7 +144,7 @@ Write `<subject-slug>/CLAUDE.md` with three sections in order:
 Write specific, concrete scope descriptions. Related should be symmetric.
 
 **Section 3 — Managed section:** insert the full current content of
-`~/Projects/PhenomML/cc-tools/templates/wiki-schema.md` wrapped in sentinels:
+`$CC_TOOLS/templates/wiki-schema.md` wrapped in sentinels:
 ```
 <!-- cc-tools:wiki:begin -->
 [wiki-schema.md content]
@@ -193,7 +193,7 @@ Skip any file or directory that already exists without overwriting.
 
 Run:
 ```bash
-bash ~/Projects/PhenomML/cc-tools/setup-claude.sh --project .
+bash $CC_TOOLS/setup-claude.sh --project .
 ```
 This creates or updates `.claude/settings.local.json` with the standard cc-tools
 allowlist. Idempotent — safe to run even if `cc-wiki-brief` already ran it.
@@ -344,7 +344,7 @@ links — not code spans. Pages are two levels from the wiki root, so the path i
 
 **Company financial figures require structured caveats.** For company briefs with
 financial figures (valuation, revenue, ARR, NRR, growth rate), read and apply the rules
-in `~/Projects/PhenomML/cc-tools/templates/wiki-brief-financial-caveats.md`.
+in `$CC_TOOLS/templates/wiki-brief-financial-caveats.md`.
 
 **Before writing any claim about a third party's actions, relationships, or funding,
 grep existing `raw/` files for their name.** Peer-reviewed journals require financial
@@ -394,7 +394,7 @@ use the frame to organize the argument is weaker than one where the frame runs t
 
 If a driving question was provided in `$ARGUMENTS`, synthesize an answer now by reading
 across the concept pages just written. File the result as `syntheses/<slug>.md` using
-`~/Projects/PhenomML/cc-tools/templates/synthesis.md` as the structural template —
+`$CC_TOOLS/templates/synthesis.md` as the structural template —
 fill every section, including the Gaps and Absence block even if adversarial search
 returned nothing.
 
@@ -441,5 +441,5 @@ contribution to the wiki traceable without re-reading everything.
 
 ## Embedded Mode
 
-If embedded wiki detected: read `~/Projects/PhenomML/cc-tools/templates/wiki-brief-embedded.md`
+If embedded wiki detected: read `$CC_TOOLS/templates/wiki-brief-embedded.md`
 and follow it instead of Steps 1–8 above.

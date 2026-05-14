@@ -20,7 +20,7 @@ Replace the content between the sentinels with the current wiki-schema.md from c
 
 ```bash
 WIKI_CLAUDE="CLAUDE.md"
-SCHEMA=~/Projects/PhenomML/cc-tools/templates/wiki-schema.md
+SCHEMA=$CC_TOOLS/templates/wiki-schema.md
 
 WIKI_CLAUDE="$WIKI_CLAUDE" SCHEMA="$SCHEMA" python3 - <<'PYEOF'
 import os, re, pathlib
@@ -112,7 +112,7 @@ Append to `log.md`:
 Run:
 
 ```bash
-bash ~/Projects/PhenomML/cc-tools/setup-claude.sh --project .
+bash $CC_TOOLS/setup-claude.sh --project .
 ```
 
 This merges any new standard allowlist entries into `.claude/settings.local.json`

@@ -24,12 +24,12 @@ Create at the brief root if not already present:
 - `raw/` — for documents fetched during the experiment
 - `.gitignore` containing `raw/`
 - `log.md` — with a minimal header: `# <Project> Log\n\n<!-- entries appended below -->`
-- `CLAUDE.md` — copy from `~/Projects/PhenomML/cc-tools/templates/experiment-wiki-CLAUDE.md`
+- `CLAUDE.md` — copy from `$CC_TOOLS/templates/experiment-wiki-CLAUDE.md`
   and fill in the title, date, and goal from the driving question
 
 Run:
 ```bash
-bash ~/Projects/PhenomML/cc-tools/setup-claude.sh --project .
+bash $CC_TOOLS/setup-claude.sh --project .
 ```
 
 Do not create standalone sub-wiki directories or index.md unless the operational brief

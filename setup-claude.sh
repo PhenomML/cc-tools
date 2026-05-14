@@ -192,6 +192,45 @@ fi
 uv tool install --editable "$SCRIPT_DIR" --quiet
 echo "setup-claude: cc-tools Python package installed (editable) from $SCRIPT_DIR"
 
+# ── cc-tools environment config ───────────────────────────────────────────────
+
+CC_TOOLS_CONFIG_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/cc-tools"
+mkdir -p "$CC_TOOLS_CONFIG_DIR"
+ENV_FILE="$CC_TOOLS_CONFIG_DIR/env.sh"
+
+python3 - "$ENV_FILE" "$SCRIPT_DIR" << 'PYEOF'
+import sys, pathlib, re
+env_file = pathlib.Path(sys.argv[1])
+script_dir = sys.argv[2]
+line = f'export CC_TOOLS="{script_dir}"\n'
+if env_file.exists():
+    content = env_file.read_text()
+    if 'CC_TOOLS=' in content:
+        content = re.sub(r'^export CC_TOOLS=.*\n', line, content, flags=re.MULTILINE)
+    else:
+        content += line
+    env_file.write_text(content)
+else:
+    env_file.write_text(line)
+PYEOF
+echo "setup-claude: CC_TOOLS=$SCRIPT_DIR → $ENV_FILE"
+
+SOURCE_LINE='[ -f "${XDG_CONFIG_HOME:-$HOME/.config}/cc-tools/env.sh" ] && source "${XDG_CONFIG_HOME:-$HOME/.config}/cc-tools/env.sh"'
+sourced=0
+for profile in "$HOME/.zshrc" "$HOME/.bashrc"; do
+    if [[ -f "$profile" ]] && ! grep -qF "cc-tools/env.sh" "$profile"; then
+        printf '\n# cc-tools ecosystem\n%s\n' "$SOURCE_LINE" >> "$profile"
+        echo "setup-claude: added cc-tools source to $profile"
+        sourced=1
+    elif [[ -f "$profile" ]]; then
+        sourced=1
+    fi
+done
+if (( sourced == 0 )); then
+    echo "setup-claude: WARNING: no .zshrc or .bashrc found — add this line manually:"
+    echo "  $SOURCE_LINE"
+fi
+
 # ── CLAUDE.md ────────────────────────────────────────────────────────────────
 
 mkdir -p "$HOME/.claude"

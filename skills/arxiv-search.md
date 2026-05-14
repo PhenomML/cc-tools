@@ -1,7 +1,7 @@
 Search arXiv for papers related to: $ARGUMENTS
 
 Use the arxiv Python library via:
-  uv run --directory ~/Projects/PhenomML/cc-tools python
+  uv run --directory $CC_TOOLS python
 
 Search for the top 8–10 most relevant results. For each paper present:
 - Title
