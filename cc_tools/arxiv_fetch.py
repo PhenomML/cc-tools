@@ -209,7 +209,7 @@ def _extract_preamble_macros(tex_path: str) -> str:
     return "$$\n" + "\n".join(macros) + "\n$$\n\n"
 
 
-def _post_process_src(content: str, arxiv_id: str, macro_block: str = "") -> str:
+def _post_process_src(content: str, arxiv_id: str, macro_block: str = "", pipeline: str = "make4ht+mathjax") -> str:
     # HTML entities in raw-HTML passthrough blocks (algorithm listings, captions)
     content = content.replace("&amp;", "&").replace("&lt;", "<").replace("&gt;", ">")
     # CSS class spans from make4ht: [text]{.ClassName} -> text
@@ -221,7 +221,7 @@ def _post_process_src(content: str, arxiv_id: str, macro_block: str = "") -> str
     content = re.sub(r"^:+\s*$", "", content, flags=re.MULTILINE)
     # Collapse excess blank lines
     content = re.sub(r"\n{3,}", "\n\n", content)
-    header = f"<!-- Source: arXiv:{arxiv_id} TeX source tarball via make4ht+mathjax. Math fidelity: high. -->\n\n"
+    header = f"<!-- Source: arXiv:{arxiv_id} TeX source tarball via {pipeline}. Math fidelity: high. -->\n\n"
     return header + macro_block + content.strip() + "\n"
 
 
@@ -268,10 +268,10 @@ def _src_to_markdown(arxiv_id: str) -> str:
         )
         stem = os.path.splitext(tex_name)[0]
         html_path = os.path.join(tex_dir, stem + ".html")
-        if not os.path.exists(html_path):
-            tail = r.stderr.decode(errors="replace")[-400:] if r.stderr else ""
-            raise RuntimeError(f"make4ht produced no HTML (exit {r.returncode})\n{tail}")
-        if r.returncode != 0:
+        if r.returncode != 0 and not os.path.exists(html_path):
+            print(f"cc-arxiv --src: make4ht failed (exit {r.returncode}), trying pandoc fallback",
+                  file=sys.stderr)
+        elif r.returncode != 0:
             print(f"cc-arxiv --src: make4ht warnings (exit {r.returncode}), continuing", file=sys.stderr)
 
         macro_block = _extract_preamble_macros(root_tex)
@@ -279,21 +279,33 @@ def _src_to_markdown(arxiv_id: str) -> str:
             n = macro_block.count("\\newcommand") + macro_block.count("\\DeclareMathOperator") + macro_block.count("\\def\\")
             print(f"cc-arxiv --src: extracted {n} math macro(s) from preamble", file=sys.stderr)
 
-        with open(html_path, encoding="utf-8", errors="replace") as f:
-            raw_html = f.read()
-        normalized_html = _normalize_make4ht_html(raw_html)
+        if os.path.exists(html_path):
+            with open(html_path, encoding="utf-8", errors="replace") as f:
+                raw_html = f.read()
+            normalized_html = _normalize_make4ht_html(raw_html)
+            p = subprocess.run(
+                ["pandoc",
+                 "--from", "html+tex_math_dollars+tex_math_single_backslash",
+                 "--to", "markdown",
+                 "--wrap=none"],
+                input=normalized_html, capture_output=True, text=True, timeout=60,
+            )
+            if p.returncode != 0:
+                raise RuntimeError(f"pandoc failed: {p.stderr[:200]}")
+            return _post_process_src(p.stdout, arxiv_id, macro_block)
 
+        # make4ht failed to produce HTML (e.g. IEEEtran register overflow).
+        # Fall back to pandoc direct LaTeX → markdown — still gives clean math.
+        print("cc-arxiv --src: make4ht produced no HTML, falling back to pandoc direct LaTeX conversion",
+              file=sys.stderr)
         p = subprocess.run(
-            ["pandoc",
-             "--from", "html+tex_math_dollars+tex_math_single_backslash",
-             "--to", "markdown",
-             "--wrap=none"],
-            input=normalized_html, capture_output=True, text=True, timeout=60,
+            ["pandoc", "--from", "latex", "--to", "markdown", "--wrap=none", root_tex],
+            capture_output=True, text=True, timeout=60,
         )
         if p.returncode != 0:
-            raise RuntimeError(f"pandoc failed: {p.stderr[:200]}")
-
-        return _post_process_src(p.stdout, arxiv_id, macro_block)
+            raise RuntimeError(f"pandoc direct LaTeX conversion failed: {p.stderr[:200]}")
+        content = re.sub(r'\{reference-type="[^"]*"\s+reference="[^"]*"\}', "", p.stdout)
+        return _post_process_src(content, arxiv_id, macro_block, pipeline="pandoc-latex")
 
 
 def _html_available(base_id: str) -> bool:
