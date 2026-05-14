@@ -16,8 +16,12 @@
       "Bash(cc-nbconvert *)",
       "Bash(cc-pdfplumber *)",
       "Bash(cc-dropbox-sync *)",
+      "Bash(pandoc *)",
+      "Bash(latexpand *)",
+      "Bash(make4ht *)",
       "Read(//Users/awd/obsidian/research-tooling/**)",
-      "Read(//Users/awd/Library/Mobile Documents/iCloud~md~obsidian/Documents/research-tooling/**)"
+      "Read(//Users/awd/Library/Mobile Documents/iCloud~md~obsidian/Documents/research-tooling/**)",
+      "Read(//Users/awd/Projects/PhenomML/**)"
     ]
   }
 }
