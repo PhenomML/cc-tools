@@ -255,9 +255,12 @@ def _post_process_src(content: str, arxiv_id: str, macro_block: str = "", pipeli
         inner = re.sub(r"\s+", " ", inner).strip()
         return f"\n\n*{inner}*\n\n"
     content = re.sub(r"<figcaption>(.*?)</figcaption>", _clean_figcaption, content, flags=re.DOTALL)
-    # Strip <span> tags (keep content); two passes for nesting
-    for _ in range(3):
-        content = re.sub(r"<span[^>]*>(.*?)</span>", r"\1", content, flags=re.DOTALL)
+    # Strip <span> tags (keep content); iterate until convergence (nesting can be 4+ levels deep)
+    while True:
+        stripped = re.sub(r"<span[^>]*>(.*?)</span>", r"\1", content, flags=re.DOTALL)
+        if stripped == content:
+            break
+        content = stripped
     # Strip <img> tags (figures don't render in Obsidian without the tarball)
     content = re.sub(r"<img[^>]*/?>", "", content)
     # Strip <figure>, <div>, <p> container tags — keep content, drop wrappers
@@ -323,13 +326,8 @@ def _src_to_markdown(arxiv_id: str) -> str:
         if r.returncode != 0 and not os.path.exists(html_path):
             print(f"cc-arxiv --src: make4ht failed (exit {r.returncode}), trying pandoc fallback",
                   file=sys.stderr)
-        elif r.returncode != 0:
-            print(f"cc-arxiv --src: make4ht warnings (exit {r.returncode}), continuing", file=sys.stderr)
 
         macro_block = _extract_preamble_macros(root_tex)
-        if macro_block:
-            n = macro_block.count("\\newcommand") + macro_block.count("\\DeclareMathOperator") + macro_block.count("\\def\\")
-            print(f"cc-arxiv --src: extracted {n} math macro(s) from preamble", file=sys.stderr)
 
         if os.path.exists(html_path):
             with open(html_path, encoding="utf-8", errors="replace") as f:
