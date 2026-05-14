@@ -1,13 +1,13 @@
 ---
-arxiv_id: "1610.05898"
+arxiv_id: "1610.03082"
 title: "Vector Approximate Message Passing"
 authors: "Rangan, Schniter, Fletcher"
-year: 2019
+year: 2016
 pipeline: pandoc-latex
-macro_count_min: 214
+macro_count_min: 0
 macro_file: null
 known_artifacts:
   - "IEEEtran.cls register overflow: make4ht produces no HTML; pandoc-latex fallback required"
 verified: 2026-05-14
-notes: "IEEEtran class paper; VAMP; dense preamble (214 macros)"
+notes: "IEEEtran class paper; VAMP; right-orthogonally invariant matrices"
 ---

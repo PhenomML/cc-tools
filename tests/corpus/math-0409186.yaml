@@ -1,0 +1,12 @@
+---
+arxiv_id: "math/0409186"
+title: "Robust Uncertainty Principles: Exact Signal Reconstruction from Highly Incomplete Frequency Information"
+authors: "Candes, Romberg, Tao"
+year: 2004
+pipeline: make4ht
+macro_count_min: 0
+macro_file: null
+known_artifacts: []
+verified: 2026-05-14
+notes: "Old-style arXiv ID (math/ prefix); foundational CS paper; Annals of Math style"
+---
