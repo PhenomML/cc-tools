@@ -34,25 +34,30 @@ Then restart your shell (or run `source ~/.zshrc`) so that `~/.local/bin` is on 
 **Install:**
 
 ```bash
-git clone git@github.com:PhenomML/cc-tools.git ~/Projects/PhenomML/cc-tools
-uv tool install --editable ~/Projects/PhenomML/cc-tools
-bash ~/Projects/PhenomML/cc-tools/setup-claude.sh
+git clone git@github.com:PhenomML/cc-tools.git ~/cc-tools   # or any path you prefer
+cd ~/cc-tools
+bash setup-claude.sh
 ```
 
-The first two commands install the tools into an isolated `uv` environment — completely separate from your Conda setup, no interaction between them. `uv tool` installs into `~/.local/share/uv/tools/cc-tools/`, which does not touch your `base` environment or any project environment. The third command: reinstalls the Python package, adds the cc-tools section to `~/.claude/CLAUDE.md` (creating it if needed), and symlinks every skill from `skills/` into `~/.claude/commands/` so Claude Code can invoke them as slash commands. Safe to run again after updates — it replaces the managed section in place and refreshes all skill symlinks without touching anything else.
+The clone location can be anywhere — skills and templates reference it via `$CC_TOOLS`, which `setup-claude.sh` writes at install time. `setup-claude.sh` does the following (safe to re-run after updates):
+
+- Installs the cc-tools Python package into an isolated `uv` environment (`~/.local/share/uv/tools/cc-tools/`) — completely separate from Conda, no interaction
+- Writes `CC_TOOLS=<install-path>` to `~/.config/cc-tools/env.sh` and adds a one-line source to `~/.zshrc` / `~/.bashrc` so skills can resolve template paths at runtime
+- Adds the cc-tools section to `~/.claude/CLAUDE.md` (creating it if needed), replacing it on re-run
+- Symlinks every skill from `skills/` into `~/.claude/commands/` so Claude Code can invoke them as slash commands, refreshing symlinks on re-run
 
 ## Keeping it up to date
 
 When Claude adds new tools or skills to this repository, pull and re-run setup:
 
 ```bash
-cd ~/Projects/PhenomML/cc-tools && git pull && bash setup-claude.sh
+cd $CC_TOOLS && git pull && bash setup-claude.sh
 ```
 
 To set up a new project directory with the standard cc-tools allowlist (so Claude doesn't prompt for `cc-arxiv`, `curl`, `mkdir`, etc.):
 
 ```bash
-bash ~/Projects/PhenomML/cc-tools/setup-claude.sh --project ~/Research/Topics/new-topic
+bash $CC_TOOLS/setup-claude.sh --project ~/Research/Topics/new-topic
 ```
 
 If the directory doesn't exist yet it will be created. Safe to re-run — merges missing entries without removing existing ones.
