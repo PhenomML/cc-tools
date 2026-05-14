@@ -17,6 +17,10 @@ The design choices behind cc-tools are explained in three pieces:
 | [The Research Brief](articles/the-research-brief.md) | A subject-oriented wiki assembled in one session for a meeting or time-sensitive question — person, company, topic, or policy |
 | [Jupyter and the MCP Trade-off](articles/jupyter-and-the-mcp-tradeoff.md) | When static notebook conversion is sufficient and when the Jupyter MCP is worth its token cost |
 
+## Companion
+
+[cc-code-tools](https://github.com/PhenomML/cc-code-tools) — extends cc-tools for researchers working scientific codebases. Adds `/wiki-codebase` with paper ingestion and paper–code correspondence tracking.
+
 ## Installation
 
 **Prerequisites:** Install `uv` (Claude's package manager — distinct from conda):
@@ -159,23 +163,6 @@ The agent reads the operational brief, reads `../CLAUDE.md` for repo context, wr
 `/agent-brief` is the skill for the dual-agent research-to-code pattern: a theory Claude writes an operational brief defining the agent's role, phase targets, constraints, and log format; `/agent-brief` instantiates a second Claude from that brief. The orientation synthesis it writes is the confirmation gate — the agent does nothing until the researcher approves it.
 
 The multi-agent file convention (`syntheses/<topic>-<agent-slug>.md`, `## Questions for <Agent>` sections) is documented in the skill and lets two Claude instances collaborate through a shared `syntheses/` directory with the researcher as relay.
-
-### /wiki-codebase: codebase onboarding and issue work
-
-`/wiki-codebase` builds a structured wiki from a code repo and optionally works a GitHub issue using that wiki as context. It is the right starting point when onboarding to an unfamiliar codebase or making a targeted fix.
-
-```bash
-# 1. Launch from the wiki directory inside the repo
-cc-wiki-brief "MyProject" --brief-dir ~/Projects/myrepo/wiki
-
-# 2. Inside the session — build wiki only:
-/wiki-codebase
-
-# 3. Or build wiki and immediately work an issue:
-/wiki-codebase 12345
-```
-
-The skill surveys the repo, detects the tech stack, scaffolds sub-wikis mapped to code domains (architecture, backend, frontend, api, infrastructure, etc.), writes concept pages from key source files, then fetches the issue via `gh issue view` and implements a fix. The wiki is both the comprehension artifact and the agent's working memory during coding. Stops after the wiki-building phase if no issue number is provided.
 
 ## Unsupported tools
 

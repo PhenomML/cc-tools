@@ -83,7 +83,7 @@ def main() -> None:
     print(f"Syncing {project_name}/ → {target_dir}", file=sys.stderr)
 
     result = subprocess.run([
-        "rsync", "-av", "--delete", "--delete-excluded",
+        "rsync", "-av", "--delete",
         "--exclude=.git/",
         "--filter=:- .gitignore",
         *dry_run_flag,
