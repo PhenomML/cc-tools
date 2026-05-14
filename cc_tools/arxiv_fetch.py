@@ -280,12 +280,13 @@ def _post_process_src(content: str, arxiv_id: str, macro_block: str = "", pipeli
     return header + macro_block + content.strip() + "\n"
 
 
-def _src_to_markdown(arxiv_id: str) -> str:
+def _fetch_tarball(arxiv_id: str) -> bytes:
+    """Download source tarball bytes from arXiv."""
     url = f"https://arxiv.org/src/{arxiv_id}"
     req = urllib.request.Request(url, headers={"User-Agent": "cc-tools/cc-arxiv"})
     try:
         with urllib.request.urlopen(req, timeout=60) as resp:
-            src_data = resp.read()
+            return resp.read()
     except urllib.error.HTTPError as e:
         if e.code == 403:
             raise RuntimeError(
@@ -296,6 +297,9 @@ def _src_to_markdown(arxiv_id: str) -> str:
     except urllib.error.URLError as e:
         raise RuntimeError(f"source download failed: {e}")
 
+
+def _convert_tarball(src_data: bytes, arxiv_id: str) -> str:
+    """Convert raw tarball bytes to markdown. Called by _src_to_markdown and --local-src."""
     with tempfile.TemporaryDirectory() as tmpdir:
         tarpath = os.path.join(tmpdir, "src.tar.gz")
         with open(tarpath, "wb") as f:
@@ -358,6 +362,10 @@ def _src_to_markdown(arxiv_id: str) -> str:
         return _post_process_src(content, arxiv_id, macro_block, pipeline="pandoc-latex")
 
 
+def _src_to_markdown(arxiv_id: str) -> str:
+    return _convert_tarball(_fetch_tarball(arxiv_id), arxiv_id)
+
+
 def _html_available(base_id: str) -> bool:
     url = f"https://arxiv.org/html/{base_id}"
     req = urllib.request.Request(url, headers={"User-Agent": "cc-tools/cc-arxiv"})
@@ -369,11 +377,21 @@ def _html_available(base_id: str) -> bool:
 
 
 def main():
-    src_mode = "--src" in sys.argv
-    args = [a for a in sys.argv[1:] if a != "--src"]
+    argv = sys.argv[1:]
+    src_mode = "--src" in argv
+    argv = [a for a in argv if a != "--src"]
 
-    if len(args) != 1 or args[0] in ("-h", "--help"):
-        print("Usage: cc-arxiv [--src] <arxiv-id|biorxiv-doi|pmid|doi>", file=sys.stderr)
+    local_src = None
+    if "--local-src" in argv:
+        idx = argv.index("--local-src")
+        if idx + 1 >= len(argv):
+            print("cc-arxiv: --local-src requires a path argument", file=sys.stderr)
+            sys.exit(1)
+        local_src = argv[idx + 1]
+        argv = argv[:idx] + argv[idx + 2:]
+
+    if len(argv) != 1 or argv[0] in ("-h", "--help"):
+        print("Usage: cc-arxiv [--src] [--local-src <path>] <arxiv-id|biorxiv-doi|pmid|doi>", file=sys.stderr)
         print("Fetch metadata for a preprint or published paper.", file=sys.stderr)
         print("  arXiv ID:            2301.07608", file=sys.stderr)
         print("  bioRxiv/medRxiv DOI: 10.1101/2024.01.12.574717", file=sys.stderr)
@@ -382,21 +400,32 @@ def main():
         print("Outputs: ID, title, authors, year, PDF URL, HTML availability, abstract.", file=sys.stderr)
         print("  --src: fetch TeX source tarball, convert to markdown via make4ht+pandoc.", file=sys.stderr)
         print("         arXiv IDs only; outputs markdown to stdout.", file=sys.stderr)
-        sys.exit(0 if (args and args[0] in ("-h", "--help")) else 1)
+        print("  --local-src <path>: use cached tarball instead of fetching from arXiv.", file=sys.stderr)
+        print("         Requires --src. Useful for offline re-conversion.", file=sys.stderr)
+        sys.exit(0 if (argv and argv[0] in ("-h", "--help")) else 1)
 
-    paper_id = args[0]
+    paper_id = argv[0]
 
     if src_mode:
         if paper_id.startswith("10.") or paper_id.isdigit():
             print("cc-arxiv: --src only supported for arXiv IDs", file=sys.stderr)
             sys.exit(1)
         try:
-            md = _src_to_markdown(paper_id)
+            if local_src:
+                with open(local_src, "rb") as f:
+                    src_data = f.read()
+                md = _convert_tarball(src_data, paper_id)
+            else:
+                md = _src_to_markdown(paper_id)
         except RuntimeError as e:
             print(f"cc-arxiv --src: {e}", file=sys.stderr)
             sys.exit(1)
         print(md, end="")
         return
+
+    if local_src:
+        print("cc-arxiv: --local-src requires --src", file=sys.stderr)
+        sys.exit(1)
 
     if paper_id.startswith("10.1101/"):
         _fetch_biorxiv(paper_id)

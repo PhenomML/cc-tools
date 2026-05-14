@@ -19,4 +19,6 @@ ideas/
 .dropbox-sync-target
 
 # Test corpus cached outputs — fetched from arXiv, not committed
+tests/corpus/tarballs/*.tar.gz
+tests/corpus/tarballs/*.gz
 tests/corpus/expected/*.md
