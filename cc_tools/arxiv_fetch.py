@@ -192,7 +192,7 @@ def _normalize_make4ht_html(html: str) -> str:
 
 
 def _preamble_files(root_tex: str) -> list[str]:
-    """Return root_tex plus files \input'd before \begin{document}."""
+    """Return root_tex plus files from \\input directives before \\begin{document}."""
     tex_dir = os.path.dirname(root_tex)
     files = [root_tex]
     try:
@@ -214,7 +214,7 @@ def _preamble_files(root_tex: str) -> list[str]:
 
 
 def _extract_preamble_macros(root_tex: str) -> str:
-    """Extract math macro definitions from TeX preamble (and \input'd files) as a MathJax $$-block."""
+    """Extract math macro definitions from TeX preamble and \\input-included files as a MathJax $$-block."""
     macro_pattern = re.compile(
         r"\\(newcommand|renewcommand|providecommand|DeclareMathOperator)\b|\\def\\"
     )
@@ -223,7 +223,6 @@ def _extract_preamble_macros(root_tex: str) -> str:
     for tex_path in _preamble_files(root_tex):
         try:
             with open(tex_path, encoding="utf-8", errors="replace") as f:
-                in_preamble = (tex_path == root_tex)
                 for line in f:
                     if r"\begin{document}" in line:
                         break
@@ -261,6 +260,8 @@ def _post_process_src(content: str, arxiv_id: str, macro_block: str = "", pipeli
         content = re.sub(r"<span[^>]*>(.*?)</span>", r"\1", content, flags=re.DOTALL)
     # Strip <img> tags (figures don't render in Obsidian without the tarball)
     content = re.sub(r"<img[^>]*/?>", "", content)
+    # Strip <figure>, <div>, <p> container tags — keep content, drop wrappers
+    content = re.sub(r"<(?:figure|div|p)(?:\s[^>]*)?>|</(?:figure|div|p)>", "", content)
     # Strip <br> tags
     content = re.sub(r"<br\s*/?>", "\n", content)
     # Strip internal anchor links — keep link text
