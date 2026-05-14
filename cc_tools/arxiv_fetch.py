@@ -191,19 +191,48 @@ def _normalize_make4ht_html(html: str) -> str:
     )
 
 
-def _extract_preamble_macros(tex_path: str) -> str:
-    """Extract math macro definitions from TeX preamble as a MathJax $$-block."""
-    macros = []
+def _preamble_files(root_tex: str) -> list[str]:
+    """Return root_tex plus files \input'd before \begin{document}."""
+    tex_dir = os.path.dirname(root_tex)
+    files = [root_tex]
     try:
-        with open(tex_path, encoding="utf-8", errors="replace") as f:
+        with open(root_tex, encoding="utf-8", errors="replace") as f:
             for line in f:
                 if r"\begin{document}" in line:
                     break
-                stripped = line.strip()
-                if re.match(r"\\(newcommand|renewcommand|providecommand|DeclareMathOperator)\b|\\def\\", stripped):
-                    macros.append(stripped)
+                m = re.search(r"\\(?:input|include)\{([^}]+)\}", line)
+                if m:
+                    name = m.group(1)
+                    if not name.endswith(".tex"):
+                        name += ".tex"
+                    path = os.path.join(tex_dir, name)
+                    if os.path.exists(path):
+                        files.append(path)
     except OSError:
-        return ""
+        pass
+    return files
+
+
+def _extract_preamble_macros(root_tex: str) -> str:
+    """Extract math macro definitions from TeX preamble (and \input'd files) as a MathJax $$-block."""
+    macro_pattern = re.compile(
+        r"\\(newcommand|renewcommand|providecommand|DeclareMathOperator)\b|\\def\\"
+    )
+    seen: set[str] = set()
+    macros: list[str] = []
+    for tex_path in _preamble_files(root_tex):
+        try:
+            with open(tex_path, encoding="utf-8", errors="replace") as f:
+                in_preamble = (tex_path == root_tex)
+                for line in f:
+                    if r"\begin{document}" in line:
+                        break
+                    stripped = line.strip()
+                    if macro_pattern.match(stripped) and stripped not in seen:
+                        seen.add(stripped)
+                        macros.append(stripped)
+        except OSError:
+            continue
     if not macros:
         return ""
     return "$$\n" + "\n".join(macros) + "\n$$\n\n"
@@ -212,8 +241,30 @@ def _extract_preamble_macros(tex_path: str) -> str:
 def _post_process_src(content: str, arxiv_id: str, macro_block: str = "", pipeline: str = "make4ht+mathjax") -> str:
     # HTML entities in raw-HTML passthrough blocks (algorithm listings, captions)
     content = content.replace("&amp;", "&").replace("&lt;", "<").replace("&gt;", ">")
-    # CSS class spans from make4ht: [text]{.ClassName} -> text
+    # CSS class spans from make4ht: [text]{.ClassName} -> text  (dot-class variant)
     content = re.sub(r"\[([^\]]*)\]\{\.[\w-]+\}", r"\1", content)
+    # Strip empty HTML anchors []{#id} produced by pandoc from make4ht's id attributes
+    content = re.sub(r"\[\]\{#[^}]+\}", "", content)
+    # Strip span wrappers [text]{#id .class} — keep text, drop attribute
+    content = re.sub(r"\[([^\]]*)\]\{#[^}]+\}", r"\1", content)
+    # Strip remaining {#id ...} heading/block attributes
+    content = re.sub(r"\s*\{#[^}]+\}", "", content)
+    # Strip residual HTML: figure captions → italicised plain text
+    def _clean_figcaption(m: re.Match) -> str:
+        inner = re.sub(r"<[^>]+>", " ", m.group(1))
+        inner = _html.unescape(inner)
+        inner = re.sub(r"\s+", " ", inner).strip()
+        return f"\n\n*{inner}*\n\n"
+    content = re.sub(r"<figcaption>(.*?)</figcaption>", _clean_figcaption, content, flags=re.DOTALL)
+    # Strip <span> tags (keep content); two passes for nesting
+    for _ in range(3):
+        content = re.sub(r"<span[^>]*>(.*?)</span>", r"\1", content, flags=re.DOTALL)
+    # Strip <img> tags (figures don't render in Obsidian without the tarball)
+    content = re.sub(r"<img[^>]*/?>", "", content)
+    # Strip <br> tags
+    content = re.sub(r"<br\s*/?>", "\n", content)
+    # Strip internal anchor links — keep link text
+    content = re.sub(r'<a\s+href="#[^"]*">(.*?)</a>', r"\1", content, flags=re.DOTALL)
     # Style attributes
     content = re.sub(r'\{style="[^"]*"\}', "", content)
     # Div block markers (::: mathjax-block etc.)
