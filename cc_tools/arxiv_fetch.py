@@ -231,7 +231,14 @@ def _src_to_markdown(arxiv_id: str) -> str:
     try:
         with urllib.request.urlopen(req, timeout=60) as resp:
             src_data = resp.read()
-    except (urllib.error.HTTPError, urllib.error.URLError) as e:
+    except urllib.error.HTTPError as e:
+        if e.code == 403:
+            raise RuntimeError(
+                "no TeX source available (403) — paper was likely submitted as PDF-only; "
+                "use cc-markitdown on the PDF as fallback"
+            )
+        raise RuntimeError(f"source download failed: {e}")
+    except urllib.error.URLError as e:
         raise RuntimeError(f"source download failed: {e}")
 
     with tempfile.TemporaryDirectory() as tmpdir:
