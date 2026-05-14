@@ -85,6 +85,7 @@ def main() -> None:
     result = subprocess.run([
         "rsync", "-av", "--delete",
         "--exclude=.git/",
+        "--filter=P *.pdf",        # protect gitignored build artifacts in destination
         "--filter=:- .gitignore",
         *dry_run_flag,
         source, dest,
