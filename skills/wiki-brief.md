@@ -342,37 +342,9 @@ links — not code spans. Pages are two levels from the wiki root, so the path i
 - Wikipedia, "Ilya Sutskever" (accessed 2026-04-26) — [raw/wikipedia-sutskever.md](../../raw/wikipedia-sutskever.md)
 ```
 
-**Company financial figures require a structured caveat — when used in valuation,
-growth, or financial comparison contexts.** The cleanest signal is EDGAR: if the company
-files a 10-K or 10-Q, it is public and its financials are under SEC audit obligation;
-if no 10-K exists on EDGAR, apply the private-company caveat regardless of how the figure
-is presented. Apply two tiers:
-
-- **Public companies** (10-K / 10-Q on EDGAR): cite the figure, note the filing period
-  (e.g., "FY2024 10-K"), and flag if it is revenue vs. ARR vs. deferred revenue. No
-  further caveat needed — EDGAR-filed figures are audited and subject to restatement risk
-  but are not run-rate estimates.
-
-- **Private companies** (no 10-K on EDGAR — press releases, funding announcements,
-  management commentary): figures are self-reported and unaudited. Add a note: "Figure is
-  [run-rate / ARR / annualized] as reported by the company; not audited under GAAP."
-  Company announcements frequently report a single quarter annualized rather than trailing
-  twelve months — and almost never note the distinction. A reader unfamiliar with this
-  convention can easily misread run-rate as trailing revenue, overstating actual
-  performance by 2–4×.
-
-**Cross-company comparisons require an inline asymmetry flag.** When a table or
-paragraph places a public-company figure alongside a private-company figure — e.g.,
-"Snowflake NRR 126% (FY2024 10-K) vs. Databricks NRR >140% (company announcement)"
-— note the asymmetry at the point of comparison, not only in a separate caveat block.
-A reader scanning a table will treat both numbers as equivalent-quality data unless told
-otherwise. Example inline note: "Databricks figure is self-reported and unaudited;
-Snowflake figure is SEC-disclosed." The two-tier caveat block explains the rule; the
-inline note enforces it where it matters.
-
-Do not fire this caveat on non-financial figures (customer counts, product launch
-metrics, headcount) — treating every press release citation as suspect trains researchers
-to skip past the warning when it actually matters.
+**Company financial figures require structured caveats.** For company briefs with
+financial figures (valuation, revenue, ARR, NRR, growth rate), read and apply the rules
+in `~/Projects/PhenomML/cc-tools/templates/wiki-brief-financial-caveats.md`.
 
 **Before writing any claim about a third party's actions, relationships, or funding,
 grep existing `raw/` files for their name.** Peer-reviewed journals require financial
@@ -469,61 +441,5 @@ contribution to the wiki traceable without re-reading everything.
 
 ## Embedded Mode
 
-Use this procedure when `../CLAUDE.md` or `../.git` is detected — the wiki is a
-subdirectory of a code repo, not a standalone research brief.
-
-### Navigation
-
-All code, conda, and git operations run from `../` (the repo root), not from `wiki/`.
-Verify your working directory before every shell command — conda and git run silently
-from the wrong directory without error.
-
-```bash
-pwd        # confirm you are in wiki/
-ls ../     # confirm repo root contents before any code work
-```
-
-### Minimal scaffold
-
-Create only what the experiment needs. Skip sub-wiki directories, biography/, products/,
-and other standalone-brief structure.
-
-Create at the brief root if not already present:
-- `syntheses/` — shared blackboard for agent-authored files and handoffs
-- `raw/` — for documents fetched during the experiment
-- `.gitignore` containing `raw/`
-- `log.md` — with a minimal header: `# <Project> Log\n\n<!-- entries appended below -->`
-- `CLAUDE.md` — copy from `~/Projects/PhenomML/cc-tools/templates/experiment-wiki-CLAUDE.md`
-  and fill in the title, date, and goal from the driving question
-
-Run:
-```bash
-bash ~/Projects/PhenomML/cc-tools/setup-claude.sh --project .
-```
-
-Do not create standalone sub-wiki directories or index.md unless the operational brief
-specifically calls for them.
-
-### Orientation synthesis
-
-Write the orientation synthesis to `syntheses/<slug>.md` using standard wiki synthesis
-frontmatter before doing any other work. This is the confirmation gate — stop and wait
-for the researcher to confirm the orientation is correct before starting any computation,
-environment setup, or code work.
-
-### Multi-agent convention
-
-When two Claude instances collaborate through the same `syntheses/` directory, use these
-conventions so each agent's contributions are traceable:
-
-**File naming:** `syntheses/<topic>-<agent-slug>.md`
-Examples: `syntheses/phase-minus1-results-emma.md`, `syntheses/sign-convention-response-xfmr.md`
-
-**Asking questions:** append a `## Questions for <Agent>` section to any synthesis file.
-The named agent responds in a new file: `syntheses/<topic>-response-<agent-slug>.md`.
-
-**Routing:** the researcher relays files between sessions — there is no direct channel
-between agents. Keep question sections short and unambiguous.
-
-**Blackboard rule:** `syntheses/` is append-only shared state. Never overwrite another
-agent's files; write responses and amendments as new files.
+If embedded wiki detected: read `~/Projects/PhenomML/cc-tools/templates/wiki-brief-embedded.md`
+and follow it instead of Steps 1–8 above.
