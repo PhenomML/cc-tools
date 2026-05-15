@@ -1,8 +1,43 @@
-# Authoring Guide for cc-md2pdf
+# Authoring Guide for cc-tools
 
-Documents processed by `cc-md2pdf` are rendered via **pandoc + XeLaTeX** and are
-also intended to open in **Obsidian**. Both pipelines share the same LaTeX math syntax,
-so a single source file works for both outputs.
+All cc-tools output — wiki pages, raw ingested files, syntheses, commission documents,
+preregistrations, and PDF exports — shares a single math standard. Write once; all
+targets follow.
+
+---
+
+## Math standard
+
+**cc-tools targets Markdown + MathJax, aligned with GitHub's math renderer (MathJax v3,
+introduced May 2022).** This is the same renderer used by Obsidian. `cc-md2pdf` output
+via pandoc + XeLaTeX has a superset of MathJax coverage — anything valid in MathJax
+renders correctly in PDF.
+
+### Renderer by output type
+
+| Output type | Renderer |
+|---|---|
+| Obsidian wiki pages, syntheses, raw files | MathJax v3 |
+| GitHub `.md` preview | MathJax v3 |
+| `cc-md2pdf` PDF export | pandoc + XeLaTeX (superset of MathJax) |
+| `cc-arxiv --src` raw files | MathJax v3 (Obsidian target) |
+| `cc-webfetch --math` output | MathJax v3 (Obsidian target) |
+
+Write for MathJax. The other targets follow.
+
+### Math as specification
+
+When a document is a specification — a preregistration, commission, methods section, or
+reproducibility record — the math must be sufficient for an independent implementer to
+reproduce the experiment from the document alone, without reference to code. This is a
+reproducibility requirement, not a style preference. If a variable, operator, or
+distribution is introduced in prose but undefined in math, the specification is incomplete.
+
+### Caveat: chemical notation
+
+`\ce{H2O}` (mhchem extension) is supported in Obsidian by default and in `cc-md2pdf`
+via XeLaTeX. GitHub's MathJax does not load mhchem — avoid `\ce{}` in documents
+intended for GitHub preview. Use `\text{H}_2\text{O}` as a portable fallback.
 
 ---
 
