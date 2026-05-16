@@ -10,6 +10,7 @@ dependencies = [
     "nbconvert>=7.17.1",
     "pdfplumber>=0.11.9",
     "trafilatura>=2.0",
+    "beautifulsoup4>=4.12",
 ]
 
 [project.scripts]
@@ -25,6 +26,7 @@ cc-dropbox-sync  = "cc_tools.dropbox_sync:main"
 cc-ocr           = "cc_tools.ocr:main"
 cc-safari-fetch       = "cc_tools.safari_fetch:main"
 cc-semantic-scholar   = "cc_tools.semantic_scholar:main"
+cc-distill-fetch      = "cc_tools.distill_fetch:main"
 
 [tool.setuptools.packages.find]
 include = ["cc_tools*"]
