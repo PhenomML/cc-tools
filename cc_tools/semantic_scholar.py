@@ -1,6 +1,7 @@
 import json
 import os
 import sys
+import time
 import urllib.error
 import urllib.parse
 import urllib.request
@@ -12,6 +13,10 @@ SEARCH_LIMIT = 10
 ABSTRACT_PREVIEW = 300
 
 
+MAX_RETRIES = 3
+BACKOFF_BASE = 5  # seconds: 5, 15, 45
+
+
 def _get(path: str, params: dict) -> dict:
     url = f"{S2_BASE}/{path}?" + urllib.parse.urlencode(params)
     headers = {"User-Agent": "cc-tools/cc-semantic-scholar"}
@@ -19,18 +24,31 @@ def _get(path: str, params: dict) -> dict:
     if api_key:
         headers["x-api-key"] = api_key
     req = urllib.request.Request(url, headers=headers)
-    try:
-        with urllib.request.urlopen(req, timeout=15) as resp:
-            return json.loads(resp.read())
-    except urllib.error.HTTPError as e:
-        body = ""
+
+    for attempt in range(MAX_RETRIES + 1):
         try:
-            body = e.read().decode("utf-8", errors="replace")
-        except Exception:
-            pass
-        raise RuntimeError(f"HTTP {e.code}: {body[:200] or e.reason}")
-    except urllib.error.URLError as e:
-        raise RuntimeError(str(e.reason))
+            with urllib.request.urlopen(req, timeout=15) as resp:
+                return json.loads(resp.read())
+        except urllib.error.HTTPError as e:
+            if e.code == 429 and attempt < MAX_RETRIES:
+                wait = BACKOFF_BASE * (3 ** attempt)
+                print(
+                    f"cc-semantic-scholar: rate limited — retrying in {wait}s "
+                    f"({attempt + 1}/{MAX_RETRIES})",
+                    file=sys.stderr,
+                )
+                time.sleep(wait)
+                continue
+            body = ""
+            try:
+                body = e.read().decode("utf-8", errors="replace")
+            except Exception:
+                pass
+            raise RuntimeError(f"HTTP {e.code}: {body[:200] or e.reason}")
+        except urllib.error.URLError as e:
+            raise RuntimeError(str(e.reason))
+
+    raise RuntimeError("rate limited after retries — set S2_API_KEY for higher limits")
 
 
 def _format_authors(authors: list) -> str:
