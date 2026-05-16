@@ -176,6 +176,7 @@ version = "0.1.0"
 source = { virtual = "." }
 dependencies = [
     { name = "arxiv" },
+    { name = "beautifulsoup4" },
     { name = "markitdown", extra = ["all"] },
     { name = "nbconvert" },
     { name = "pdfplumber" },
@@ -191,6 +192,7 @@ dev = [
 [package.metadata]
 requires-dist = [
     { name = "arxiv", specifier = ">=3.0.0" },
+    { name = "beautifulsoup4", specifier = ">=4.12" },
     { name = "markitdown", extras = ["all"], specifier = ">=0.1.5" },
     { name = "nbconvert", specifier = ">=7.17.1" },
     { name = "pdfplumber", specifier = ">=0.11.9" },
