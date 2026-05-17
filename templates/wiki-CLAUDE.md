@@ -64,6 +64,7 @@ wiki/                   ← repo root (this file lives here)
   CLAUDE.md             ← this file
   index.md              ← cross-wiki catalog (Claude maintains)
   log.md                ← chronological record of all operations (Claude maintains)
+  pipeline-status.md    ← per-paper pipeline tracker: fetch quality → Karpathy → claims → AG → adjudicated (Claude maintains)
   raw/                  ← source documents — local only, never committed
   <subwiki>/            ← one directory per research domain (see Sub-wikis above)
     CLAUDE.md           ← scope definition for this sub-wiki

@@ -7,6 +7,7 @@ wiki/                   ← repo root (this file lives here)
   index.md              ← cross-wiki catalog (Claude maintains)
   log.md                ← chronological record of all operations (Claude maintains)
   queue.md              ← candidate books and papers for future ingestion (Claude maintains)
+  pipeline-status.md    ← per-paper pipeline tracker: fetch quality → Karpathy → claims → AG → adjudicated (Claude maintains)
   raw/                  ← source documents — local only, never committed
   claims/               ← adversarial claim documents (one set per high-stakes claim or lemma)
   failures/             ← failure records FR-NNN.md; always kept in active context

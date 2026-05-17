@@ -189,13 +189,43 @@ secondary sub-wiki's `index.md`:
 The `wikis:` frontmatter field specifies exactly where to cross-file — do not skip
 secondary wikis and leave them for a manual pass.
 
-## Step 5 — Update root log
+## Step 5 — Update root log and pipeline status
 
 Append to `log.md`:
 ```
 ## [<YYYY-MM-DD>] ingest | <Author> (<Year>) — <Title>
 Sub-wikis: <list>. Pages written: <count>. Key concepts updated: <list>.
 ```
+
+Add or update the entry for this paper in `pipeline-status.md` at the wiki root. If the file does not exist, create it with this header:
+
+```markdown
+# Pipeline Status
+
+<!-- Updated by /wiki-ingest (Fetch method, Raw quality, Karpathy). Updated by /wiki-promote (Adjudicated). Cross-validated by /wiki-lint. -->
+
+| Paper | Fetch method | Raw quality | Karpathy | Claims | AG | Adjudicated |
+|---|---|---|---|---|---|---|
+```
+
+Add one row for this paper. Set Fetch method and Raw quality from the fetch in Step 1; link Karpathy to the primary paper page; set Claims, AG, and Adjudicated to `—`.
+
+**Fetch method vocabulary:** `tarball` (cc-arxiv --src) | `PDF+markitdown` | `cc-safari-fetch` | `abstract` | `stub`
+
+**Raw quality vocabulary:**
+- `✓ full text` — confirmed correct paper, full content available
+- `○ paywalled` — correct paper identified, full text needs institutional access
+- `⚠ wrong URL` — fetch returned wrong paper; note what is needed in the cell
+- `⚠ pending ID` — correct paper known, arXiv/DOI unconfirmed
+
+Example rows:
+```markdown
+| [elhage-2021-transformer-circuits](mechanistic-interpretability/papers/elhage-2021-transformer-circuits.md) | tarball | ✓ full text | [summary](mechanistic-interpretability/papers/elhage-2021-transformer-circuits.md) | — | — | — |
+| alkaissi-2023-fabricated | stub | ⚠ wrong Cureus URL — try PubMed | — | — | — | — |
+| wang-2023-science | abstract | ○ paywalled | — | — | — | — |
+```
+
+This file survives session compaction and is the authoritative source of raw/ quality state. Do not reconstruct it from conversation memory.
 
 ## Step 6 — Report
 
