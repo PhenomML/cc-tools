@@ -1,0 +1,12 @@
+---
+arxiv_id: "math/9510203"
+title: "unknown — verify after first --regenerate run"
+authors: "Szarek, Voiculescu"
+year: 1995
+pipeline: pandoc-latex
+macro_count_min: 0
+macro_file: null
+known_artifacts: []
+verified: null
+notes: "Pre-2000 paper with bare .tex source (not tarball); regression for issue #32 (bare .tex path). Pipeline tag to be confirmed after first --regenerate run."
+---
