@@ -92,6 +92,13 @@ confidence: high | medium | low
 ---
 ```
 
+**Additional fields for `paper` pages** (add after `confidence:`):
+```yaml
+fetch_provenance: "tarball | cc-arxiv --src <id> | YYYY-MM-DD"
+                 # PDF | cc-markitdown | YYYY-MM-DD
+                 # abstract only | cc-arxiv <id> | YYYY-MM-DD
+```
+
 **Additional fields for `research-thread` pages** (add after `confidence:`):
 ```yaml
 brief_path: ../Topics/compressed-sensing   # relative from wiki root to brief directory

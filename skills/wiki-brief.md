@@ -286,11 +286,25 @@ only if the tarball fails (PDF-only submissions have no LaTeX source). Do not us
 `cc-webfetch https://arxiv.org/html/<id>` — HTML is a derived rendering inferior to the
 tarball and is not part of the arXiv fetch workflow.
 
-**After saving any arXiv file, verify the title.** Read the first 10 lines of the saved
-file and confirm the title matches the intended paper before proceeding. A fetch can
-silently return the wrong paper (bad redirect, ID collision, cached error page) — a
-title mismatch caught here prevents wrong content from propagating into concept pages
-and citations.
+**Title verification gate.** After saving any source file, read the first 10 lines and
+confirm the title matches the intended paper before proceeding. This is a gate, not a
+note — do not continue to the next fetch or to Step 6 with an unverified file.
+
+What "silently wrong" looks like: a fetch can return a different paper (bad redirect,
+ID collision, cached error page) with no error signal. The file exists, has content, and
+looks plausible until you read the title. `cc-arxiv --src` can return a LaTeX
+compilation error or a stub. In both cases the slug is right and the content is wrong
+— the title is the only check. Speed is not the priority in brief ingestion; a
+wrong-paper error discovered after ten concept pages are written costs far more than a
+title check costs now.
+
+**Record fetch provenance for each source.** When saving a file to `raw/`, append a
+one-line entry to `log.md` noting the method:
+```
+- Fetched: raw/<slug>.md via cc-arxiv --src <id>   # or: cc-markitdown, cc-webfetch, abstract only
+```
+This builds the dataset for measuring which sources yield clean content via which tool,
+and makes the basis of each concept page traceable if the brief is revisited.
 
 **Large fetched files:** the Read tool enforces a 256KB limit. Files larger than this
 (long essays, Wikipedia pages for major topics) will be refused. Use `offset` and

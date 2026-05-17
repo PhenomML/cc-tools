@@ -37,12 +37,18 @@ Fetch the full text using the tarball (TeX source — highest fidelity, works fo
 ```bash
 cc-arxiv --src <id> > raw/<author>-<year>-<slug>.md
 ```
+
+> **Title verification gate:** Read the first 10 lines of the saved file and confirm the title matches the intended paper before proceeding. `cc-arxiv --src` can produce a LaTeX compilation stub, an error document, or content from a different paper — the title is the first check. A mismatch is a stop signal: do not use the file as a source.
+
 If the tarball fails (paper is PDF-only, no LaTeX source submitted), fall back to the PDF:
 ```bash
 mkdir -p raw/pdf
 curl -L <pdf-url> -o raw/pdf/<author>-<year>-<slug>.pdf
 cc-markitdown raw/pdf/<author>-<year>-<slug>.pdf > raw/<author>-<year>-<slug>.md
 ```
+
+> **Title verification gate:** Read the first 10 lines and confirm the title. PDF-to-markdown conversion can silently produce wrong content if the PDF URL resolved to a redirect target. A mismatch is a stop signal: do not use the file as a source.
+
 PDFs land in `raw/pdf/`; the converted markdown lands in `raw/`. The `sources:` field cites both at their respective paths (e.g. `../../raw/author-year-slug.md` and `../../raw/pdf/author-year-slug.pdf`).
 
 **Do not use `cc-webfetch https://arxiv.org/html/<id>`** — HTML is a derived rendering of the same LaTeX source, inferior to the tarball in math fidelity and completeness. It is not part of the arXiv fetch workflow.
@@ -57,6 +63,9 @@ mkdir -p raw/pdf
 curl -L <pdf-url> -o raw/pdf/<author>-<year>-<slug>.pdf
 cc-markitdown raw/pdf/<author>-<year>-<slug>.pdf > raw/<author>-<year>-<slug>.md
 ```
+
+> **Title verification gate:** Read the first 10 lines and confirm the title before proceeding.
+
 Same `raw/pdf/` + `raw/` split and `sources:` citation pattern as arXiv PDF fallback.
 
 **If PubMed PMID or any DOI (CrossRef):** fetch metadata first:
@@ -93,11 +102,6 @@ The source file stays where it is; only the converted markdown lands in `raw/`.
 
 In all cases the saved `.md` file in `raw/` is the working copy for all subsequent
 steps — do not re-run the conversion.
-
-**After saving any arXiv file, verify the title.** Read the first 10 lines of the saved
-file and confirm the title matches the intended paper. A fetch can silently return the
-wrong paper (bad redirect, ID collision, cached error page) — a mismatch caught here
-prevents wrong content from propagating into the wiki.
 
 ## Step 2 — Read and discuss
 
@@ -150,6 +154,9 @@ related: []
 created: <today>
 updated: <today>
 confidence: high     # high = primary source read directly; medium = secondhand/abstract only; low = inferred
+fetch_provenance: "tarball | cc-arxiv --src <id> | <YYYY-MM-DD>"
+                 # PDF | cc-markitdown | <YYYY-MM-DD>
+                 # abstract only | cc-arxiv <id> | <YYYY-MM-DD>
 ```
 
 **Before writing any pages, verify one `sources:` path resolves** by checking the file
