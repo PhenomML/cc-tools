@@ -33,17 +33,19 @@ If the abstract answers your question, metadata alone may be sufficient — you 
 title, authors, year, and PDF URL for a citation without fetching further. Fetch the
 full text when you need specific claims, methodology, or data not visible in the abstract.
 
-If HTML is available (reported in the output), fetch it directly into raw/ as markdown:
+Fetch the full text using the tarball (TeX source — highest fidelity, works for all papers with LaTeX source):
 ```bash
-cc-webfetch https://arxiv.org/html/<id> > raw/<author>-<year>-<slug>.md
+cc-arxiv --src <id> > raw/<author>-<year>-<slug>.md
 ```
-If HTML is not available, download the PDF using the URL from cc-arxiv output and convert:
+If the tarball fails (paper is PDF-only, no LaTeX source submitted), fall back to the PDF:
 ```bash
 mkdir -p raw/pdf
 curl -L <pdf-url> -o raw/pdf/<author>-<year>-<slug>.pdf
 cc-markitdown raw/pdf/<author>-<year>-<slug>.pdf > raw/<author>-<year>-<slug>.md
 ```
 PDFs land in `raw/pdf/`; the converted markdown lands in `raw/`. The `sources:` field cites both at their respective paths (e.g. `../../raw/author-year-slug.md` and `../../raw/pdf/author-year-slug.pdf`).
+
+**Do not use `cc-webfetch https://arxiv.org/html/<id>`** — HTML is a derived rendering of the same LaTeX source, inferior to the tarball in math fidelity and completeness. It is not part of the arXiv fetch workflow.
 
 **If bioRxiv/medRxiv DOI (`10.1101/...`):** fetch metadata first:
 ```bash

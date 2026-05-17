@@ -279,9 +279,12 @@ do not leave the absence invisible. See Step 7.
 
 **arXiv sources:** use `cc-arxiv <id>` to fetch metadata. If the abstract answers your
 question, metadata alone may be sufficient — the abstract, authors, year, and PDF URL
-are all you need for a citation. Fetch the full text (HTML preferred; PDF via
-`cc-markitdown` as fallback) only when you need specific claims, methodology, or data
-not visible in the abstract.
+are all you need for a citation. Fetch the full text when you need specific claims,
+methodology, or data not visible in the abstract: use `cc-arxiv --src <id>` (TeX source
+tarball, highest math fidelity) as the primary path; fall back to PDF via `cc-markitdown`
+only if the tarball fails (PDF-only submissions have no LaTeX source). Do not use
+`cc-webfetch https://arxiv.org/html/<id>` — HTML is a derived rendering inferior to the
+tarball and is not part of the arXiv fetch workflow.
 
 **After saving any arXiv file, verify the title.** Read the first 10 lines of the saved
 file and confirm the title matches the intended paper before proceeding. A fetch can
