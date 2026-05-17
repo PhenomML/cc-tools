@@ -63,8 +63,9 @@ Match on both slug overlap (filename) AND title substring (case-insensitive) —
 entries and ingested pages are often named by different sessions and may not share a slug
 even when they refer to the same source.
 
-**Pipeline status cross-validation** — if `pipeline-status.md` exists at the wiki root, run three checks:
+**Pipeline status cross-validation** — if `pipeline-status.md` exists at the wiki root, run four checks:
 - **Missing entries:** papers present in any `papers/` directory but absent from pipeline-status.md. These were ingested before the feature shipped or ingest did not update the file. List slug and sub-wiki for backfill.
+- **Missing raw/ files:** for each row where raw quality is `✓ full text` or `○ paywalled` (i.e., not a `⚠` problem row), derive the expected raw/ slug from the paper link text and verify a file with that slug exists in `raw/`. A row that claims successful ingestion but has no corresponding raw/ file is a silent gap — the paper page exists but the source it was built from is gone. List slug and row for investigation.
 - **Broken Karpathy links:** rows where the Karpathy column contains a path but that file does not exist. List the row and the expected path.
 - **Open fetch problems:** rows with a `⚠` raw quality code (`⚠ wrong URL`, `⚠ pending ID`). List these separately — they are actionable fetch failures, not passive gaps, and should not be buried in other findings.
 
