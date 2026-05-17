@@ -309,8 +309,11 @@ def _convert_tarball(src_data: bytes, arxiv_id: str) -> str:
             with tarfile.open(tarpath) as tar:
                 tar.extractall(tmpdir, filter="data")
         except tarfile.TarError:
-            # arXiv sometimes returns a bare .tex file rather than a tarball
-            tex_path = os.path.join(tmpdir, f"{arxiv_id}.tex")
+            # arXiv sometimes returns a bare .tex file rather than a tarball.
+            # Sanitize arxiv_id: old-style IDs like math/9510203 contain '/'
+            # which would make os.path.join create a non-existent subdirectory.
+            safe_id = arxiv_id.replace("/", "_")
+            tex_path = os.path.join(tmpdir, f"{safe_id}.tex")
             with open(tex_path, "wb") as f:
                 f.write(src_data)
 
@@ -377,6 +380,8 @@ def _html_available(base_id: str) -> bool:
 
 
 def main():
+    import shutil
+
     argv = sys.argv[1:]
     src_mode = "--src" in argv
     argv = [a for a in argv if a != "--src"]
@@ -390,8 +395,17 @@ def main():
         local_src = argv[idx + 1]
         argv = argv[:idx] + argv[idx + 2:]
 
+    output_path = None
+    if "--output" in argv:
+        idx = argv.index("--output")
+        if idx + 1 >= len(argv):
+            print("cc-arxiv: --output requires a path argument", file=sys.stderr)
+            sys.exit(1)
+        output_path = argv[idx + 1]
+        argv = argv[:idx] + argv[idx + 2:]
+
     if len(argv) != 1 or argv[0] in ("-h", "--help"):
-        print("Usage: cc-arxiv [--src] [--local-src <path>] <arxiv-id|biorxiv-doi|pmid|doi>", file=sys.stderr)
+        print("Usage: cc-arxiv [--src] [--local-src <path>] [--output <path>] <arxiv-id|biorxiv-doi|pmid|doi>", file=sys.stderr)
         print("Fetch metadata for a preprint or published paper.", file=sys.stderr)
         print("  arXiv ID:            2301.07608", file=sys.stderr)
         print("  bioRxiv/medRxiv DOI: 10.1101/2024.01.12.574717", file=sys.stderr)
@@ -402,6 +416,8 @@ def main():
         print("         arXiv IDs only; outputs markdown to stdout.", file=sys.stderr)
         print("  --local-src <path>: use cached tarball instead of fetching from arXiv.", file=sys.stderr)
         print("         Requires --src. Useful for offline re-conversion.", file=sys.stderr)
+        print("  --output <path>: write output to file atomically (safe alternative to '>').", file=sys.stderr)
+        print("         On failure, the target file is not modified.", file=sys.stderr)
         sys.exit(0 if (argv and argv[0] in ("-h", "--help")) else 1)
 
     paper_id = argv[0]
@@ -420,7 +436,22 @@ def main():
         except RuntimeError as e:
             print(f"cc-arxiv --src: {e}", file=sys.stderr)
             sys.exit(1)
-        print(md, end="")
+        if output_path:
+            # Write to temp file alongside target, then move atomically
+            tmp = output_path + ".tmp"
+            try:
+                with open(tmp, "w", encoding="utf-8") as f:
+                    f.write(md)
+                shutil.move(tmp, output_path)
+            except OSError as e:
+                print(f"cc-arxiv --src: failed to write output: {e}", file=sys.stderr)
+                try:
+                    os.unlink(tmp)
+                except OSError:
+                    pass
+                sys.exit(1)
+        else:
+            print(md, end="")
         return
 
     if local_src:
