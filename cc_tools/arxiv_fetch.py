@@ -298,6 +298,25 @@ def _fetch_tarball(arxiv_id: str) -> bytes:
         raise RuntimeError(f"source download failed: {e}")
 
 
+def _detect_tex_dialect(directory: str) -> str | None:
+    """Return dialect name if directory contains AMSTeX/plain TeX but no LaTeX files."""
+    for dirpath, _, filenames in os.walk(directory):
+        for fname in filenames:
+            if not fname.endswith(".tex"):
+                continue
+            fpath = os.path.join(dirpath, fname)
+            try:
+                with open(fpath, "rb") as f:
+                    chunk = f.read(512)
+                if b"%&amstex" in chunk or b"%&amsppt" in chunk:
+                    return "AMSTeX"
+                if b"%&plain" in chunk or chunk.lstrip().startswith(b"\\input plain"):
+                    return "plain TeX"
+            except OSError:
+                pass
+    return None
+
+
 def _convert_tarball(src_data: bytes, arxiv_id: str) -> str:
     """Convert raw tarball bytes to markdown. Called by _src_to_markdown and --local-src."""
     with tempfile.TemporaryDirectory() as tmpdir:
@@ -319,6 +338,14 @@ def _convert_tarball(src_data: bytes, arxiv_id: str) -> str:
 
         root_tex = _find_root_tex(tmpdir)
         if not root_tex:
+            # Check if source is AMSTeX or plain TeX (pre-LaTeX dialects, common pre-2000)
+            dialect = _detect_tex_dialect(tmpdir)
+            if dialect:
+                raise RuntimeError(
+                    f"{dialect} source detected — no \\documentclass; "
+                    "make4ht and pandoc require LaTeX. "
+                    "Use PDF fallback: cc-markitdown on the arXiv PDF."
+                )
             raise RuntimeError("could not find root .tex file with \\documentclass")
 
         tex_dir = os.path.dirname(root_tex)

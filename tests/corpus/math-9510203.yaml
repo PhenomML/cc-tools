@@ -1,12 +1,13 @@
 ---
 arxiv_id: "math/9510203"
-title: "unknown — verify after first --regenerate run"
+title: "Volumes of Sections of Cubes and Related Problems"
 authors: "Szarek, Voiculescu"
 year: 1995
-pipeline: pandoc-latex
+pipeline: no-source
 macro_count_min: 0
 macro_file: null
-known_artifacts: []
-verified: null
-notes: "Pre-2000 paper with bare .tex source (not tarball); regression for issue #32 (bare .tex path). Pipeline tag to be confirmed after first --regenerate run."
+known_artifacts:
+  - "AMSTeX source (%&amstex format line) — no \\documentclass; make4ht and pandoc require LaTeX; use PDF fallback"
+verified: 2026-05-17
+notes: "Pre-2000 AMSTeX paper; regression for issue #32 bare .tex + AMSTeX detection. Expects graceful failure with clear error message."
 ---
