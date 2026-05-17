@@ -227,7 +227,44 @@ Example rows:
 
 This file survives session compaction and is the authoritative source of raw/ quality state. Do not reconstruct it from conversation memory.
 
-## Step 6 — Report
+## Step 6 — Session Completion Checklist
+
+Run these checks before declaring the session complete. Each item is a verification by inspection — run the command and read the output. Do not answer from memory.
+
+For each paper ingested this session:
+
+**1. Title confirmed** — read the raw/ file and confirm the title is the intended paper:
+```bash
+head -20 raw/<author-year-slug>.md
+```
+If the title is wrong or the file is a stub or compilation error: flag it and do not use the file as a source. This overrides any earlier assumption.
+
+**2. `fetch_provenance:` present** — grep the paper page:
+```bash
+grep "fetch_provenance" <wiki>/papers/<author-year-slug>.md
+```
+If absent: add the field before closing. Do not leave a paper page without it.
+
+**3. `pipeline-status.md` entry present** — grep by slug:
+```bash
+grep "<author-year-slug>" pipeline-status.md
+```
+If absent: add the row before closing.
+
+**4. Paper linked in sub-wiki `index.md`** — grep:
+```bash
+grep "<author-year-slug>" <wiki>/index.md
+```
+If absent: add the link before closing.
+
+**5. `log.md` updated** — read the tail and confirm the ingest entry is the last entry:
+```bash
+tail -5 log.md
+```
+
+Report any item that failed and whether it was corrected. A session that completes with uncorrected checklist failures must say so explicitly — do not omit failures from the report.
+
+## Step 7 — Report
 
 List every file created or modified, grouped by sub-wiki. Note any cross-wiki links
 created. Flag any concepts that warrant their own page but don't have one yet.

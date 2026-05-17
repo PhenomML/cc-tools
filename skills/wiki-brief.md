@@ -437,6 +437,36 @@ links if the session is interrupted before the synthesis is complete.
 
 ## Step 8 — Report
 
+**Session Completion Checklist.** Run these checks before reporting. Each is a verification by inspection — run the command and read the output. Do not answer from memory.
+
+For each source saved to `raw/` this session:
+
+**1. Title confirmed** — read the file and confirm it is the intended source:
+```bash
+head -20 raw/<slug>.md
+```
+If the title is wrong: flag it. A wrong-paper file must not propagate into concept pages.
+
+**2. Fetch provenance logged** — confirm a `Fetched:` line appears in `log.md` for each source:
+```bash
+grep "Fetched:" log.md
+```
+If absent for any source: add the missing entries.
+
+**3. Synthesis written** — if a driving question was provided, confirm the synthesis file exists:
+```bash
+ls syntheses/
+```
+
+**4. `index.md` has syntheses link** — confirm the entry was added:
+```bash
+grep "syntheses" index.md
+```
+
+Report any item that failed and whether it was corrected.
+
+---
+
 Run `/wiki-lint` to catch path errors, broken links, and orphaned pages before closing
 the session. Path convention failures are silent at write time — lint is the checkpoint
 that catches them while the session is still warm and fixes are cheap.
