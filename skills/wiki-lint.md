@@ -63,6 +63,19 @@ Match on both slug overlap (filename) AND title substring (case-insensitive) —
 entries and ingested pages are often named by different sessions and may not share a slug
 even when they refer to the same source.
 
+**Pipeline status cross-validation** — if `pipeline-status.md` exists at the wiki root, run three checks:
+- **Missing entries:** papers present in any `papers/` directory but absent from pipeline-status.md. These were ingested before the feature shipped or ingest did not update the file. List slug and sub-wiki for backfill.
+- **Broken Karpathy links:** rows where the Karpathy column contains a path but that file does not exist. List the row and the expected path.
+- **Open fetch problems:** rows with a `⚠` raw quality code (`⚠ wrong URL`, `⚠ pending ID`). List these separately — they are actionable fetch failures, not passive gaps, and should not be buried in other findings.
+
+If `pipeline-status.md` does not exist but `papers/` directories are non-empty, flag its absence as a lint failure.
+
+**Missing `fetch_provenance:` on paper pages** — scan all `papers/*.md` for pages with `type: paper` that lack a `fetch_provenance:` field. Pre-existing pages written before the convention was established will fail this check. List by slug for backfill. No automatic fix — the researcher must determine the original fetch method from `raw/` file content or session logs.
+
+**`fetch_provenance`/`confidence` contradiction** — flag pages where:
+- `fetch_provenance:` contains `abstract` but `confidence:` is `high` — an abstract-only fetch cannot meet the "primary source read directly" bar.
+- `fetch_provenance:` contains `stub` and `confidence:` is not `low` — a stub has no content to establish confidence.
+
 **Math notation** — flag two classes of issue, both for `/math-review`:
 - Bare Unicode Greek letters or Unicode subscript digits used as math notation outside `$...$`
 - Inline `$...$` expressions containing `_` (subscript) where content follows the subscript before the closing `$`, or multiple such expressions on the same line — GitHub italic conflict risk (see AUTHORING.md)
@@ -72,6 +85,6 @@ even when they refer to the same source.
 Append to `log.md`:
 ```
 ## [<YYYY-MM-DD>] lint | <scope>
-Orphans: <n>. Broken links: <n>. Orphaned raw: <n>. Path-depth errors: <n>. Missing concepts (high/suggest): <n>/<n>. Stale pages: <n>.
+Orphans: <n>. Broken links: <n>. Orphaned raw: <n>. Path-depth errors: <n>. Missing concepts (high/suggest): <n>/<n>. Stale pages: <n>. Pipeline status gaps: <n>. Open fetch problems: <n>. Missing fetch_provenance: <n>. Provenance/confidence conflicts: <n>.
 Actions taken: <summary or "none — awaiting researcher direction">.
 ```
