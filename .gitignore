@@ -9,6 +9,9 @@ wheels/
 # Virtual environments
 .venv
 
+# uv lockfile — machine-local, each user resolves their own
+uv.lock
+
 # Private ideas — not for public repo
 ideas/
 
