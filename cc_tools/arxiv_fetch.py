@@ -346,11 +346,16 @@ def _convert_tarball(src_data: bytes, arxiv_id: str) -> str:
             with tarfile.open(tarpath) as tar:
                 tar.extractall(tmpdir, filter="data")
         except tarfile.TarError:
-            # Uncompressed bare .tex — sanitize ID (math/9510203 → math_9510203)
-            _write_bare_tex(src_data, arxiv_id, tmpdir)
+            # Not a tarball. Try gzip decompression first (arXiv returns gzip'd
+            # bare .tex for some old papers); fall back to raw bytes if not gzip.
+            try:
+                content = _gzip.decompress(src_data)
+            except Exception:
+                content = src_data
+            _write_bare_tex(content, arxiv_id, tmpdir)
 
-        # tarfile opens gzip natively but extracts nothing if content isn't a tar.
-        # A gzip'd bare .tex lands here: decompress and write as .tex.
+        # Safety net: tarfile opens gzip natively but may extract nothing if the
+        # content isn't a valid tar. Handle that case too.
         if not _has_tex_files(tmpdir):
             try:
                 decompressed = _gzip.decompress(src_data)
