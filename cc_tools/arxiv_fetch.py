@@ -317,8 +317,26 @@ def _detect_tex_dialect(directory: str) -> str | None:
     return None
 
 
+def _write_bare_tex(data: bytes, arxiv_id: str, tmpdir: str) -> None:
+    """Write raw bytes as a bare .tex file into tmpdir."""
+    safe_id = arxiv_id.replace("/", "_")
+    tex_path = os.path.join(tmpdir, f"{safe_id}.tex")
+    with open(tex_path, "wb") as f:
+        f.write(data)
+
+
+def _has_tex_files(directory: str) -> bool:
+    return any(
+        fname.endswith(".tex")
+        for _, _, fnames in os.walk(directory)
+        for fname in fnames
+    )
+
+
 def _convert_tarball(src_data: bytes, arxiv_id: str) -> str:
     """Convert raw tarball bytes to markdown. Called by _src_to_markdown and --local-src."""
+    import gzip as _gzip
+
     with tempfile.TemporaryDirectory() as tmpdir:
         tarpath = os.path.join(tmpdir, "src.tar.gz")
         with open(tarpath, "wb") as f:
@@ -328,13 +346,17 @@ def _convert_tarball(src_data: bytes, arxiv_id: str) -> str:
             with tarfile.open(tarpath) as tar:
                 tar.extractall(tmpdir, filter="data")
         except tarfile.TarError:
-            # arXiv sometimes returns a bare .tex file rather than a tarball.
-            # Sanitize arxiv_id: old-style IDs like math/9510203 contain '/'
-            # which would make os.path.join create a non-existent subdirectory.
-            safe_id = arxiv_id.replace("/", "_")
-            tex_path = os.path.join(tmpdir, f"{safe_id}.tex")
-            with open(tex_path, "wb") as f:
-                f.write(src_data)
+            # Uncompressed bare .tex — sanitize ID (math/9510203 → math_9510203)
+            _write_bare_tex(src_data, arxiv_id, tmpdir)
+
+        # tarfile opens gzip natively but extracts nothing if content isn't a tar.
+        # A gzip'd bare .tex lands here: decompress and write as .tex.
+        if not _has_tex_files(tmpdir):
+            try:
+                decompressed = _gzip.decompress(src_data)
+            except Exception:
+                decompressed = src_data
+            _write_bare_tex(decompressed, arxiv_id, tmpdir)
 
         root_tex = _find_root_tex(tmpdir)
         if not root_tex:
