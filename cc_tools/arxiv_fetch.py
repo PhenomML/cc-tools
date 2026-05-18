@@ -2,6 +2,7 @@ import html as _html
 import json
 import os
 import re
+import shutil
 import subprocess
 import sys
 import tarfile
@@ -191,6 +192,61 @@ def _normalize_make4ht_html(html: str) -> str:
     )
 
 
+def _parse_simple_macros(root_tex: str) -> dict[str, str]:
+    """Return {name: expansion} for no-argument \\newcommand macros in the preamble.
+
+    Skips macros with arguments ([N] after the name) and macros whose expansion
+    contains #N parameter references.
+    """
+    def _extract_brace_group(s: str, pos: int) -> tuple[str, int] | None:
+        if pos >= len(s) or s[pos] != '{':
+            return None
+        depth = 0
+        for i in range(pos, len(s)):
+            if s[i] == '{':
+                depth += 1
+            elif s[i] == '}':
+                depth -= 1
+                if depth == 0:
+                    return s[pos + 1:i], i + 1
+        return None
+
+    result: dict[str, str] = {}
+    cmd_pattern = re.compile(
+        r'\\(?:newcommand\*?|renewcommand\*?|providecommand\*?)'
+        r'\{?\\(\w+)\}?'   # \name or {\name}
+        r'(?!\s*\[)'        # not followed by [N] arg count
+    )
+    for tex_path in _preamble_files(root_tex):
+        try:
+            with open(tex_path, encoding="utf-8", errors="replace") as f:
+                for line in f:
+                    if r"\begin{document}" in line:
+                        break
+                    m = cmd_pattern.search(line)
+                    if m:
+                        name = m.group(1)
+                        group = _extract_brace_group(line, m.end())
+                        if group:
+                            defn, _ = group
+                            if '#' not in defn and name not in result:
+                                result[name] = defn
+        except OSError:
+            pass
+    return result
+
+
+def _expand_macros(content: str, macros: dict[str, str]) -> str:
+    """Expand no-argument macros in markdown content."""
+    for name, defn in macros.items():
+        content = re.sub(
+            r'\\' + re.escape(name) + r'(?![a-zA-Z])',
+            lambda m, d=defn: d,
+            content,
+        )
+    return content
+
+
 def _preamble_files(root_tex: str) -> list[str]:
     """Return root_tex plus files from \\input directives before \\begin{document}."""
     tex_dir = os.path.dirname(root_tex)
@@ -237,7 +293,7 @@ def _extract_preamble_macros(root_tex: str) -> str:
     return "$$\n" + "\n".join(macros) + "\n$$\n\n"
 
 
-def _post_process_src(content: str, arxiv_id: str, macro_block: str = "", pipeline: str = "make4ht+mathjax") -> str:
+def _post_process_src(content: str, arxiv_id: str, macro_block: str = "", pipeline: str = "make4ht+mathjax", preserve_images: bool = False, simple_macros: dict[str, str] | None = None) -> str:
     # HTML entities in raw-HTML passthrough blocks (algorithm listings, captions)
     content = content.replace("&amp;", "&").replace("&lt;", "<").replace("&gt;", ">")
     # CSS class spans from make4ht: [text]{.ClassName} -> text  (dot-class variant)
@@ -261,8 +317,18 @@ def _post_process_src(content: str, arxiv_id: str, macro_block: str = "", pipeli
         if stripped == content:
             break
         content = stripped
-    # Strip <img> tags (figures don't render in Obsidian without the tarball)
-    content = re.sub(r"<img[^>]*/?>", "", content)
+    # Convert or strip <img> tags
+    if preserve_images:
+        def _img_to_md(m: re.Match) -> str:
+            tag = m.group(0)
+            src_m = re.search(r'\bsrc=(["\'])([^"\']+)\1', tag)
+            alt_m = re.search(r'\balt=(["\'])([^"\']*)\1', tag)
+            src = src_m.group(2) if src_m else ""
+            alt = alt_m.group(2) if alt_m else "figure"
+            return f"\n\n![{alt}]({src})\n\n" if src else ""
+        content = re.sub(r"<img\b[^>]*/?>", _img_to_md, content, flags=re.DOTALL)
+    else:
+        content = re.sub(r"<img[^>]*/?>", "", content)
     # Strip <figure>, <div>, <p> container tags — keep content, drop wrappers
     content = re.sub(r"<(?:figure|div|p)(?:\s[^>]*)?>|</(?:figure|div|p)>", "", content)
     # Strip <br> tags
@@ -276,6 +342,9 @@ def _post_process_src(content: str, arxiv_id: str, macro_block: str = "", pipeli
     content = re.sub(r"^:+\s*$", "", content, flags=re.MULTILINE)
     # Collapse excess blank lines
     content = re.sub(r"\n{3,}", "\n\n", content)
+    # Expand no-argument macros inline so KaTeX (Obsidian) renders them without needing \newcommand scope
+    if simple_macros:
+        content = _expand_macros(content, simple_macros)
     header = f"<!-- Source: arXiv:{arxiv_id} TeX source tarball via {pipeline}. Math fidelity: high. -->\n\n"
     return header + macro_block + content.strip() + "\n"
 
@@ -333,7 +402,34 @@ def _has_tex_files(directory: str) -> bool:
     )
 
 
-def _convert_tarball(src_data: bytes, arxiv_id: str) -> str:
+def _rewrite_img_src(html: str, tex_dir: str, figures_dir: str, img_rel_prefix: str) -> str:
+    """Copy image files referenced in <img> tags to figures_dir; rewrite src to img_rel_prefix/basename."""
+    os.makedirs(figures_dir, exist_ok=True)
+    copied: set[str] = set()
+
+    def _replace(m: re.Match) -> str:
+        tag = m.group(0)
+        src_m = re.search(r'\bsrc=(["\'])([^"\']+)\1', tag)
+        if not src_m:
+            return tag
+        src = src_m.group(2)
+        if src.startswith(("http", "data:")):
+            return tag
+        img_path = os.path.join(tex_dir, src)
+        if not os.path.exists(img_path):
+            return tag
+        basename = os.path.basename(src)
+        dest = os.path.join(figures_dir, basename)
+        if src not in copied:
+            shutil.copy2(img_path, dest)
+            copied.add(src)
+        new_src = f"{img_rel_prefix}/{basename}" if img_rel_prefix else basename
+        return tag.replace(src_m.group(0), f'src="{new_src}"', 1)
+
+    return re.sub(r"<img\b[^>]*/?>", _replace, html, flags=re.DOTALL)
+
+
+def _convert_tarball(src_data: bytes, arxiv_id: str, figures_dir: str | None = None, output_path: str | None = None) -> str:
     """Convert raw tarball bytes to markdown. Called by _src_to_markdown and --local-src."""
     import gzip as _gzip
 
@@ -389,11 +485,19 @@ def _convert_tarball(src_data: bytes, arxiv_id: str) -> str:
                   file=sys.stderr)
 
         macro_block = _extract_preamble_macros(root_tex)
+        simple_macros = _parse_simple_macros(root_tex)
 
         if os.path.exists(html_path):
             with open(html_path, encoding="utf-8", errors="replace") as f:
                 raw_html = f.read()
             normalized_html = _normalize_make4ht_html(raw_html)
+            if figures_dir:
+                if output_path:
+                    output_dir = os.path.dirname(os.path.abspath(output_path))
+                    img_rel_prefix = os.path.relpath(os.path.abspath(figures_dir), output_dir)
+                else:
+                    img_rel_prefix = os.path.abspath(figures_dir)
+                normalized_html = _rewrite_img_src(normalized_html, tex_dir, figures_dir, img_rel_prefix)
             p = subprocess.run(
                 ["pandoc",
                  "--from", "html+tex_math_dollars+tex_math_single_backslash",
@@ -403,7 +507,7 @@ def _convert_tarball(src_data: bytes, arxiv_id: str) -> str:
             )
             if p.returncode != 0:
                 raise RuntimeError(f"pandoc failed: {p.stderr[:200]}")
-            return _post_process_src(p.stdout, arxiv_id, macro_block)
+            return _post_process_src(p.stdout, arxiv_id, macro_block, preserve_images=figures_dir is not None, simple_macros=simple_macros)
 
         # make4ht failed to produce HTML (e.g. IEEEtran register overflow).
         # Fall back to pandoc direct LaTeX → markdown — still gives clean math.
@@ -416,11 +520,11 @@ def _convert_tarball(src_data: bytes, arxiv_id: str) -> str:
         if p.returncode != 0:
             raise RuntimeError(f"pandoc direct LaTeX conversion failed: {p.stderr[:200]}")
         content = re.sub(r'\{reference-type="[^"]*"\s+reference="[^"]*"\}', "", p.stdout)
-        return _post_process_src(content, arxiv_id, macro_block, pipeline="pandoc-latex")
+        return _post_process_src(content, arxiv_id, macro_block, pipeline="pandoc-latex", simple_macros=simple_macros)
 
 
-def _src_to_markdown(arxiv_id: str) -> str:
-    return _convert_tarball(_fetch_tarball(arxiv_id), arxiv_id)
+def _src_to_markdown(arxiv_id: str, figures_dir: str | None = None, output_path: str | None = None) -> str:
+    return _convert_tarball(_fetch_tarball(arxiv_id), arxiv_id, figures_dir=figures_dir, output_path=output_path)
 
 
 def _html_available(base_id: str) -> bool:
@@ -434,8 +538,6 @@ def _html_available(base_id: str) -> bool:
 
 
 def main():
-    import shutil
-
     argv = sys.argv[1:]
     src_mode = "--src" in argv
     argv = [a for a in argv if a != "--src"]
@@ -458,8 +560,17 @@ def main():
         output_path = argv[idx + 1]
         argv = argv[:idx] + argv[idx + 2:]
 
+    figures_dir = None
+    if "--figures-dir" in argv:
+        idx = argv.index("--figures-dir")
+        if idx + 1 >= len(argv):
+            print("cc-arxiv: --figures-dir requires a path argument", file=sys.stderr)
+            sys.exit(1)
+        figures_dir = argv[idx + 1]
+        argv = argv[:idx] + argv[idx + 2:]
+
     if len(argv) != 1 or argv[0] in ("-h", "--help"):
-        print("Usage: cc-arxiv [--src] [--local-src <path>] [--output <path>] <arxiv-id|biorxiv-doi|pmid|doi>", file=sys.stderr)
+        print("Usage: cc-arxiv [--src] [--local-src <path>] [--output <path>] [--figures-dir <path>] <arxiv-id|biorxiv-doi|pmid|doi>", file=sys.stderr)
         print("Fetch metadata for a preprint or published paper.", file=sys.stderr)
         print("  arXiv ID:            2301.07608", file=sys.stderr)
         print("  bioRxiv/medRxiv DOI: 10.1101/2024.01.12.574717", file=sys.stderr)
@@ -472,6 +583,8 @@ def main():
         print("         Requires --src. Useful for offline re-conversion.", file=sys.stderr)
         print("  --output <path>: write output to file atomically (safe alternative to '>').", file=sys.stderr)
         print("         On failure, the target file is not modified.", file=sys.stderr)
+        print("  --figures-dir <path>: extract figures to this directory; embed relative paths in output.", file=sys.stderr)
+        print("         Requires --src. Best used with --output so relative paths are correct.", file=sys.stderr)
         sys.exit(0 if (argv and argv[0] in ("-h", "--help")) else 1)
 
     paper_id = argv[0]
@@ -484,9 +597,9 @@ def main():
             if local_src:
                 with open(local_src, "rb") as f:
                     src_data = f.read()
-                md = _convert_tarball(src_data, paper_id)
+                md = _convert_tarball(src_data, paper_id, figures_dir=figures_dir, output_path=output_path)
             else:
-                md = _src_to_markdown(paper_id)
+                md = _src_to_markdown(paper_id, figures_dir=figures_dir, output_path=output_path)
         except RuntimeError as e:
             print(f"cc-arxiv --src: {e}", file=sys.stderr)
             sys.exit(1)
