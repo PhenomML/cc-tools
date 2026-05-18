@@ -77,6 +77,27 @@ If `pipeline-status.md` does not exist but `papers/` directories are non-empty, 
 - `fetch_provenance:` contains `abstract` but `confidence:` is `high` — an abstract-only fetch cannot meet the "primary source read directly" bar.
 - `fetch_provenance:` contains `stub` and `confidence:` is not `low` — a stub has no content to establish confidence.
 
+**Broken figure references** — scan all `raw/*.md` files for `![alt](path)` image references. For each, resolve the path relative to the markdown file's location and check whether the file exists. Report missing files as broken figure references: the paper was likely ingested without `--figures-dir` or the figures directory was not created at the correct path.
+
+Command to collect references:
+```bash
+grep -rn '!\[' raw/ --include="*.md"
+```
+For each match, extract the path inside `(...)` and resolve it relative to the containing file. Flag any path that does not resolve to an existing file.
+
+**Figures directory provenance check** — for each `papers/*.md` whose `fetch_provenance:` field contains `--figures-dir`, extract the figures directory path from the provenance string and verify it exists and is non-empty. A provenance claim without a corresponding directory indicates an incomplete ingest.
+
+Pattern: `fetch_provenance` contains `--figures-dir raw/figures/<slug>` → check `raw/figures/<slug>/` exists at the wiki root and contains at least one file.
+
+**Claims index cross-validation** — if `claims/index.md` exists, validate it against the actual claims files:
+
+- Every row's file path resolves to an existing file
+- Claim count in the index matches the actual number of enumerated claim paragraphs in the file (count block-ref anchors `^[A-Z]{2}\d{2}-\d{3}`)
+- No claims files exist in `claims/` without a corresponding index entry
+- Any adjudication links (`claims/adjudication/<id>-adjudication.md`) resolve to existing files
+
+If `claims/` exists but `claims/index.md` is absent, flag as a lint failure.
+
 **Math notation** — flag two classes of issue, both for `/math-review`:
 - Bare Unicode Greek letters or Unicode subscript digits used as math notation outside `$...$`
 - Inline `$...$` expressions containing `_` (subscript) where content follows the subscript before the closing `$`, or multiple such expressions on the same line — GitHub italic conflict risk (see AUTHORING.md)
@@ -86,6 +107,6 @@ If `pipeline-status.md` does not exist but `papers/` directories are non-empty, 
 Append to `log.md`:
 ```
 ## [<YYYY-MM-DD>] lint | <scope>
-Orphans: <n>. Broken links: <n>. Orphaned raw: <n>. Path-depth errors: <n>. Missing concepts (high/suggest): <n>/<n>. Stale pages: <n>. Pipeline status gaps: <n>. Open fetch problems: <n>. Missing fetch_provenance: <n>. Provenance/confidence conflicts: <n>.
+Orphans: <n>. Broken links: <n>. Orphaned raw: <n>. Path-depth errors: <n>. Missing concepts (high/suggest): <n>/<n>. Stale pages: <n>. Pipeline status gaps: <n>. Open fetch problems: <n>. Missing fetch_provenance: <n>. Provenance/confidence conflicts: <n>. Broken figure refs: <n>. Figures dir gaps: <n>. Claims index errors: <n>.
 Actions taken: <summary or "none — awaiting researcher direction">.
 ```
