@@ -35,8 +35,12 @@ full text when you need specific claims, methodology, or data not visible in the
 
 Fetch the full text using the tarball (TeX source — highest fidelity, works for all papers with LaTeX source):
 ```bash
-cc-arxiv --src <id> > raw/<author>-<year>-<slug>.md
+cc-arxiv --src --output raw/<author>-<year>-<slug>-src.md --figures-dir raw/figures/<author>-<year>-<slug> <id>
 ```
+
+The `--figures-dir` path uses the same slug as the markdown filename (without `-src.md`). This keeps figures for each paper isolated in their own subdirectory and prevents filename collisions across papers. Obsidian resolves figure references inline from the markdown file's location.
+
+Use `--output` rather than `>` redirect — it writes atomically and is required for correct relative path calculation in `--figures-dir`.
 
 > **Title verification gate:** Read the first 10 lines of the saved file and confirm the title matches the intended paper before proceeding. `cc-arxiv --src` can produce a LaTeX compilation stub, an error document, or content from a different paper — the title is the first check. A mismatch is a stop signal: do not use the file as a source.
 
@@ -154,7 +158,7 @@ related: []
 created: <today>
 updated: <today>
 confidence: high     # high = primary source read directly; medium = secondhand/abstract only; low = inferred
-fetch_provenance: "tarball | cc-arxiv --src <id> | <YYYY-MM-DD>"
+fetch_provenance: "tarball | cc-arxiv --src --output raw/<slug>-src.md --figures-dir raw/figures/<slug> <id> | <YYYY-MM-DD>"
                  # PDF | cc-markitdown | <YYYY-MM-DD>
                  # abstract only | cc-arxiv <id> | <YYYY-MM-DD>
 ```
