@@ -8,6 +8,7 @@ macro_count_min: 50
 macro_file: null
 known_artifacts:
   - "IEEEtran.cls register overflow: make4ht produces no HTML; pandoc-latex fallback required"
+  - "LuaLaTeX (make4ht --lua) does not fix the overflow — TeX4ht hook system is the register consumer, not the engine; 65535 limit exceeded regardless of engine"
 verified: 2026-05-14
 notes: "IEEEtran class paper; canonical AMP reference (PNAS 2009)"
 ---

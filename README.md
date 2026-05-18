@@ -82,24 +82,34 @@ After pulling, **start a new Claude session** before invoking updated skills. Cl
 
 More tools will be added here as the standard Claude instantiation grows.
 
-### cc-md2pdf prerequisites
+### System prerequisites
 
-`cc-md2pdf` requires system packages not managed by uv. Install once per machine:
+Several cc-tools commands depend on system binaries not managed by uv. Install once per machine.
+
+**pandoc** — required by `cc-arxiv --src` (HTML → Markdown conversion) and `cc-md2pdf`:
 
 ```bash
 brew install pandoc
 ```
 
-For the LaTeX engine, install **one** of the following (MacTeX and BasicTeX conflict — if you have one, skip the other):
+**TeX Live** — required by `cc-arxiv --src` (LaTeX → HTML via make4ht) and `cc-md2pdf` (PDF typesetting via XeLaTeX). Install **one** of the following (MacTeX and BasicTeX conflict):
 
 ```bash
 brew install --cask mactex      # full TeX distribution (~4 GB), recommended
 # or
 brew install --cask basictex    # minimal TeX (~100 MB); then:
-# sudo tlmgr update --self && sudo tlmgr install collection-fontsrecommended
+# sudo tlmgr update --self && sudo tlmgr install collection-fontsrecommended make4ht
 ```
 
-If MacTeX is already installed, only `brew install pandoc` is needed.
+MacTeX includes `make4ht`, `pdflatex`, `xelatex`, and `lualatex`. BasicTeX requires installing `make4ht` explicitly via `tlmgr`.
+
+If MacTeX is already installed (common for researchers writing LaTeX), only `brew install pandoc` is needed.
+
+**Without TeX Live:** `cc-arxiv` (metadata only), `cc-markitdown`, `cc-webfetch`, `cc-fetch`, `cc-pdfplumber`, `cc-semantic-scholar`, and all wiki skills work without TeX. Only `cc-arxiv --src` and `cc-md2pdf` require it. [cc-code-tools](https://github.com/PhenomML/cc-code-tools) is fully functional without TeX for codebase work; paper ingestion falls back to PDF conversion.
+
+### cc-md2pdf prerequisites
+
+`cc-md2pdf` requires pandoc and TeX Live — see [System prerequisites](#system-prerequisites) above.
 
 ### cc-markitdown audio support
 
