@@ -1,5 +1,6 @@
 import json
 import os
+import re
 import sys
 import time
 import urllib.error
@@ -28,7 +29,10 @@ def _get(path: str, params: dict) -> dict:
     for attempt in range(MAX_RETRIES + 1):
         try:
             with urllib.request.urlopen(req, timeout=15) as resp:
-                return json.loads(resp.read())
+                data = json.loads(resp.read())
+            if api_key:
+                time.sleep(1)  # S2 authenticated limit is 1 req/s
+            return data
         except urllib.error.HTTPError as e:
             if e.code == 429 and attempt < MAX_RETRIES:
                 wait = BACKOFF_BASE * (3 ** attempt)
@@ -137,7 +141,20 @@ def _lookup(paper_id: str) -> None:
         print(f"Abstract:  {abstract}")
 
 
+_ARXIV_NEW = re.compile(r"^\d{4}\.\d{4,5}(v\d+)?$")
+_ARXIV_OLD = re.compile(r"^[a-z-]+(\.[A-Z]{2})?/\d{7}(v\d+)?$")
+
+
+def _normalize_id(arg: str) -> str:
+    """Return S2-prefixed paper ID; bare arXiv IDs get ARXIV: prefix."""
+    if _ARXIV_NEW.match(arg) or _ARXIV_OLD.match(arg):
+        return f"ARXIV:{arg}"
+    return arg
+
+
 def _is_paper_id(arg: str) -> bool:
+    if _ARXIV_NEW.match(arg) or _ARXIV_OLD.match(arg):
+        return True
     prefixes = ("ARXIV:", "DOI:", "MAG:", "ACL:", "PMID:", "PMCID:", "CorpusId:")
     if any(arg.upper().startswith(p.upper()) for p in prefixes):
         return True
@@ -149,7 +166,7 @@ def main():
         print("Usage: cc-semantic-scholar <query>", file=sys.stderr)
         print("       cc-semantic-scholar <paper-id>", file=sys.stderr)
         print("Search Semantic Scholar or look up a specific paper.", file=sys.stderr)
-        print("Paper ID formats: ARXIV:2505.00326  DOI:10.x/y  CorpusId:nnn", file=sys.stderr)
+        print("Paper ID formats: 1706.03762  ARXIV:2505.00326  DOI:10.x/y  CorpusId:nnn", file=sys.stderr)
         print("Output is written to stdout.", file=sys.stderr)
         print("Rate limit: set S2_API_KEY in env for 1 req/s; unauthenticated is ~100/5min.", file=sys.stderr)
         print("Apply: https://www.semanticscholar.org/product/api", file=sys.stderr)
@@ -159,7 +176,7 @@ def main():
 
     try:
         if _is_paper_id(arg):
-            _lookup(arg)
+            _lookup(_normalize_id(arg))
         else:
             _search(arg)
     except RuntimeError as e:
