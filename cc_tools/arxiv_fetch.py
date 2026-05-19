@@ -386,6 +386,52 @@ def _detect_tex_dialect(directory: str) -> str | None:
     return None
 
 
+# Patterns that indicate active exploitation attempts in TeX source.
+# LaTeX is Turing-complete and can execute shell commands, read arbitrary
+# files, and make network requests — any of which could exfiltrate data or
+# compromise the host when processing untrusted source. See SECURITY.md.
+_HAZARD_PATTERNS: list[tuple[re.Pattern, str]] = [
+    # Shell execution via \write18 (even in restricted mode, flag it)
+    (re.compile(r"\\write18\s*\{"), r"\write18 (shell escape)"),
+    (re.compile(r"\\immediate\s*\\write18\s*\{"), r"\immediate\write18 (shell escape)"),
+    # Lua interpreter (LuaTeX): shell and network access.
+    # CVE-2023-32700: on TeX Live < 2023, \directlua can bypass --no-shell-escape
+    # entirely via Lua's debug upvalue API. The pre-scan is the primary defense.
+    (re.compile(r"os\.execute\s*\("), "os.execute in Lua (shell execution)"),
+    (re.compile(r"require\s*\(\s*[\"']socket"), "require('socket') in Lua (network access)"),
+    (re.compile(r"io\.popen\s*\("), "io.popen in Lua (shell execution)"),
+    # File I/O to paths outside the working tree
+    (re.compile(r"\\openin\b[^\n]*(?:/etc/|/root/|/Users/|/home/|~/|\\string~)"),
+     r"\openin with sensitive absolute path"),
+    (re.compile(r"\\openout\b[^\n]*(?:/etc/|/root/|/Users/|/home/|~/|\\string~)"),
+     r"\openout with sensitive absolute path"),
+]
+
+
+def _scan_tex_for_hazards(tmpdir: str) -> list[str]:
+    """Scan extracted TeX source for dangerous execution patterns.
+
+    Returns a list of 'file:line: description' strings. Empty list = clean.
+    Scans .tex, .sty, .cls, .dtx, and .ins files.
+    """
+    findings: list[str] = []
+    scannable = {".tex", ".sty", ".cls", ".dtx", ".ins"}
+    for dirpath, _, filenames in os.walk(tmpdir):
+        for fname in filenames:
+            if os.path.splitext(fname)[1].lower() not in scannable:
+                continue
+            fpath = os.path.join(dirpath, fname)
+            try:
+                with open(fpath, encoding="utf-8", errors="replace") as fh:
+                    for lineno, line in enumerate(fh, 1):
+                        for pattern, description in _HAZARD_PATTERNS:
+                            if pattern.search(line):
+                                findings.append(f"{fname}:{lineno}: {description}")
+            except OSError:
+                pass
+    return findings
+
+
 def _write_bare_tex(data: bytes, arxiv_id: str, tmpdir: str) -> None:
     """Write raw bytes as a bare .tex file into tmpdir."""
     safe_id = arxiv_id.replace("/", "_")
@@ -459,6 +505,19 @@ def _convert_tarball(src_data: bytes, arxiv_id: str, figures_dir: str | None = N
                 decompressed = src_data
             _write_bare_tex(decompressed, arxiv_id, tmpdir)
 
+        # Tier-1 security scan: abort before executing TeX if dangerous patterns found.
+        # LaTeX is Turing-complete; see SECURITY.md for the threat model.
+        hazards = _scan_tex_for_hazards(tmpdir)
+        if hazards:
+            sample = "\n".join(f"  {h}" for h in hazards[:10])
+            if len(hazards) > 10:
+                sample += f"\n  ... ({len(hazards) - 10} more)"
+            raise RuntimeError(
+                "cc-arxiv --src: TeX source contains potentially dangerous patterns "
+                "(aborting to protect against code execution / data exfiltration):\n"
+                + sample
+            )
+
         root_tex = _find_root_tex(tmpdir)
         if not root_tex:
             # Check if source is AMSTeX or plain TeX (pre-LaTeX dialects, common pre-2000)
@@ -474,9 +533,20 @@ def _convert_tarball(src_data: bytes, arxiv_id: str, figures_dir: str | None = N
         tex_dir = os.path.dirname(root_tex)
         tex_name = os.path.basename(root_tex)
 
+        # Harden the TeX execution environment:
+        #   openout_any=p — write only within current directory tree (paranoid mode)
+        #   -no-shell-escape — disable \write18 explicitly (belt-and-suspenders;
+        #     restricted shell-escape is already the TeX Live default)
+        security_cnf = os.path.join(tmpdir, "texmf.cnf")
+        with open(security_cnf, "w") as _f:
+            _f.write("openout_any = p\n")
+        make_env = os.environ.copy()
+        existing_cnf = make_env.get("TEXMFCNF", "")
+        make_env["TEXMFCNF"] = (tmpdir + ":" + existing_cnf) if existing_cnf else tmpdir
+
         r = subprocess.run(
-            ["make4ht", tex_name, "mathjax"],
-            cwd=tex_dir, capture_output=True, timeout=180,
+            ["make4ht", tex_name, "mathjax", "-no-shell-escape"],
+            cwd=tex_dir, capture_output=True, timeout=180, env=make_env,
         )
         stem = os.path.splitext(tex_name)[0]
         html_path = os.path.join(tex_dir, stem + ".html")

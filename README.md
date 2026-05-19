@@ -6,6 +6,10 @@ cc-tools is that somewhere. It packages the essential ingestion stack into an is
 
 cc-tools also ships the wiki skills that implement [Karpathy's LLM wiki pattern](https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f) — where the agent reads a paper, writes a structured summary, updates the concept pages it touches, and maintains a cross-linked index across sessions. The knowledge accumulates because it is written down, not held in chat history. A lighter brief variant builds a subject-oriented wiki in a single session for a meeting or time-sensitive question — a person, company, topic, or policy assembled from public sources around a driving question.
 
+## Security
+
+`cc-arxiv --src` executes untrusted LaTeX source. LaTeX is Turing-complete and can read files, write files, and (in LuaTeX) make network requests without shell escape. cc-tools implements a pre-execution static scan, `openout_any=p` write restriction, and explicit `-no-shell-escape` for every invocation. See [SECURITY.md](SECURITY.md) for the full threat model, defenses, and known incidents.
+
 ## Articles
 
 The design choices behind cc-tools are explained in three pieces:
