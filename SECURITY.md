@@ -127,7 +127,15 @@ If you discover a bypass or a dangerous pattern not covered by the pre-scan, ple
 
 ## Planned Defenses (Tier 2)
 
-- **macOS `sandbox-exec` profile** — wrap the `make4ht` subprocess in a macOS sandbox that denies network access and restricts file reads to the temp directory and the TeX installation tree. This would contain the Lua attack surface that the pre-scan cannot fully enumerate.
-- **Container execution** — run `make4ht` in a Docker container with `--network none` and a read-only bind mount for the tarball. Gold standard; heavier infrastructure.
+**macOS `sandbox-exec` profile** — wrap the `make4ht` subprocess in a macOS sandbox profile that:
+
+- Denies all network access
+- Allows file reads only from the temp working directory and the TeX installation tree (`/usr/local/texlive/`, `/Library/TeX/`, system dylib paths)
+- Allows file writes only to the temp working directory
+- Denies reads from `$HOME` entirely
+
+This would contain the Lua attack surface that the pre-scan cannot fully enumerate, including novel upvalue-style bypasses not yet reflected in `_HAZARD_PATTERNS`. The macOS sandbox is a kernel-enforced mandatory access control boundary — the process literally cannot make system calls outside the profile. It is the correct next defense layer for a local macOS tool.
+
+**A note on Docker:** Docker is not a security solution. It is an isolation layer built on Linux namespaces and cgroups, and it has a documented history of container escape CVEs (runc escapes, kernel namespace bypasses). Docker's own documentation states that containers are not a security boundary. When organizations add real security to Docker-hosted workloads, they add seccomp profiles and AppArmor/SELinux policies on top — those MAC-layer mechanisms do the security work, not Docker itself. On macOS specifically, Docker runs inside a Linux VM, adding indirection without adding a stronger security guarantee than `sandbox-exec` already provides natively.
 
 Contributions welcome.
