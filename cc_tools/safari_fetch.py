@@ -6,6 +6,7 @@ import trafilatura
 
 LOAD_POLL_INTERVAL = 0.5
 LOAD_TIMEOUT = 30.0
+POST_LOAD_SETTLE = 5.0  # extra wait after readyState=complete for JS-rendered content
 MIN_WORDS = 50
 
 
@@ -68,18 +69,34 @@ def _close_tab() -> None:
 
 
 def main():
-    if len(sys.argv) != 2 or sys.argv[1] in ("-h", "--help"):
-        print("Usage: cc-safari-fetch <url>", file=sys.stderr)
+    args = sys.argv[1:]
+    settle = POST_LOAD_SETTLE
+
+    if "--wait" in args:
+        idx = args.index("--wait")
+        try:
+            settle = float(args[idx + 1])
+            args = args[:idx] + args[idx + 2:]
+        except (IndexError, ValueError):
+            print("cc-safari-fetch: --wait requires a number of seconds", file=sys.stderr)
+            sys.exit(1)
+
+    if len(args) != 1 or args[0] in ("-h", "--help"):
+        print("Usage: cc-safari-fetch [--wait N] <url>", file=sys.stderr)
         print("Fetch a URL via Safari using your session and credentials.", file=sys.stderr)
+        print("  --wait N   seconds to wait after page load for JS rendering (default: 5)", file=sys.stderr)
         print("Requires: Safari open; Develop → Allow JavaScript from Apple Events enabled.", file=sys.stderr)
         print("Output is written to stdout.", file=sys.stderr)
-        sys.exit(0 if "--help" in sys.argv else 1)
+        sys.exit(0 if "--help" in args else 1)
 
-    url = sys.argv[1]
+    url = args[0]
 
     try:
         _open_url(url)
         _wait_for_load()
+        if settle > 0:
+            print(f"cc-safari-fetch: waiting {settle:.0f}s for JS rendering…", file=sys.stderr)
+            time.sleep(settle)
         html = _extract_html()
     except (RuntimeError, TimeoutError) as e:
         print(f"cc-safari-fetch: {e}", file=sys.stderr)
