@@ -82,7 +82,7 @@ After pulling, **start a new Claude session** before invoking updated skills. Cl
 | `cc-pdfplumber` | [jsvine/pdfplumber](https://github.com/jsvine/pdfplumber) | Extract tables and text from PDFs with precise layout information |
 | `cc-arxiv` | [lukasschwab/arxiv.py](https://github.com/lukasschwab/arxiv.py) + built-in | Fetch paper metadata by ID; auto-routes: arXiv ID → arXiv, `10.1101/` DOI → bioRxiv/medRxiv, integer → PubMed (eUtils), any other DOI → CrossRef. Outputs title, authors, year, PDF URL, abstract. |
 | `cc-ocr` | cc-tools (built-in) | OCR a scanned PDF (no text layer) using pdftoppm + tesseract; fallback for historic papers that `cc-markitdown` cannot extract |
-| `cc-safari-fetch` | cc-tools (built-in) | Fetch a URL via Safari (uses your browser session and cookies); bypasses Cloudflare and paywalls that block headless fetchers. Requires Safari open with Develop → Allow JavaScript from Apple Events enabled. |
+| `cc-safari-fetch` | cc-tools (built-in) | Fetch a URL via Safari (uses your browser session and cookies); bypasses Cloudflare and paywalls that block headless fetchers. `--wait N` adds N seconds after page load for JS-rendered sites (default: 5s; use `--wait 10` for Distill or heavy SPAs; `--wait 0` for static pages). Requires Safari open with Develop → Allow JavaScript from Apple Events enabled. |
 | `cc-wiki-brief` | cc-tools (built-in) | Scaffold a research brief directory and launch Claude inside it, scoping memory and settings to that subject. Auto-detects People vs. Companies; supports `--person`, `--company`, `--topic`, `--dir`. |
 
 More tools will be added here as the standard Claude instantiation grows.
