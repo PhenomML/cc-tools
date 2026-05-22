@@ -171,9 +171,9 @@ cc-wiki-brief "My Experiment" "driving question" --brief-dir ~/Projects/myrepo/w
 **Instantiating a role-defined agent:** use `--agent` to point at an operational brief written by a theory Claude. This seeds `/agent-brief` instead of `/wiki-brief`, replacing the need for a carefully crafted driving question:
 
 ```bash
-cc-wiki-brief "iSATx Experiment Manager" \
-  --agent ~/Research/Topics/transformers/syntheses/isatx-experiment-manager-brief.md \
-  --brief-dir ~/Projects/iSATx-Toy-System-Experiment/wiki
+cc-wiki-brief "My Experiment Manager" \
+  --agent ~/Research/Topics/my-project/syntheses/agent-brief.md \
+  --brief-dir ~/Projects/my-experiment/wiki
 ```
 
 The agent reads the operational brief, reads `../CLAUDE.md` for repo context, writes an orientation synthesis as a confirmation gate, and waits for your approval before starting any work.

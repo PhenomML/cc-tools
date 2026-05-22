@@ -51,11 +51,11 @@ it must not be lost in translation to the wiki.
 **Finding the memory directory:** take the absolute form of `$ARGUMENTS`, replace every
 `/` with `-`, then look under `~/.claude/projects/<encoded>/memory/`.
 
-Example: brief at `/Users/awd/Research/Topics/compressed-sensing`
-→ `~/.claude/projects/-Users-awd-Research-Topics-compressed-sensing/memory/`
+Example: brief at `~/Research/Topics/compressed-sensing` (expands to `/Users/username/Research/Topics/compressed-sensing`)
+→ `~/.claude/projects/-Users-username-Research-Topics-compressed-sensing/memory/`
 
 ```bash
-ls ~/.claude/projects/-Users-awd-Research-Topics-compressed-sensing/memory/
+ls ~/.claude/projects/$(echo ~/Research/Topics/compressed-sensing | sed 's|/|-|g')/memory/
 ```
 
 Read each `.md` file. Extract:

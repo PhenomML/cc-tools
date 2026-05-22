@@ -4,8 +4,8 @@ Instantiate a specialised agent from an operational brief: $ARGUMENTS
 role, scientific question, phase targets, boundaries, and log format. Written by a
 theory Claude or researcher as a handoff document. Examples:
 
-- `~/Research/Topics/transformers/syntheses/isatx-experiment-manager-brief.md`
-- `~/Research/Topics/compressed-sensing/syntheses/steinsense-implementation-brief.md`
+- `~/Research/Topics/my-project/syntheses/experiment-manager-brief.md`
+- `~/Research/Topics/my-topic/syntheses/implementation-brief.md`
 
 Run from inside `wiki/`. The code repo or work directory is at `../`.
 

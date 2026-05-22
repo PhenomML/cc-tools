@@ -70,4 +70,4 @@ This convention is active in all sessions, not just promotion sessions.
 
 - Research deps: **Conda** — never uv for researcher projects
 - `uv` is Claude's tooling only (`~/.local/bin/uv`)
-- GitHub: SSH (`git@github.com`), `gh` CLI as `adonoho`
+- GitHub: SSH (`git@github.com`), `gh` CLI
