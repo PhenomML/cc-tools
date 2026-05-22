@@ -189,7 +189,7 @@ fi
 
 # ── Python package ───────────────────────────────────────────────────────────
 
-uv tool install --editable "$SCRIPT_DIR" --quiet
+uv tool install --editable --reinstall --force "$SCRIPT_DIR" --quiet
 echo "setup-claude: cc-tools Python package installed (editable) from $SCRIPT_DIR"
 
 # ── cc-tools environment config ───────────────────────────────────────────────
