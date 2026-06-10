@@ -6,6 +6,43 @@
 **Created:** <YYYY-MM-DD>
 **Goal:** <driving goal — read the operational brief in ../CLAUDE.md for full context>
 
+## Session Start
+
+**Before responding to any request, read in order:**
+
+1. `ORIENTATION.md` — one-page current state; read this first if present
+2. `log.md` — most recent entry, to know where the last session left off
+
+If `ORIENTATION.md` is absent, read the documents listed in the operational brief (`../CLAUDE.md`) directly.
+
+**Why:** This wiki accumulates experiment-specific state that does not exist in Claude's training data. Working from memory substitutes training priors for the evolved project understanding.
+
+## Session End
+
+**Before closing (`/exit`), regenerate `ORIENTATION.md`.**
+
+`ORIENTATION.md` is a one-page current-state summary: active phase, last completed step, open commissions, pending decisions, and any blockers. Write it fresh each session — do not append to the previous version.
+
+Format:
+```markdown
+# <Experiment Name> — Current State
+**Updated:** YYYY-MM-DD
+
+## Active phase
+<one sentence>
+
+## Last completed
+<commission or step, with result summary>
+
+## Open commissions
+- COMM-NNN — <title> — <status>
+
+## Pending decisions / blockers
+- <item>
+```
+
+**Why:** The next Claude instance reads ORIENTATION.md first. A stale or absent file forces it to reconstruct state from the full log — slower and error-prone. Regenerating it is the single most valuable thing you can do before closing.
+
 ## Log format
 
 Append an entry to `log.md` after every experiment, decision, or synthesis. Format:

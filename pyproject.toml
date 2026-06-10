@@ -14,7 +14,7 @@ dependencies = [
 ]
 
 [project.scripts]
-cc-markitdown = "markitdown.__main__:main"
+cc-markitdown = "cc_tools.markitdown:main_wrapper"
 cc-md2pdf     = "cc_tools.md2pdf:main"
 cc-nbconvert  = "nbconvert.nbconvertapp:main"
 cc-pdfplumber = "pdfplumber.cli:main"
