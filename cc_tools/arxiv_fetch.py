@@ -15,6 +15,9 @@ import xml.etree.ElementTree as ET
 import arxiv
 
 
+_CONFIGS_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "make4ht_configs")
+
+
 def _fetch_biorxiv(doi: str) -> None:
     for server in ("biorxiv", "medrxiv"):
         url = f"https://api.biorxiv.org/details/{server}/{doi}/json"
@@ -475,6 +478,42 @@ def _rewrite_img_src(html: str, tex_dir: str, figures_dir: str, img_rel_prefix: 
     return re.sub(r"<img\b[^>]*/?>", _replace, html, flags=re.DOTALL)
 
 
+def _detect_document_class(root_tex: str) -> str | None:
+    """Return the document class name from the root .tex file."""
+    pattern = re.compile(r'\\documentclass(?:\[[^\]]*\])?\{(\w+)\}')
+    try:
+        with open(root_tex, encoding="utf-8", errors="replace") as f:
+            for line in f:
+                if r'\begin{document}' in line:
+                    break
+                if line.lstrip().startswith('%'):
+                    continue
+                m = pattern.search(line)
+                if m:
+                    return m.group(1)
+    except OSError:
+        pass
+    return None
+
+
+def _uses_package(root_tex: str, package: str) -> bool:
+    """Return True if the preamble loads the given package (handles options and comma-lists)."""
+    pattern = re.compile(
+        r'\\usepackage(?:\[[^\]]*\])?\{[^}]*\b' + re.escape(package) + r'\b[^}]*\}'
+    )
+    for tex_path in _preamble_files(root_tex):
+        try:
+            with open(tex_path, encoding="utf-8", errors="replace") as f:
+                for line in f:
+                    if r'\begin{document}' in line:
+                        break
+                    if pattern.search(line):
+                        return True
+        except OSError:
+            pass
+    return False
+
+
 def _convert_tarball(src_data: bytes, arxiv_id: str, figures_dir: str | None = None, output_path: str | None = None) -> str:
     """Convert raw tarball bytes to markdown. Called by _src_to_markdown and --local-src."""
     import gzip as _gzip
@@ -544,8 +583,25 @@ def _convert_tarball(src_data: bytes, arxiv_id: str, figures_dir: str | None = N
         existing_cnf = make_env.get("TEXMFCNF", "")
         make_env["TEXMFCNF"] = (tmpdir + ":" + existing_cnf) if existing_cnf else tmpdir
 
+        # Apply upstream patches for known-problematic document classes / packages.
+        # IEEEtran: copy patched .4ht into tex_dir so TeX finds it before system copy.
+        # algpseudocode: pass -c config to replace nested-span output with <strong class="keyword">.
+        doc_class = _detect_document_class(root_tex)
+        if doc_class == "IEEEtran":
+            patched_4ht = os.path.join(_CONFIGS_DIR, "IEEEtran.4ht")
+            if os.path.exists(patched_4ht):
+                shutil.copy2(patched_4ht, os.path.join(tex_dir, "IEEEtran.4ht"))
+                print("cc-arxiv --src: applying IEEEtran.4ht patch (#189)", file=sys.stderr)
+
+        make4ht_cmd = ["make4ht", tex_name, "mathjax", "-no-shell-escape"]
+        if _uses_package(root_tex, "algpseudocode"):
+            alg_cfg = os.path.join(_CONFIGS_DIR, "algpseudocode.cfg")
+            if os.path.exists(alg_cfg):
+                make4ht_cmd = ["make4ht", "-c", alg_cfg, tex_name, "mathjax", "-no-shell-escape"]
+                print("cc-arxiv --src: applying algpseudocode.cfg patch (#190)", file=sys.stderr)
+
         r = subprocess.run(
-            ["make4ht", tex_name, "mathjax", "-no-shell-escape"],
+            make4ht_cmd,
             cwd=tex_dir, capture_output=True, timeout=180, env=make_env,
         )
         stem = os.path.splitext(tex_name)[0]

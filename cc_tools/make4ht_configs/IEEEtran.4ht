@@ -1,0 +1,36 @@
+% IEEEtran.4ht — patched version supplied by Michal Hoftich (michal-h21)
+% in response to https://github.com/michal-h21/make4ht/issues/189
+% Fixes: \current@color capacity failure; adds section/author block formatting.
+% Drop this file in the document directory so TeX finds it before the system copy.
+%
+% Original copyright:
+% Copyright (C) 2009-2009 Eitan M. Gurari
+% Copyright 2009-2024 TeX Users Group
+% LPPL maintenance status "maintained" — TeX4ht Project <https://tug.org/tex4ht>
+\immediate\write-1{version 2024-12-08-07:56 (cc-tools patch)}
+
+\input article.4ht
+
+\let\twocolumn\onecolumn
+\AtBeginDocument{
+  \@restonecoltrue\onecolumn
+  \let\@restonecolfalse\@restonecoltrue
+}
+
+\ifCLASSOPTIONcompsoc\else
+\def\thesubsection{\thesection-\Alph{subsection}}     % I-A
+\fi
+
+\NewConfigure{authorblockN}{2}
+\NewConfigure{authorblockA}{2}
+
+\Configure{authorblockA}{\ifvmode\IgnorePar\fi\EndP\HCode{<div class="authorblockA">}}{\HCode{</div>}}
+\Configure{authorblockN}{\ifvmode\IgnorePar\fi\EndP\HCode{<div class="authorblockN">}}{\HCode{</div>}}
+
+% Respect line breaks caused by \\ in author blocks
+\Css{.authorblockA{font-size: 0.8rem; white-space: pre-wrap;}}
+
+\def\IEEEauthorblockA#1{\a:authorblockA#1\b:authorblockA}
+\def\IEEEauthorblockN#1{\a:authorblockN#1\b:authorblockN}
+\Hinput{IEEEtran}
+\endinput

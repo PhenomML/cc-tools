@@ -31,6 +31,9 @@ cc-distill-fetch      = "cc_tools.distill_fetch:main"
 [tool.setuptools.packages.find]
 include = ["cc_tools*"]
 
+[tool.setuptools.package-data]
+cc_tools = ["make4ht_configs/*.4ht", "make4ht_configs/*.cfg"]
+
 [dependency-groups]
 dev = [
     "pytest>=8.0",
