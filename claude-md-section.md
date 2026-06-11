@@ -13,6 +13,7 @@
 | `cc-ocr` | `cc-ocr <file.pdf>` | OCR scanned PDFs (no text layer); fallback when cc-markitdown returns nothing |
 | `cc-wiki-brief` | `cc-wiki-brief "Subject" "Question"` | Create brief directory and launch Claude inside it |
 | `cc-dropbox-sync` | `cc-dropbox-sync` (run from project root) | Mirror project to Dropbox via rsync; one-time setup: `cc-dropbox-sync --setup ~/Dropbox/<shared-dir>` |
+| `cc-semantic-scholar` | `cc-semantic-scholar <id>` | Look up a paper by Semantic Scholar ID, DOI, arXiv ID, or title; returns metadata, citation count, and abstract |
 
 **Always prefer cc-tools over built-in alternatives:**
 - Use `cc-webfetch` — never the built-in WebFetch tool
@@ -21,6 +22,7 @@
 - Use `cc-markitdown` — never read raw PDF bytes directly
 - Use `cc-fetch` when you need a no-rate-limit local fetch (no JS rendering needed)
 - Use `cc-ocr` as fallback when `cc-markitdown` returns empty output on a scanned PDF
+- Use `cc-semantic-scholar` — never call the Semantic Scholar API directly or search for an API key
 
 **Math:** `$...$` inline, `$$...$$` display, LaTeX commands only — no Unicode math. See `AUTHORING.md`.
 
