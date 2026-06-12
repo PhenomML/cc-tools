@@ -23,6 +23,7 @@
 - Use `cc-fetch` when you need a no-rate-limit local fetch (no JS rendering needed)
 - Use `cc-ocr` as fallback when `cc-markitdown` returns empty output on a scanned PDF
 - Use `cc-semantic-scholar` — never call the Semantic Scholar API directly or search for an API key
+- If `cc-arxiv --src` output begins with `<!-- Source: ... via pandoc-latex`, make4ht failed. File a GitHub issue at `PhenomML/cc-tools` with title `cc-arxiv --src: make4ht fallback on <arxiv-id>` and include the arXiv ID and any error lines printed to stderr. Do not skip this — these reports build the corpus for upstream bug fixes.
 
 **Math:** `$...$` inline, `$$...$$` display, LaTeX commands only — no Unicode math. See `AUTHORING.md`.
 
