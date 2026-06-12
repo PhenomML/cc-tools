@@ -581,7 +581,10 @@ def _convert_tarball(src_data: bytes, arxiv_id: str, figures_dir: str | None = N
             _f.write("openout_any = p\n")
         make_env = os.environ.copy()
         existing_cnf = make_env.get("TEXMFCNF", "")
-        make_env["TEXMFCNF"] = (tmpdir + ":" + existing_cnf) if existing_cnf else tmpdir
+        # Trailing colon tells kpathsea to continue with its compiled-in default search path.
+        # Without it, setting TEXMFCNF=tmpdir replaces the defaults entirely and breaks
+        # the Lua module lookup that make4ht needs (module 'make4ht-logging' not found).
+        make_env["TEXMFCNF"] = tmpdir + ":" + existing_cnf
 
         # Apply upstream patches for known-problematic document classes / packages.
         # IEEEtran: copy patched .4ht into tex_dir so TeX finds it before system copy.
@@ -609,6 +612,19 @@ def _convert_tarball(src_data: bytes, arxiv_id: str, figures_dir: str | None = N
         if r.returncode != 0 and not os.path.exists(html_path):
             print(f"cc-arxiv --src: make4ht failed (exit {r.returncode}), trying pandoc fallback",
                   file=sys.stderr)
+            # make4ht writes diagnostics to the TeX .log file, not stderr.
+            # Print the tail so failures can be reported upstream (issue #189).
+            log_path = os.path.join(tex_dir, stem + ".log")
+            if os.path.exists(log_path):
+                with open(log_path, encoding="utf-8", errors="replace") as _lf:
+                    log_tail = _lf.read()[-4000:]
+                print("cc-arxiv --src: make4ht log (tail):\n" + log_tail, file=sys.stderr)
+            elif r.stderr:
+                print("cc-arxiv --src: make4ht stderr:\n" + r.stderr.decode("utf-8", errors="replace"),
+                      file=sys.stderr)
+            if r.stdout:
+                print("cc-arxiv --src: make4ht stdout:\n" + r.stdout.decode("utf-8", errors="replace"),
+                      file=sys.stderr)
 
         macro_block = _extract_preamble_macros(root_tex)
         simple_macros = _parse_simple_macros(root_tex)
