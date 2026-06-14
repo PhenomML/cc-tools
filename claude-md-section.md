@@ -46,6 +46,7 @@
 | `/wiki-upgrade` | `/wiki-upgrade` | Update cc-tools section in CLAUDE.md |
 | `/wiki-promote` | `/wiki-promote <brief-path>` | Promote brief findings to wiki |
 | `/agent-brief` | `/agent-brief <brief-path>` | Instantiate a specialised agent from an operational brief |
+| `/memory-audit` | `/memory-audit` | Audit project auto-memory for stale, overdue, or promotable entries |
 
 Skills auto-update on `git pull`. Docs: https://github.com/PhenomML/cc-tools
 
