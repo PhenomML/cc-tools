@@ -11,7 +11,25 @@ ls "$MEMORY_DIR" 2>/dev/null | head -5
 
 If the directory does not exist or is empty, report "No memory found for this project" and stop.
 
-## Step 2 — Read the index
+## Step 2 — Detect workspace context
+
+```bash
+test -d wiki && echo "wiki: yes" || echo "wiki: no"
+test -f log.md && echo "log.md: yes" || echo "log.md: no"
+test -f ORIENTATION.md && echo "ORIENTATION.md: yes" || echo "ORIENTATION.md: no"
+```
+
+This determines which destinations are available when trimming ORIENTATION.md or triaging memories:
+
+| Context | Available destinations |
+|---|---|
+| Wiki present (`wiki/` exists) | memory files, `log.md`, wiki pages, delete |
+| Brief only (no `wiki/`) | memory files, `log.md` (if present), delete |
+| No `log.md` | memory files, wiki pages (if wiki present), delete |
+
+Carry these availability flags through all subsequent steps. Do not offer "promote to wiki" if no `wiki/` directory exists.
+
+## Step 3 — Read the index
 
 ```bash
 cat "$MEMORY_DIR/MEMORY.md"
@@ -19,7 +37,7 @@ cat "$MEMORY_DIR/MEMORY.md"
 
 Note the total entry count. This is the audit scope.
 
-## Step 3 — Check ORIENTATION.md size
+## Step 4 — Check ORIENTATION.md size
 
 ```bash
 wc -l ORIENTATION.md 2>/dev/null || echo "No ORIENTATION.md found"
@@ -42,7 +60,7 @@ Report what should be cut and where each section should go. Ask the researcher t
 
 The target is a document a fresh Claude can read in under 2 minutes and have genuine current-state orientation — not a chronicle.
 
-## Step 4 — Scan each memory file
+## Step 5 — Scan each memory file
 
 For each `.md` file in the memory directory (excluding `MEMORY.md`), collect:
 
@@ -65,7 +83,7 @@ grep -rl "review_after\|expires" "$MEMORY_DIR" --include="*.md"
 
 Read the flagged files in full. Also read any file older than 60 days that has not been updated this session.
 
-## Step 5 — Classify findings
+## Step 6 — Classify findings
 
 Group entries into three buckets:
 
@@ -77,7 +95,7 @@ Group entries into three buckets:
 
 **Current** — no flags. Report count only; do not enumerate.
 
-## Step 6 — Present findings
+## Step 7 — Present findings
 
 Report each flagged entry with:
 - Memory name and one-line description from MEMORY.md
@@ -94,7 +112,7 @@ STALE-LIKELY (47 days) — project_antigravity_migration.md
 
 Do not make any changes yet. Present all findings first.
 
-## Step 7 — Triage each flagged entry
+## Step 8 — Triage each flagged entry
 
 For each flagged entry, ask the researcher to choose:
 
@@ -107,7 +125,7 @@ For **Promote to wiki**: suggest a destination based on content. If `$ARGUMENTS`
 
 After each decision, apply it before moving to the next entry. Do not batch changes.
 
-## Step 8 — Update MEMORY.md
+## Step 9 — Update MEMORY.md
 
 After all triage decisions:
 - Remove retired entries from MEMORY.md
