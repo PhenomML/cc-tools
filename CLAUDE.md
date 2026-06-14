@@ -16,6 +16,7 @@ Read `DEPLOYING.md` — it lists every file that must be updated when adding a t
 | `templates/` | Wiki scaffolding templates |
 | `DEPLOYING.md` | Deployment checklist |
 | `SECURITY.md` | LaTeX execution security |
+| `wiki/` | Living knowledge base — tool assessments, patterns, upstream engagement; see `wiki/CLAUDE.md` |
 
 ## Install
 
