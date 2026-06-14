@@ -19,7 +19,23 @@ cat "$MEMORY_DIR/MEMORY.md"
 
 Note the total entry count. This is the audit scope.
 
-## Step 3 — Scan each memory file
+## Step 3 — Check ORIENTATION.md size
+
+```bash
+wc -l ORIENTATION.md 2>/dev/null || echo "No ORIENTATION.md found"
+```
+
+ORIENTATION.md is read at every session start. It should contain *current state only* — not a running history. Size thresholds:
+
+- **Under 150 lines** — healthy; no action needed
+- **150–300 lines** — flag; review for resolved items that can be retired to `log.md` or the wiki
+- **Over 300 lines** — bloated; session-start overhead is significant; trim before the audit continues
+
+If bloated, read the file and identify sections that describe resolved commissions, past decisions with no ongoing implication, or history that belongs in `log.md`. Report what should be cut. Ask the researcher to confirm before editing.
+
+The target is a document a fresh Claude can read in under 2 minutes and have genuine current-state orientation — not a chronicle.
+
+## Step 4 — Scan each memory file
 
 For each `.md` file in the memory directory (excluding `MEMORY.md`), collect:
 
@@ -42,7 +58,7 @@ grep -rl "review_after\|expires" "$MEMORY_DIR" --include="*.md"
 
 Read the flagged files in full. Also read any file older than 60 days that has not been updated this session.
 
-## Step 4 — Classify findings
+## Step 5 — Classify findings
 
 Group entries into three buckets:
 
@@ -54,7 +70,7 @@ Group entries into three buckets:
 
 **Current** — no flags. Report count only; do not enumerate.
 
-## Step 5 — Present findings
+## Step 6 — Present findings
 
 Report each flagged entry with:
 - Memory name and one-line description from MEMORY.md
@@ -71,7 +87,7 @@ STALE-LIKELY (47 days) — project_antigravity_migration.md
 
 Do not make any changes yet. Present all findings first.
 
-## Step 6 — Triage each flagged entry
+## Step 7 — Triage each flagged entry
 
 For each flagged entry, ask the researcher to choose:
 
@@ -84,7 +100,7 @@ For **Promote to wiki**: suggest a destination based on content. If `$ARGUMENTS`
 
 After each decision, apply it before moving to the next entry. Do not batch changes.
 
-## Step 7 — Update MEMORY.md
+## Step 8 — Update MEMORY.md
 
 After all triage decisions:
 - Remove retired entries from MEMORY.md
