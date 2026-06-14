@@ -31,7 +31,14 @@ ORIENTATION.md is read at every session start. It should contain *current state 
 - **150–300 lines** — flag; review for resolved items that can be retired to `log.md` or the wiki
 - **Over 300 lines** — bloated; session-start overhead is significant; trim before the audit continues
 
-If bloated, read the file and identify sections that describe resolved commissions, past decisions with no ongoing implication, or history that belongs in `log.md`. Report what should be cut. Ask the researcher to confirm before editing.
+If bloated, read the file and identify sections by destination:
+
+- **Promote to memory file** — settled decisions, environment facts, API quirks, infrastructure conventions, behavioral patterns. These belong in typed memory files (`feedback`, `project`, `reference`) where they persist across sessions and are indexed by MEMORY.md. This is the primary destination for most trimmed content.
+- **Retire to `log.md`** — resolved commissions, completed experiment phases, superseded decisions. Historical record, not active knowledge.
+- **Promote to wiki** — factual knowledge useful to the whole team (human-visible). Use the wiki path, not memory.
+- **Delete** — truly ephemeral state that is no longer true and has no archival value.
+
+Report what should be cut and where each section should go. Ask the researcher to confirm before editing. Create new memory files as needed; update MEMORY.md index for any new entries.
 
 The target is a document a fresh Claude can read in under 2 minutes and have genuine current-state orientation — not a chronicle.
 
