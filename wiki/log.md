@@ -1,5 +1,13 @@
 # Session Log
 
+## [2026-06-15] ingest | Zhang, Kraska, Khattab (2025) — Recursive Language Models
+Sub-wikis: papers. Pages written: 1 (papers/zhang-2025-recursive-language-models.md). pipeline-status.md created.
+Fetch: cc-arxiv --src failed (tex4ht exit code 1; pandoc stub useless — issue #42 filed). PDF+markitdown fallback: ✓ full text from line ~100.
+Key concepts: RLM as REPL-environment paradigm; parallels to cc-tools wiki-as-active-memory architecture noted in paper page.
+
+## [2026-06-15] memory-audit | /memory-audit — private memory triage
+9 entries retired to wiki/memories/ (cs-onsager-pipeline, dd25-adjudication, icloud-sync-decision, version-policy, markdownnew-cf-bug, fc2-gate-design, research-memory-isolation, donoho-session-improvements, transformers-adversary). 2 entries updated (adversarial-review-discipline, fran — FC2-16 refs stripped; upstream-bug-filing — Michal validation added). pyproject.toml bumped to v0.2.0. wiki/memories/ directory established as public memory layer.
+
 ## 2026-06-14
 
 Wiki initialized. Driving question: what are we learning about AI-assisted research tooling through building and using cc-tools?
