@@ -231,6 +231,18 @@ Example rows:
 
 This file survives session compaction and is the authoritative source of raw/ quality state. Do not reconstruct it from conversation memory.
 
+## Step 5b — Update INDEX.md
+
+Add one line to `wiki/INDEX.md` for each paper page created this session:
+
+```
+- [slug](papers/slug.md) #paper #tag1 #tag2 — one sentence: what it is and why it matters for cc-tools
+```
+
+Choose tags from: `#paper` `#memory` `#pattern` `#tool` `#upstream` for type, plus topic tags (`#inference` `#long-context` `#latex` `#make4ht` `#context-management` `#adversarial-pipeline` etc.).
+
+If `INDEX.md` does not exist, create it with a header and `## Papers` section first.
+
 ## Step 6 — Session Completion Checklist
 
 Run these checks before declaring the session complete. Each item is a verification by inspection — run the command and read the output. Do not answer from memory.
@@ -261,7 +273,13 @@ grep "<author-year-slug>" <wiki>/index.md
 ```
 If absent: add the link before closing.
 
-**5. `log.md` updated** — read the tail and confirm the ingest entry is the last entry:
+**5. `INDEX.md` entry present** — grep by slug:
+```bash
+grep "<author-year-slug>" wiki/INDEX.md
+```
+If absent: add the entry before closing.
+
+**6. `log.md` updated** — read the tail and confirm the ingest entry is the last entry:
 ```bash
 tail -5 log.md
 ```

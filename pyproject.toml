@@ -27,6 +27,7 @@ cc-ocr           = "cc_tools.ocr:main"
 cc-safari-fetch       = "cc_tools.safari_fetch:main"
 cc-semantic-scholar   = "cc_tools.semantic_scholar:main"
 cc-distill-fetch      = "cc_tools.distill_fetch:main"
+cc-wiki-grep          = "cc_tools.wiki_grep:main"
 
 [tool.setuptools.packages.find]
 include = ["cc_tools*"]

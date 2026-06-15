@@ -14,6 +14,7 @@
 | `cc-wiki-brief` | `cc-wiki-brief "Subject" "Question"` | Create brief directory and launch Claude inside it |
 | `cc-dropbox-sync` | `cc-dropbox-sync` (run from project root) | Mirror project to Dropbox via rsync; one-time setup: `cc-dropbox-sync --setup ~/Dropbox/<shared-dir>` |
 | `cc-semantic-scholar` | `cc-semantic-scholar <id>` | Look up a paper by Semantic Scholar ID, DOI, arXiv ID, or title; returns metadata, citation count, and abstract |
+| `cc-wiki-grep` | `cc-wiki-grep PATTERN [PATH]` | Search wiki .md files; returns file § heading: match; modes: `--section HEADING FILE`, `--frontmatter [PATH]`, `--tags [PATH]`, `-l` (files only) |
 
 **Always prefer cc-tools over built-in alternatives:**
 - Use `cc-webfetch` — never the built-in WebFetch tool

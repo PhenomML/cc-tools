@@ -8,13 +8,38 @@ This wiki is a living artifact — both working memory for the cc-tools Claude a
 
 1. Read `ORIENTATION.md` at the repo root for current codebase state
 2. Read `wiki/log.md` for what changed in recent sessions
-3. Read any wiki pages relevant to today's work before starting
+3. Read `wiki/INDEX.md` to orient across all wiki content — one line per page, greppable tags
+4. Read specific pages only when the task requires them — use INDEX.md and grep to decide what to load
+
+## Querying the wiki without loading full files
+
+Load INDEX.md first (small), then use grep/sed to extract only what you need:
+
+```bash
+# Find pages by topic
+grep "#cloudflare" wiki/INDEX.md
+
+# Find pages by type
+grep "#paper" wiki/INDEX.md
+
+# Extract a named section from a page (no full-file read)
+sed -n '/^## Methods/,/^## /p' wiki/papers/foo.md
+
+# Search for a term across all wiki pages, showing file + nearest heading
+grep -rn "compaction" wiki/ --include="*.md" -l
+
+# Read frontmatter only (stop at first blank line after ---)
+sed -n '/^---$/,/^---$/p' wiki/papers/foo.md | head -20
+```
+
+The goal: INDEX.md tells you *where* to look; grep/sed tell you *what* to extract; `Read` with `offset`/`limit` fetches only the relevant section. Avoid reading full files unless the whole page is needed.
 
 ## Session End
 
 1. Update `wiki/log.md` with a brief entry: what changed, what's pending
 2. If factual knowledge was generated (tool behavior, patterns, upstream findings), write or update the relevant wiki page
 3. If private memory files were updated, check whether the content belongs here instead (or as well)
+4. Add an entry to `wiki/INDEX.md` for any new page created this session
 
 ## Structure
 
