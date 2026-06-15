@@ -1,5 +1,8 @@
 # Session Log
 
+## [2026-06-15] pattern | INDEX.md + cc-wiki-grep navigation — field assessment
+wiki/patterns/index-md-navigation.md created. First real-world evaluation by Cass (compressed-sensing wiki): useful for session-start orientation and long-tail page discovery; tag taxonomy is rough; high-frequency pages bypass it via memory; verdict "useful, not transformative." Design note on tag-miss backstop added.
+
 ## [2026-06-15] ingest | Zhang, Kraska, Khattab (2025) — Recursive Language Models
 Sub-wikis: papers. Pages written: 1 (papers/zhang-2025-recursive-language-models.md). pipeline-status.md created.
 Fetch: cc-arxiv --src failed (tex4ht exit code 1; pandoc stub useless — issue #42 filed). PDF+markitdown fallback: ✓ full text from line ~100.

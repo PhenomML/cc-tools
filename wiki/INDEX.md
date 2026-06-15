@@ -4,6 +4,10 @@ One line per page. Tags are greppable: `grep "#memory" wiki/INDEX.md`, `grep "#p
 Maintained by convention: add an entry whenever a page is created or promoted.
 `raw/` files are not indexed here — they are source material, not knowledge.
 
+## Patterns
+
+- [index-md-navigation](patterns/index-md-navigation.md) #pattern #context-management — INDEX.md + cc-wiki-grep two-step navigation; field assessment by Cass (useful for long tail, not transformative)
+
 ## Papers
 
 - [zhang-2025-recursive-language-models](papers/zhang-2025-recursive-language-models.md) #paper #inference #long-context #context-management #claude-code — RLM treats prompt as REPL variable; symbolic recursion outperforms compaction; +13% median over Claude Code on long-context tasks
