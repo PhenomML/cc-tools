@@ -2,6 +2,13 @@ Upgrade the cc-tools managed section in this wiki's CLAUDE.md: $ARGUMENTS
 
 Run from the wiki root (the directory containing CLAUDE.md).
 
+> **Pre-flight on mature wikis:** On wikis that have been running for more than a few sessions,
+> inspect the managed block before Step 2. Project-specific sections sometimes accumulate inside
+> the sentinels alongside the schema content — the upgrade will silently delete them.
+> Run `grep -n "^## " CLAUDE.md` and check whether any section between the sentinels is
+> project-specific (not present in `wiki-schema.md`). If so, move it above the begin sentinel
+> before proceeding.
+
 ## Step 1 — Verify sentinels
 
 Check that CLAUDE.md contains both sentinel markers. If either is missing, the file
