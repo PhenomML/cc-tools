@@ -95,7 +95,50 @@ PYEOF
 
 Report whether the section was injected or already present.
 
-## Step 4 — Verify and report
+## Step 4 — Bootstrap INDEX.md if missing
+
+Check whether `INDEX.md` exists at the wiki root:
+
+```bash
+test -f INDEX.md && echo "exists" || echo "missing"
+```
+
+If it **exists**, skip this step.
+
+If it **is missing**, bootstrap it:
+
+1. Find all content pages (exclude infrastructure files):
+```bash
+find . -name "*.md" \
+  ! -name "CLAUDE.md" ! -name "INDEX.md" ! -name "log.md" \
+  ! -name "pipeline-status.md" ! -name "queue.md" \
+  ! -path "*/raw/*" \
+  | sort
+```
+
+2. For each page found, read its frontmatter (`cc-wiki-grep --frontmatter <page>`) to extract `title`, `type`, and any `wikis` field. Write one INDEX.md entry per page in this format:
+```
+- [slug](path/to/page.md) #type #topic-tag — one sentence: what it contains
+```
+
+Choose `#type` from the `type:` frontmatter field (`#paper`, `#memory`, `#pattern`, `#tool`, `#upstream`). Add one or two topic tags based on content (e.g. `#long-context`, `#make4ht`, `#cloudflare`, `#cc-arxiv`). Write the sentence from the page title and first paragraph — do not invent claims.
+
+Write the file with a brief header:
+```markdown
+# Wiki Index
+
+<!-- One line per page. Format: - [slug](path) #type #tag — sentence. Maintained by Claude. -->
+
+## Papers
+[paper entries]
+
+## Other
+[remaining entries]
+```
+
+Report how many entries were written. Note that tags are seeded from frontmatter — the researcher should review and adjust topic tags before committing.
+
+## Step 5 — Verify and report
 
 Read CLAUDE.md and confirm:
 - The Sub-wikis table is unchanged
@@ -107,7 +150,7 @@ Append to `log.md`:
 ## [<YYYY-MM-DD>] upgrade | cc-tools wiki schema updated
 ```
 
-## Step 5 — Update project settings
+## Step 6 — Update project settings
 
 Run:
 
