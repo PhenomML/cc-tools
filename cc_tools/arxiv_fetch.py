@@ -596,11 +596,15 @@ def _convert_tarball(src_data: bytes, arxiv_id: str, figures_dir: str | None = N
                 shutil.copy2(patched_4ht, os.path.join(tex_dir, "IEEEtran.4ht"))
                 print("cc-arxiv --src: applying IEEEtran.4ht patch (#189)", file=sys.stderr)
 
-        make4ht_cmd = ["make4ht", tex_name, "mathjax", "-no-shell-escape"]
+        # Do NOT pass "-no-shell-escape" as a positional arg — make4ht treats
+        # positional arg[2] as tex4ht binary options (not LaTeX options), so
+        # tex4ht receives it directly and exits 1 with "improper command line".
+        # Shell-escape is already off by default; openout_any=p handles write security.
+        make4ht_cmd = ["make4ht", tex_name, "mathjax"]
         if _uses_package(root_tex, "algpseudocode"):
             alg_cfg = os.path.join(_CONFIGS_DIR, "algpseudocode.cfg")
             if os.path.exists(alg_cfg):
-                make4ht_cmd = ["make4ht", "-c", alg_cfg, tex_name, "mathjax", "-no-shell-escape"]
+                make4ht_cmd = ["make4ht", "-c", alg_cfg, tex_name, "mathjax"]
                 print("cc-arxiv --src: applying algpseudocode.cfg patch (#190)", file=sys.stderr)
 
         r = subprocess.run(
