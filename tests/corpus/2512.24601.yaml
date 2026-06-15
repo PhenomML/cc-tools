@@ -1,0 +1,12 @@
+---
+arxiv_id: "2512.24601"
+title: "Recursive Language Models"
+authors: "Zhang, Kraska, Khattab"
+year: 2025
+pipeline: make4ht
+notes: >
+  Uses neurips2026.sty + algorithm2e + tikzmark. This paper exposed the
+  -no-shell-escape positional-arg bug (issue #42): make4ht routed it to
+  tex4ht which exited 1 with "improper command line". Regression test to
+  ensure this class of papers converts correctly.
+---
