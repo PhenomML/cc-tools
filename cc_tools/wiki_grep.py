@@ -18,6 +18,11 @@ import sys
 from pathlib import Path
 
 
+def _to_python_regex(pattern: str) -> str:
+    r"""Translate BRE \| alternation to Python | so grep habits work."""
+    return re.sub(r"\\\|", "|", pattern)
+
+
 def _wiki_files(path: Path) -> list[Path]:
     """All .md files under path, excluding raw/ directories."""
     if path.is_file():
@@ -36,7 +41,7 @@ def _heading_above(lines: list[str], lineno: int) -> str:
 def cmd_search(pattern: str, path: Path, context: int, files_only: bool, ignore_case: bool) -> int:
     flags = re.IGNORECASE if ignore_case else 0
     try:
-        regex = re.compile(pattern, flags)
+        regex = re.compile(_to_python_regex(pattern), flags)
     except re.error as e:
         print(f"cc-wiki-grep: invalid pattern: {e}", file=sys.stderr)
         return 2
@@ -69,7 +74,7 @@ def cmd_search(pattern: str, path: Path, context: int, files_only: bool, ignore_
 def cmd_section(heading_pattern: str, filepath: Path, ignore_case: bool) -> int:
     flags = re.IGNORECASE if ignore_case else 0
     try:
-        regex = re.compile(heading_pattern, flags)
+        regex = re.compile(_to_python_regex(heading_pattern), flags)
     except re.error as e:
         print(f"cc-wiki-grep: invalid pattern: {e}", file=sys.stderr)
         return 2
