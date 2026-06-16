@@ -65,6 +65,10 @@ regardless of how it was tagged. Tags are a fast-path optimization; the search m
 backstop. This lowers the latent miss risk Cass identified, though it doesn't eliminate the
 pre-step cost when tags are wrong.
 
+## Bugs fixed in field use
+
+**Alternation syntax (80e360b, 2026-06-16):** `cc-wiki-grep "status: contaminated\|status: blocked"` returned exit 1 — Python's `re` module treats `\|` as a literal `|`, not alternation. Surfaced while querying Meridian's `data-dictionary.md`. Fix: translate BRE `\|` → Python `|` before compiling. Both forms now work.
+
 ## Maintenance rule
 
 Add one INDEX.md entry per page at ingest time. This is enforced by Step 5b of
