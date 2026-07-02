@@ -33,7 +33,7 @@ cc-wiki-grep          = "cc_tools.wiki_grep:main"
 include = ["cc_tools*"]
 
 [tool.setuptools.package-data]
-cc_tools = ["make4ht_configs/*.4ht", "make4ht_configs/*.cfg"]
+cc_tools = ["make4ht_configs/*.4ht", "make4ht_configs/*.cfg", "make4ht_configs/*.tex"]
 
 [dependency-groups]
 dev = [

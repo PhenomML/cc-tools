@@ -1,0 +1,9 @@
+---
+arxiv_id: "2211.00593"
+title: "Interpretability in the Wild: a Circuit for Indirect Object Identification in GPT-2 small"
+authors: "Wang, Variengien, Conmy, Shlegeris, Steinhardt"
+year: 2022
+pipeline: pandoc-latex
+macro_count_min: 0
+notes: "Multi-file paper (sections/ subdir); iclr2023_conference.sty triggers \\:CheckOption cascade in make4ht; pandoc fallback requires cwd=tex_dir to resolve \\input{sections/*.tex} paths correctly (fixes #45)"
+---

@@ -496,6 +496,34 @@ def _detect_document_class(root_tex: str) -> str | None:
     return None
 
 
+def _uses_tikz_external(root_tex: str) -> bool:
+    """Return True if any source file in tex_dir activates tikz externalization.
+
+    Checks both LaTeX preamble files and bundled .sty files, because
+    \\tikzexternalize is often called from a project .sty rather than the root .tex.
+    """
+    tex_dir = os.path.dirname(root_tex)
+    markers = [r'\tikzexternalize', r'\usetikzlibrary{external}']
+    for tex_path in _preamble_files(root_tex):
+        try:
+            with open(tex_path, encoding="utf-8", errors="replace") as f:
+                content = f.read()
+            if any(m in content for m in markers):
+                return True
+        except OSError:
+            pass
+    for fname in os.listdir(tex_dir):
+        if fname.endswith('.sty'):
+            try:
+                with open(os.path.join(tex_dir, fname), encoding="utf-8", errors="replace") as f:
+                    content = f.read()
+                if any(m in content for m in markers):
+                    return True
+            except OSError:
+                pass
+    return False
+
+
 def _uses_package(root_tex: str, package: str) -> bool:
     """Return True if the preamble loads the given package (handles options and comma-lists)."""
     pattern = re.compile(
@@ -589,12 +617,20 @@ def _convert_tarball(src_data: bytes, arxiv_id: str, figures_dir: str | None = N
         # Apply upstream patches for known-problematic document classes / packages.
         # IEEEtran: copy patched .4ht into tex_dir so TeX finds it before system copy.
         # algpseudocode: pass -c config to replace nested-span output with <strong class="keyword">.
+        # tikz-external: write stub library to tex_dir to neutralise grouping-level overflow.
         doc_class = _detect_document_class(root_tex)
         if doc_class == "IEEEtran":
             patched_4ht = os.path.join(_CONFIGS_DIR, "IEEEtran.4ht")
             if os.path.exists(patched_4ht):
                 shutil.copy2(patched_4ht, os.path.join(tex_dir, "IEEEtran.4ht"))
                 print("cc-arxiv --src: applying IEEEtran.4ht patch (#189)", file=sys.stderr)
+
+        if _uses_tikz_external(root_tex):
+            stub_src = os.path.join(_CONFIGS_DIR, "tikzlibraryexternal.code.tex")
+            if os.path.exists(stub_src):
+                shutil.copy2(stub_src, os.path.join(tex_dir, "tikzlibraryexternal.code.tex"))
+                print("cc-arxiv --src: applying tikz-external stub (grouping-levels fix, #44)",
+                      file=sys.stderr)
 
         # Do NOT pass "-no-shell-escape" as a positional arg — make4ht treats
         # positional arg[2] as tex4ht binary options (not LaTeX options), so
@@ -660,8 +696,8 @@ def _convert_tarball(src_data: bytes, arxiv_id: str, figures_dir: str | None = N
         print("cc-arxiv --src: make4ht produced no HTML, falling back to pandoc direct LaTeX conversion",
               file=sys.stderr)
         p = subprocess.run(
-            ["pandoc", "--from", "latex", "--to", "markdown", "--wrap=none", root_tex],
-            capture_output=True, text=True, timeout=60,
+            ["pandoc", "--from", "latex", "--to", "markdown", "--wrap=none", tex_name],
+            cwd=tex_dir, capture_output=True, text=True, timeout=60,
         )
         if p.returncode != 0:
             raise RuntimeError(f"pandoc direct LaTeX conversion failed: {p.stderr[:200]}")

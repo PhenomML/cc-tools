@@ -1,0 +1,16 @@
+% tikzlibraryexternal.code.tex — tex4ht stub
+% TikZ externalization calls \begingroup; combined with tex4ht's hook/configure
+% system this exhausts TeX's 255 grouping-level limit.  This stub replaces the
+% real library with no-ops so make4ht can process papers that load
+% \usetikzlibrary{external} or call \tikzexternalize directly.
+%
+% Applied automatically by cc-arxiv --src when externalization is detected in
+% any .tex or .sty file in the source tarball.
+\def\tikzexternalize{\pgfutil@ifnextchar[{\tikzext@stub@i}{\tikzext@stub@i[]}}
+\def\tikzext@stub@i[#1]{}
+\def\tikzsetexternalprefix#1{}
+\def\tikzexternaldisable{}
+\def\tikzexternalenable{}
+\def\tikzsetnextfilename#1{}
+\def\tikzexternalfiledependsonfile#1#2{}
+\def\tikzexternalrealmainfile{}
