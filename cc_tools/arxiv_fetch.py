@@ -631,6 +631,11 @@ def _convert_tarball(src_data: bytes, arxiv_id: str, figures_dir: str | None = N
                 shutil.copy2(stub_src, os.path.join(tex_dir, "tikzlibraryexternal.code.tex"))
                 print("cc-arxiv --src: applying tikz-external stub (grouping-levels fix, #44)",
                       file=sys.stderr)
+            hooks_src = os.path.join(_CONFIGS_DIR, "tikz-hooks.4ht")
+            if os.path.exists(hooks_src):
+                shutil.copy2(hooks_src, os.path.join(tex_dir, "tikz-hooks.4ht"))
+                print("cc-arxiv --src: applying tikz-hooks.4ht patch (self-ref guard, #44)",
+                      file=sys.stderr)
 
         # Do NOT pass "-no-shell-escape" as a positional arg — make4ht treats
         # positional arg[2] as tex4ht binary options (not LaTeX options), so
