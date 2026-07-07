@@ -66,6 +66,9 @@ cc-wiki-grep --section "Results" papers/foo.md          # extract one section
 cc-wiki-grep --frontmatter papers/                      # all paper metadata at once
 ```
 
+**During any session turn — before asserting a factual claim about this domain:**
+Run `cc-wiki-grep "TERM" .` first. Cite what you find, or mark `*[Imputed]*`.
+
 ## Session End
 
 Before closing the session:

@@ -2,7 +2,7 @@
 
 Standard Claude Code toolset for PhenomML research projects. This file is regenerated at the end of each session.
 
-**Last updated:** 2026-06-24
+**Last updated:** 2026-07-07
 
 ## What this repo is
 
@@ -19,7 +19,7 @@ CLI tools and skills installed via `uv tool install --reinstall --force .` into 
 | `pyproject.toml` | Entry points for all CLI tools |
 | `cc_tools/arxiv_fetch.py` | `cc-arxiv` implementation including `--src` make4ht pipeline |
 | `cc_tools/wiki_grep.py` | `cc-wiki-grep` — token-efficient wiki search |
-| `cc_tools/make4ht_configs/` | Upstream patches: `IEEEtran.4ht` (#189), `algpseudocode.cfg` (#190) |
+| `cc_tools/make4ht_configs/` | Upstream patches: `IEEEtran.4ht` (#189), `algpseudocode.cfg` (#190), `tikz-hooks.4ht` (#44) |
 | `templates/wiki-CLAUDE.md` | Template for new wiki CLAUDE.md files |
 | `skills/wiki-upgrade.md` | `/wiki-upgrade` skill — includes Step 4 INDEX.md bootstrap |
 | `DEPLOYING.md` | Checklist — update before any new tool/skill ships |
@@ -63,6 +63,8 @@ The research group is running sessions inside **cmux** ([manaflow-ai/cmux](https
 
 `/wiki-upgrade` now includes Step 4 (bootstrap INDEX.md if missing) and Step 3 placeholder includes INDEX.md step 2. Pre-flight rule: `grep -n "^## " CLAUDE.md` before upgrading mature wikis — project-specific sections inside the managed block are silently clobbered.
 
+**Wiki-access behavioral rule (2026-07-07):** The root problem is not that agents can't access wikis — they have `cc-wiki-grep`. The problem is nothing tells them *when* to use it during a session. Fix: added a two-line rule to `templates/wiki-CLAUDE.md` and the `wiki-upgrade.md` Step 3 placeholder: "During any session turn — before asserting a factual claim about this domain: Run `cc-wiki-grep "TERM" .` first. Cite what you find, or mark `*[Imputed]*`." Step 3b in `/wiki-upgrade` patches this rule into existing wikis that already have a Session Start section. Run `/wiki-upgrade` in each agent wiki to propagate.
+
 ## Agent session management (established 2026-06-18)
 
 **Sessions are disposable, files are not.** ORIENTATION.md, log.md, and commission documents are the continuity layer — not the conversation context.
@@ -80,12 +82,20 @@ The `--src` path fetches an arXiv TeX tarball and runs:
 
 **Bug fixed 2026-06-16 (closes #42):** `-no-shell-escape` was passed as make4ht positional arg[2], which make4ht routes directly to the `tex4ht` binary — not to LaTeX. tex4ht exits 1 with "improper command line". Fixed by removing it: shell-escape is off by default; `openout_any=p` handles write security.
 
+**Bug fixed 2026-07-02 (issue #44 — tikz-external grouping overflow):** Root cause: `tikz-hooks.4ht` inlines `\find:externalize` body into `\use@@tikzlibrary` via `\append:defI`. After the external library loads and defines `\tikzexternalize`, the code fires for every subsequent `\usetikzlibrary` call. The second fire does `\let\tikz:externalize\tikzexternalize` again — but `\tikzexternalize` has already been wrapped to call `\tikz:externalize`, so the `\let` creates a circular self-reference → infinite recursion → TeX grouping-levels=255 overflow. Fix: patched `tikz-hooks.4ht` in `make4ht_configs/` adds a one-time `\tikzext:wrap:done` guard around the wrapping block. The pipeline copies it to the tex working directory alongside the stub when tikz-external is detected (tex4ht searches current dir first). Verified on revtex4-1 (2507.07432 first pass: clean DVI) and IEEEtran (minimal test: clean HTML in ~2s); all 9 corpus tests pass.
+
 **Active upstream engagement with Michal Hoftich (michal-h21):**
 - Issue #189: IEEEtran register overflow — patches incorporated. All three papers now tested with both pdfLaTeX AND LuaLaTeX (2026-06-24). All converge at register 65630 with LuaLaTeX, confirming overflow is from IEEEtran + tex4ht hooks (not paper content). Results posted; awaiting Michal's response.
 - Issue #190: algpseudocode nested spans — patch incorporated, tested on 2505.00326 (2026-06-24), results posted. Keywords render as `<strong>`; line structure clean; math stays as MathJax spans. Config in daily use.
 - Protocol: Andrew relays upstream findings; never file make4ht issues without his go-ahead.
 
 **IEEEtran status:** All IEEEtran.cls papers (second most common arXiv class) still fall to pandoc-latex. Two failure modes: register overflow (Bad register code) and memory exhaustion. Upstream issue #189 open; no timeline.
+
+**IEEEtran register overflow root cause (2026-07-02):** The overflow is deterministic — all three test papers hit the same register number (65630) under LuaLaTeX, regardless of paper content. Root cause: IEEEtran.cls allocates many TeX registers natively (two-column layout, citation tracking, section formatting, biography environments). tex4ht's hook system allocates additional registers for every macro it wraps. Combined they exhaust the engine's register pool. The 65630 convergence means the overflow comes from the class + tex4ht infrastructure, not the papers. Fix path: IEEEtran.4ht would need to skip hooking IEEEtran-specific macros that tex4ht doesn't need for HTML output.
+
+**tikz-external rarity (2026-07-02):** Sampled 40 recent arXiv papers (cs.SY + quant-ph) — 0 use tikz-external. Reason: tikz-external saves figures as sidecar PDFs; arXiv submissions must include those files, so most authors disable it before submitting. The GPTs paper (2507.07432) is unusual — tikz-external was embedded in a bundled group .sty (dynlearn.sty) and left active by oversight. No real end-to-end test case found; IEEEtran toy document (synthetic) is the only full-pipeline evidence for the fix.
+
+**2507.07432 second-pass hang:** tex4ht second pass on 2507.07432 does not loop — it makes genuine progress through complex quantum math but is extremely slow (29+ hours observed). Orphaned process (GPTs_micro.tex, pid 79484) was killed 2026-07-02 after running since Thursday. This paper will always hit cc-arxiv's timeout and fall to pandoc-latex fallback — that is the correct behaviour, not a bug.
 
 **Known failure pattern — missing .xbb files:**
 arXiv:2602.02385 fails in the tex4ht DVI→HTML step with "Cannot determine size of graphic" warnings. Not yet filed.
@@ -120,6 +130,7 @@ arXiv:2602.02385 fails in the tex4ht DVI→HTML step with "Cannot determine size
 
 - ~~Test algpseudocode.cfg patch on arXiv:2505.00326~~ done 2026-06-24
 - File issue for 2602.02385 tex4ht .xbb failure pattern
+- Draft upstream report for issue #44 (tikz-hooks.4ht self-ref bug) for Andrew to relay to Michal
 - Antigravity CLI migration: templates/gemini-workspace.md rename, setup-claude.sh --adversary flag
 - cmux KaTeX PR: implement once maintainer responds to issue #6749
 

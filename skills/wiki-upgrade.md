@@ -103,6 +103,9 @@ cc-wiki-grep --section "Results" papers/foo.md          # extract one section
 cc-wiki-grep --frontmatter papers/                      # all paper metadata at once
 ```
 
+**During any session turn — before asserting a factual claim about this domain:**
+Run `cc-wiki-grep "TERM" .` first. Cite what you find, or mark `*[Imputed]*`.
+
 """
     sentinel = "<!-- cc-tools:wiki:begin -->"
     text = text.replace(sentinel, placeholder + sentinel, 1)
@@ -112,6 +115,40 @@ PYEOF
 ```
 
 Report whether the section was injected or already present.
+
+## Step 3b — Add wiki-access rule if missing
+
+Check whether the wiki-access behavioral rule is present:
+
+```bash
+grep -c "before asserting" CLAUDE.md
+```
+
+If the output is `0`, insert it. Find the end of the Session Start section and insert before `## Session End` or the managed-block sentinel, whichever comes first:
+
+```bash
+WIKI_CLAUDE="CLAUDE.md" python3 - <<'PYEOF'
+import os, pathlib
+
+path = pathlib.Path(os.environ["WIKI_CLAUDE"])
+text = path.read_text()
+
+if "before asserting" in text:
+    print("Wiki-access rule already present — skipping.")
+else:
+    rule = "\n**During any session turn — before asserting a factual claim about this domain:**\nRun `cc-wiki-grep \"TERM\" .` first. Cite what you find, or mark `*[Imputed]*`.\n"
+    inserted = False
+    for boundary in ["## Session End", "<!-- cc-tools:wiki:begin -->"]:
+        if boundary in text:
+            text = text.replace(boundary, rule + boundary, 1)
+            path.write_text(text)
+            print(f"Wiki-access rule injected before '{boundary}'.")
+            inserted = True
+            break
+    if not inserted:
+        print("Could not find insertion point — add manually in ## Session Start section.")
+PYEOF
+```
 
 ## Step 4 — Bootstrap INDEX.md if missing
 
