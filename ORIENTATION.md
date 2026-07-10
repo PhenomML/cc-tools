@@ -24,6 +24,22 @@ CLI tools and skills installed via `uv tool install --reinstall --force .` into 
 | `skills/wiki-upgrade.md` | `/wiki-upgrade` skill — includes Step 4 INDEX.md bootstrap |
 | `DEPLOYING.md` | Checklist — update before any new tool/skill ships |
 | `SECURITY.md` | LaTeX execution security (Tier-1 defenses, CVE-2023-32700) |
+| `AUTHORING.md` | Math and document rendering standard (MathJax, Mermaid, line wrapping) |
+| `SIGNAL.md` | AI-for-Science communication standard — three pillars: Markdown+MathJax, wiki, Shannon/McCloskey |
+
+## SIGNAL.md — communication standard (2026-07-07)
+
+Three-pillar discipline for all AI-generated scientific content. Peer to `AUTHORING.md` and `SECURITY.md`.
+
+1. **Markdown + MathJax** — structured documents; all math in `$...$`/`$$...$$` LaTeX; specification-grade reproducibility. Full rendering spec in `AUTHORING.md`.
+2. **Wiki** — knowledge in owned files, not context windows; `*[Imputed]*` for ungrounded claims; `cc-wiki-grep` before asserting.
+3. **Shannon + McCloskey** — maximum information per word; zero redundancy; claims stated as claims. Named after Claude Shannon (information density) + Deirdre McCloskey (*Economical Writing, Third Edition*).
+
+**Implementation pending:**
+- Add prose standard section to `AUTHORING.md`
+- Update `templates/wiki-CLAUDE.md` Page conventions + `wiki-schema.md` (propagated by `/wiki-upgrade`)
+- Create `/shannon` skill
+- Add Shannon/McCloskey voice to `~/.claude/CLAUDE.md` as Tool's default voice
 
 ## Shell environment: cmux (assessed 2026-06-24)
 
@@ -104,7 +120,7 @@ arXiv:2602.02385 fails in the tex4ht DVI→HTML step with "Cannot determine size
 
 ## Test corpus
 
-8 papers, all passing. Run: `uv run pytest` (offline, ~1s from cache) or `uv run pytest --regenerate` (re-runs make4ht on all tarballs, ~73s).
+10 papers, 11 passing, 2 skipped. Run: `uv run pytest` (offline, ~1s from cache) or `uv run pytest --regenerate` (re-runs make4ht on all tarballs, ~73s).
 
 | arXiv ID | Pipeline | Notes |
 |---|---|---|
@@ -116,6 +132,8 @@ arXiv:2602.02385 fails in the tex4ht DVI→HTML step with "Cannot determine size
 | 1610.03082 (VAMP) | pandoc-latex | IEEEtran memory exhaustion |
 | 2512.24601 (RLM, Zhang et al.) | make4ht | Added 2026-06-16; exposed #42 bug |
 | 2211.00593 (IOI circuit, Wang et al.) | pandoc-latex | ICLR class / multi-file; fixed pandoc cwd bug (#45) |
+| 2305.13571 (Chi et al.) | pdf-only | ACL template; tex4ht fails; pandoc times out; issue #47 |
+| 2501.00073 (Zuo et al.) | pdf-only | COLING class; tex4ht fails; pandoc parse error; issue #48 |
 
 ## Open issues (selected)
 
@@ -128,11 +146,32 @@ arXiv:2602.02385 fails in the tex4ht DVI→HTML step with "Cannot determine size
 | 21 | cc-webfetch --math: pandoc pipeline for math-heavy HTML pages |
 | 19 | /wiki-orient skill |
 
+## NLP conference template failure class (diagnosis pending)
+
+Issues #47 (ACL, 2305.13571) and #48 (COLING, 2501.00073) represent a new failure class: **both make4ht and pandoc-latex fail**, producing no output. These are the first `pdf-only` corpus entries.
+
+**Root cause: unknown.** tex4ht exits 1 on both papers, but we have not captured verbose error output. The failure mode determines scope entirely:
+- Missing `.4ht` file → moderate; write conference class hooks (AI coding makes this tractable)
+- Register overflow variant → harder; structural upstream fix like IEEEtran
+- Specific macro collision → possibly a small patch
+
+**Why LaTeXML is not the answer:** Tested and rejected in issue #20. LaTeXML emits interleaved Unicode+LaTeX on math-heavy papers, producing garbage. make4ht executes actual TeX; that architecture is correct. The tex4ht hook layer is the failure point, not the choice of make4ht.
+
+**Strategic scope:** ACL, COLING, EMNLP, NAACL, EACL all use bundled conference `.sty` files. This failure class covers most NLP papers on arXiv. A fix would benefit the entire tex4ht community and is worth upstream engagement with Michal once diagnosed.
+
+**Diagnosis path (next session):** Run make4ht on cached tarballs with full verbose output:
+```bash
+cd /tmp && tar xf <cc-tools>/tests/corpus/tarballs/2305.13571.tar.gz
+make4ht acl_latex.tex "mathjax" 2>&1 | tee /tmp/acl-make4ht.log
+```
+The error output will identify which category this falls into.
+
 ## Pending work (not yet filed)
 
 - ~~Test algpseudocode.cfg patch on arXiv:2505.00326~~ done 2026-06-24
 - File issue for 2602.02385 tex4ht .xbb failure pattern
 - Draft upstream report for issue #44 (tikz-hooks.4ht self-ref bug) for Andrew to relay to Michal
+- Diagnose ACL/COLING template failure (issues #47, #48) — run make4ht locally, capture error
 - Antigravity CLI migration: templates/gemini-workspace.md rename, setup-claude.sh --adversary flag
 - cmux KaTeX PR: implement once maintainer responds to issue #6749
 

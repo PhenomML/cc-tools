@@ -1,0 +1,10 @@
+---
+arxiv_id: "2501.00073"
+title: "Position Information Emerges in Causal Transformers Without Positional Encodings via Similarity of Nearby Embeddings"
+authors: "Zuo, Guerzhoy, Guerzhoy"
+year: 2025
+pipeline: pdf-only
+known_artifacts:
+  - "COLING LaTeX class (coling.sty): tex4ht exits 1; pandoc parse error on \\vskip\\baselineskip at coling.sty line 51"
+notes: "NLP paper using COLING conference template; total pipeline failure (issue #48); workaround: PDF + cc-markitdown"
+---

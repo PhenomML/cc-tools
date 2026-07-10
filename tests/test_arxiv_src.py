@@ -51,7 +51,10 @@ def expected_filename(arxiv_id: str) -> str:
 
 
 CORPUS = load_corpus()
-ARXIV_ENTRIES = [e for e in CORPUS if e.get("arxiv_id") and e.get("pipeline") != "no-source"]
+ARXIV_ENTRIES = [
+    e for e in CORPUS
+    if e.get("arxiv_id") and e.get("pipeline") not in ("no-source", "pdf-only")
+]
 
 
 def fetch_tarball(arxiv_id: str, tarball_path: str) -> None:
@@ -189,4 +192,33 @@ def test_no_source_papers_graceful(entry):
     )
     assert result.returncode != 0, (
         f"{arxiv_id}: expected non-zero exit for no-source paper, got success"
+    )
+
+
+@pytest.mark.parametrize(
+    "entry",
+    [e for e in CORPUS if e.get("pipeline") == "pdf-only"],
+    ids=[corpus_id(e) for e in CORPUS if e.get("pipeline") == "pdf-only"],
+)
+def test_pdf_only_papers_total_failure(entry, refetch):
+    """Papers where both make4ht and pandoc-latex fail; cc-arxiv --src must exit non-zero.
+
+    Source tarballs exist on arXiv but neither conversion path succeeds.
+    The expected workaround is PDF + cc-markitdown.
+    """
+    arxiv_id = entry["arxiv_id"]
+    tarball_path = os.path.join(TARBALLS_DIR, tarball_filename(arxiv_id))
+
+    if refetch or not os.path.exists(tarball_path):
+        fetch_tarball(arxiv_id, tarball_path)
+
+    if not os.path.exists(tarball_path):
+        pytest.skip(f"No cached tarball for {arxiv_id}; run with --refetch to download")
+
+    result = subprocess.run(
+        ["cc-arxiv", "--src", "--local-src", tarball_path, arxiv_id],
+        capture_output=True, text=True, timeout=300,
+    )
+    assert result.returncode != 0, (
+        f"{arxiv_id}: expected non-zero exit for pdf-only paper, got success"
     )

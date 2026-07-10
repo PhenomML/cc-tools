@@ -1,0 +1,10 @@
+---
+arxiv_id: "2305.13571"
+title: "Latent Positional Information is in the Self-Attention Variance of Transformer Language Models Without Positional Embeddings"
+authors: "Chi, Dong, Ma, Liang, Patra, Ye, Xu"
+year: 2023
+pipeline: pdf-only
+known_artifacts:
+  - "ACL LaTeX template (acl_latex.tex): tex4ht exits 1; pandoc direct-LaTeX fallback times out after 60s"
+notes: "NLP paper using ACL conference template; total pipeline failure (issue #47); workaround: PDF + cc-markitdown"
+---
