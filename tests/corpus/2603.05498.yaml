@@ -1,0 +1,11 @@
+---
+arxiv_id: "2603.05498"
+title: "The Spike, the Sparse and the Sink: Anatomy of Massive Activations and Attention Sinks"
+authors: "Sun, Canziani, LeCun, Zhu"
+year: 2026
+pipeline: pdf-only
+known_artifacts:
+  - "ICML 2026 class (icml2026.sty): tex4ht \\AltlDisplayDollars scanner runs off end of file when interacting with colortbl \\rowcolor; make4ht exits non-zero"
+  - "Pandoc direct-LaTeX: \\colorbox{lime!10} in captions (xcolor ! color-mixing syntax) causes 'unexpected Highlighted' parse error"
+notes: "NLP/ML paper using ICML 2026 conference template; total pipeline failure (issue #57); preprocessor (scripts/preprocess_corpus.py) succeeds with xcolor stripping + section-concat strategy; canonical copy at scratchpad (pending wiki ingest)"
+---
