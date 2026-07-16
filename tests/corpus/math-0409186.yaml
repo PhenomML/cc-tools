@@ -8,5 +8,5 @@ macro_count_min: 50
 macro_file: null
 known_artifacts: []
 verified: 2026-05-14
-notes: "Old-style arXiv ID (math/ prefix); foundational CS paper; Annals of Math style"
+notes: "Old-style arXiv ID (math/ prefix); foundational CS paper; Annals of Math style; preprocessor (pandoc path) fails at line 187 (unexpected \\begin); tex4md v0.1 succeeds: 938 lines Markdown, 0 errors, 39 PDF pages — caught discretionary-node bug (hyphens/ligatures silently dropped, fix in tex4md@060d822)"
 ---
