@@ -70,6 +70,16 @@ Claude will tell you when this is needed.
 
 After pulling, **start a new Claude session** before invoking updated skills. Claude Code caches skill file content within a session — a running instance will not pick up changes to skill files mid-session. A fresh session reads all skills from scratch. If a new session is not practical, you can tell Claude explicitly: "Re-read `~/.claude/commands/<skill-name>.md` before proceeding."
 
+## Codex support
+
+The `cc-*` CLI commands are plain `uv` entry points and work identically outside Claude Code — the installation steps above cover Codex too. What Codex doesn't get automatically is toolset *discovery*: it reads `AGENTS.md`, not `CLAUDE.md`. Copy the repo's `AGENTS.md` into place:
+
+```bash
+cp AGENTS.md ~/.codex/AGENTS.md
+```
+
+This is intentionally minimal, not a general multi-agent framework — no Codex-specific installer flag, plugin, or Agent-Skills directory port. `AGENTS.md` is hand-maintained as a prose rendering of the same tool table and research workflows in `claude-md-section.md`, scoped to what a Codex user needs today; it may drift from the canonical source over time. See [issue #61](https://github.com/PhenomML/cc-tools/issues/61) for the fuller cross-agent design this defers, and the file itself for which workflows are currently Claude-only.
+
 ## What's included
 
 | Command | Source | Purpose |

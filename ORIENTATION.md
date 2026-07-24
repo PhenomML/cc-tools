@@ -2,7 +2,7 @@
 
 Standard Claude Code toolset for PhenomML research projects. This file is regenerated at the end of each session.
 
-**Last updated:** 2026-07-16
+**Last updated:** 2026-07-24
 
 ## What this repo is
 
@@ -27,6 +27,7 @@ CLI tools and skills installed via `uv tool install --reinstall --force .` into 
 | `SECURITY.md` | LaTeX execution security (Tier-1 defenses, CVE-2023-32700) |
 | `AUTHORING.md` | Math and document rendering standard (MathJax, Mermaid, line wrapping) |
 | `SIGNAL.md` | AI-for-Science communication standard — three pillars: Markdown+MathJax, wiki, Shannon/McCloskey |
+| `AGENTS.md` | Codex-readable counterpart to the CLAUDE.md cc-tools section; hand-maintained, scoped to one Codex user (issue #61) |
 
 ## tex4md — peer project (active development)
 
@@ -70,6 +71,109 @@ Eight issues, sequenced. Issue 7 (test harness) gates both Issue 1 and Issue 2 �
 | 8 | cc-tools integration (`cc-arxiv --engine tex4md`) | Issues 1+2 stable |
 
 **Workspace rule:** tex4md is TeX Claude's workspace. Do not commit or stage files there. Surface content for relay only.
+
+## Agent compliance and scientific rigor (2026-07-23)
+
+Three discussions from this session, all converging on the same root cause: the model generates a plausible next action without checking whether it is scientifically grounded.
+
+### Issue #58 — generation-time failure to apply grounding
+
+Filed by Andrew after a GoT session: model led with a confounded result as a headline finding, was corrected, then re-derived the same confound in a different form — requiring 3 corrections despite relevant standing principles being in context. Distinct from issue #46 (session-start loading): the material was present; it was not consulted at generation time.
+
+**Diagnosis:** retrieval ≠ application. Correction momentum is not held as a persistent constraint across turns — the model re-derives from local context each time. The repetition datum (same confound, different form, three times) rules out "model didn't have the principle."
+
+**Direction:** structural gate before commit, not context re-injection. A PreToolUse hook on Write/Edit touching research artifacts that forces explicit articulation of (a) what the confound prediction would have been, (b) why this result is discriminable from it. Always-loaded context (CLAUDE.md) is more reliable than on-demand skills for compliance-critical rules — Vercel eval data confirms 0% improvement from skills vs. 79% from AGENTS.md instructions.
+
+### Commission scope discipline — Vera incident
+
+Vera added ungrounded tasks to a commission without scientific justification. Andrew let them run (hoping for useful output) and was annoyed post-completion. The structural fix: mandatory `rationale:` field for every commission task — what question does this task answer, and what happens if it is omitted? A task that cannot answer both is malformed and does not run.
+
+Key distinction: innovation expressed as a *hypothesis* ("I notice we haven't tested X because Y — should I add it?") is collaboration. Innovation expressed as silent task addition is unauthorized scope expansion. The commission document is the approval gate; additions after approval require a new approval.
+
+### Skill improvement landscape survey
+
+Surveyed the ecosystem of Claude skill improvement projects (2026-07-23):
+
+| Project | Key pattern | Distinct contribution |
+|---|---|---|
+| task-observer (rebelytics) | Observe→log→weekly review; cross-cutting principles file | Deliverable-event flush hook; self-improvement loop |
+| skill-optimizer (hqhq1025) | Mining from session transcripts; trigger-fit audit | Lifecycle separation (mine / personalize / generalize) |
+| instruction-tuning (adam-s) | Sub-agent as test subject; iterate until compliance without hints | Only approach targeting generation-time failure directly |
+| review-claudemd (ykdojo) | Mine transcripts for rule violations; propose stronger CLAUDE.md wording | Retroactive wording improvement from real violations |
+| agnix (agent-sh) | Static linter for CLAUDE.md/SKILL.md; 437 rules | Pre-flight structural validation |
+| Memento-Skills (arXiv:2603.18743) | Formal closed-loop with trainable skill router | Peer-reviewed validation; 26–116% accuracy gains |
+
+**Vercel finding (critical):** Skills with default behavior achieve 0% improvement over baseline because agents invoke them 0% of the time. AGENTS.md instructions: 79%. Embedded docs index in AGENTS.md: 100%. Compliance-critical rules go in always-loaded context, not skills.
+
+**Action items from survey:**
+1. Promote Research Discipline section to `~/.claude/CLAUDE.md` immediately — always-loaded is the right home
+2. Add `cross-cutting-principles.md` at cc-tools level, propagated via `/wiki-upgrade`
+3. Run `review-claudemd`-style transcript mining on recent violation sessions to strengthen CLAUDE.md wording
+4. Evaluate Graphify hands-on (desk research only; GRAPH_REPORT.md pattern is worth trying on cc-tools or a wiki)
+
+## Codex compatibility — minimal scope (2026-07-24)
+
+Issue #61 (external, `aasyed36`) proposed a full multi-provider framework:
+agent-neutral `setup.sh --target {codex,claude,all}`, dual `AGENTS.md`/
+`CLAUDE.md` generation, real `SKILL.md`-shaped Agent Skills, `.codex/config.toml`
+handling, plugin manifests, compatibility test matrix. Declined as scoped —
+see commit `de1e076` and the issue comment for full reasoning.
+
+**Actual driver:** one research-group member is already running cc-tools
+under Codex unassisted, because the 14 `cc-*` CLI entry points are plain
+`uv tool install` binaries and were already agent-neutral. What was missing
+was discovery — Codex reads `AGENTS.md`, not `CLAUDE.md`, so it had no way
+to know the toolset or workflows existed.
+
+**Shipped:** `AGENTS.md` at repo root — same tool table as
+`claude-md-section.md`, research workflows rewritten as plain prose (no
+`$ARGUMENTS`/slash-command syntax), a fallback rule ("if a directory has
+`CLAUDE.md` and no local `AGENTS.md`, read `CLAUDE.md` as the operating
+instructions" — lets existing wikis work under Codex without duplicating
+every wiki's `CLAUDE.md`), and explicit Claude-only flags for memory-audit,
+agent-brief, and wiki-upgrade's sentinel-block rewrite. No installer changes.
+
+**Staged plan (posted to issue #61):** Stage 0 (shipped) — static file, one
+user. Stage 1 — let the student's actual usage surface friction; fix
+specific breakage as reported, not speculatively. Stage 2 — only if a
+second Codex user appears: `cc-wiki-brief --runtime codex`, sentinel-block
+automation for `~/.codex/AGENTS.md`, possible `SKILL.md` port of the
+highest-traffic workflows. Stage 3 — only if the group standardizes on
+multi-agent work: revisit issue #61's full proposal.
+
+**How to apply:** Do not build Stage 2/3 infrastructure without a second
+demonstrated Codex user. If `AGENTS.md` and `claude-md-section.md` drift,
+`claude-md-section.md` is authoritative — reconcile by hand for now.
+
+## Graphify trial — aborted, ROI unclear (2026-07-23/24)
+
+Attempted to run `/graphify` on `geometry-of-truth` and `Meridian` via
+background agents. Both stalled well past the ~5 min estimate (28+ min).
+Initial hypothesis was a nested-agent architecture issue (the skill's
+semantic-extraction step dispatches its own Agent-tool subagents per file
+chunk; running the skill *from* a background agent would double-nest that
+dispatch). **Andrew's correction (2026-07-24): this is unconfirmed** —
+graphify may simply take significant setup time on old, complex repos
+regardless of nesting. Both GoT and Meridian are large, long-running
+corpora (433 and 205+339 files). More importantly: **it is not yet clear
+graphify is worth the setup cost** — an open evaluation question, not a
+solved problem.
+
+**Also surfaced a workspace-write violation:** both projects are other
+agents' workspaces (Vera's GoT, Emma's Meridian). Neither running graphify
+there nor cleaning up the resulting `graphify-out/` directories afterward
+should have happened without asking first — "Andrew asked for it" and "I
+created the files" were both treated, incorrectly, as authorization. See
+`feedback_workspace_write_discipline` memory (extended this session).
+
+**Status:** both `graphify-out/` directories removed; GoT and Meridian are
+back to pre-trial state. Not yet retried.
+
+**How to apply:** Don't restate the nested-agent theory as a confirmed
+diagnosis. Before recommending a retry, the time-cost/value tradeoff needs
+addressing first, not just the execution mechanics — and any retry still
+requires explicit confirmation from Vera/Emma or Andrew before running
+tooling in their workspace.
 
 ## Research Discipline (new, 2026-07-16)
 
@@ -149,11 +253,16 @@ Two-step: make4ht (TeX→HTML) → pandoc (HTML→Markdown), with pandoc-direct-
 | 27 | cc-arxiv --src: fallback chain HTML → tarball → PDF |
 | 21 | cc-webfetch --math: pandoc pipeline for math-heavy HTML pages |
 | 19 | /wiki-orient skill |
+| 61 | Codex support (external) — declined as scoped; narrower `AGENTS.md` shipped instead, tracked for the fuller design if a second Codex user appears |
 
 ## Pending work
 
+- **Codex friction from real usage:** watch for reported breakage against `AGENTS.md` (Stage 1 of the issue #61 plan) — fix specific issues as the one Codex user hits them, don't pre-build Stage 2/3
+- **Graphify — ROI unresolved:** aborted trial on GoT/Meridian; setup cost on large old repos may be inherent, not a nesting bug — whether it's worth the time is still an open question, decide that before any retry; a retry also needs Vera's/Emma's or Andrew's explicit go-ahead to run tooling in their workspace
+- **Research Discipline section:** `ideas/research-discipline-draft.md` — promote to `~/.claude/CLAUDE.md`; Vercel data confirms always-loaded is the right home; pending Andrew approval
+- **Cross-cutting principles file:** create `cross-cutting-principles.md` at cc-tools level; propagate via `/wiki-upgrade`; starting content: commission rationale field, workspace write rule, `*[Imputed]*` as stop signal, confound-discriminability check
+- **Commission rationale field:** add mandatory `rationale:` field to commission template; gates unauthorized scope addition
 - **tex4md Phase 3:** relay goals doc (`ideas/tex4md-phase3-goals.md`) to TeX Claude; Issue 7 (test harness) first
-- **Research Discipline section:** review `ideas/research-discipline-draft.md`; promote to `~/.claude/CLAUDE.md` when approved
 - **cmux KaTeX PR:** implement once maintainer responds to issue #6749
 - **File issue for 2602.02385:** tex4ht .xbb failure pattern not yet filed
 - **Upstream tikz-hooks.4ht report (issue #44):** draft for Andrew to relay to Michal
