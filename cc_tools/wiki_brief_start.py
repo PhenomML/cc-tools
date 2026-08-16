@@ -38,17 +38,20 @@ def to_slug(name: str) -> str:
 
 def infer_category(name: str) -> str:
     """Heuristic: multi-word title-cased names with no corporate keywords or abstract
-    noun suffixes are treated as People; everything else falls to Companies.
-    Use --topic, --person, --company, or --dir to override."""
+    noun suffixes are treated as People; multi-word title-cased names rejected from
+    People for an abstract noun suffix are treated as Topics; everything else falls
+    to Companies. Use --topic, --person, --company, or --dir to override."""
     words = name.strip().split()
     if len(words) < 2:
         return "Companies"
     if {w.lower() for w in words} & _COMPANY_WORDS:
         return "Companies"
     if all(w[0].isupper() for w in words):
-        # Reject if any word ends in a suffix common to abstract nouns/concepts.
+        # An abstract-noun suffix ("Denoising", "Sensing", "Compression", ...) is
+        # exactly the profile of a research topic, not a company — route there
+        # instead of falling through to Companies.
         if any(w.lower().endswith(s) for w in words for s in _ABSTRACT_SUFFIXES):
-            return "Companies"
+            return "Topics"
         return "People"
     return "Companies"
 
