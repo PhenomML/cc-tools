@@ -3,6 +3,7 @@
 #   - Installs/reinstalls the cc-tools Python package in editable mode (local source)
 #   - Manages the cc-tools section in ~/.claude/CLAUDE.md (sentinel-based, idempotent)
 #   - Symlinks skills from skills/ into ~/.claude/commands/ (updates on git pull)
+#   - Symlinks output styles from output-styles/ into ~/.claude/output-styles/ (updates on git pull)
 #   - With --project [dir]: create/update .claude/settings.local.json in that directory
 #     with the standard cc-tools allowlist. Safe to run again — merges, never removes.
 #   - With --adversary <brief-dir>: initialize an AG adversary workspace as a sibling
@@ -288,6 +289,29 @@ for skill in "$SKILLS_SRC"/*.md; do
     (( count++ )) || true
 done
 echo "setup-claude: $count skill(s) linked to $COMMANDS_DIR"
+
+# ── Output styles ────────────────────────────────────────────────────────────
+
+STYLES_SRC="$SCRIPT_DIR/output-styles"
+STYLES_DIR="$HOME/.claude/output-styles"
+mkdir -p "$STYLES_DIR"
+
+count=0
+for style in "$STYLES_SRC"/*.md; do
+    [[ -f "$style" ]] || continue
+    name="$(basename "$style")"
+    target="$STYLES_DIR/$name"
+    if [[ -L "$target" ]]; then
+        ln -sf "$style" "$target"
+    elif [[ -e "$target" ]]; then
+        echo "setup-claude: skipping $name — exists and is not a symlink (user-created file?)"
+        continue
+    else
+        ln -s "$style" "$target"
+    fi
+    (( count++ )) || true
+done
+echo "setup-claude: $count output style(s) linked to $STYLES_DIR"
 
 # ── Optional system dependencies ─────────────────────────────────────────────
 

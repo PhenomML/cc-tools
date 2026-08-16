@@ -22,6 +22,13 @@ Complete every item on this checklist before closing the session. Each item is a
 - [ ] `~/.claude/CLAUDE.md` — mirror the skills table row
 - [ ] `README.md` — add skill to the skills reference
 
+## New Output Style (`~/.claude/output-styles/<style>.md`)
+
+- [ ] Style file written in `output-styles/`, with `name`/`description`/`keep-coding-instructions` frontmatter
+- [ ] `bash setup-claude.sh` — confirm it symlinks (not skips) into `~/.claude/output-styles/`
+- [ ] `README.md` — add to the Output Styles section
+- [ ] If the style governs persistent-record writing, cross-reference the `*[Imputed]*` convention rather than reinventing hedging language
+
 ## After Any Change
 
 - [ ] Commit with a message that names the tool/skill

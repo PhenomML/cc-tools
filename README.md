@@ -194,6 +194,17 @@ The agent reads the operational brief, reads `../CLAUDE.md` for repo context, wr
 
 The multi-agent file convention (`syntheses/<topic>-<agent-slug>.md`, `## Questions for <Agent>` sections) is documented in the skill and lets two Claude instances collaborate through a shared `syntheses/` directory with the researcher as relay.
 
+## Output Styles
+
+`output-styles/` ships Claude Code output styles, symlinked into `~/.claude/output-styles/` by `setup-claude.sh` the same way skills are symlinked into `~/.claude/commands/`. Activate one with `/output-style`.
+
+| Style | Purpose |
+|---|---|
+| `scientific-record` | Terse, precise, no hedging filler — write like a lab notebook entry, not a chat message |
+| `scientific-record-shannon` | Same discipline, applied specifically to persistent-record content (wiki entries, reports, commit messages) in Claude Shannon's expository voice — term-pinning, assumptions stated before results, no evaluative adjectives. Conversational replies keep their own voice; this governs what gets written down. |
+
+Both cross-reference the `*[Imputed]*` convention for load-bearing uncertainty rather than reinventing hedging language — the tag carries the uncertainty so the surrounding prose can stay declarative.
+
 ## Unsupported tools
 
 The following tools ship in this repository but are **not supported** — no bug reports or feature requests. Use at your own risk.
