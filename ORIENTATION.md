@@ -2,7 +2,7 @@
 
 Standard Claude Code toolset for PhenomML research projects. This file is regenerated at the end of each session.
 
-**Last updated:** 2026-07-24
+**Last updated:** 2026-08-17
 
 ## What this repo is
 
@@ -27,7 +27,9 @@ CLI tools and skills installed via `uv tool install --reinstall --force .` into 
 | `SECURITY.md` | LaTeX execution security (Tier-1 defenses, CVE-2023-32700) |
 | `AUTHORING.md` | Math and document rendering standard (MathJax, Mermaid, line wrapping) |
 | `SIGNAL.md` | AI-for-Science communication standard — three pillars: Markdown+MathJax, wiki, Shannon/McCloskey |
-| `AGENTS.md` | Codex-readable counterpart to the CLAUDE.md cc-tools section; hand-maintained, scoped to one Codex user (issue #61) |
+| `AGENTS.md` | Codex-readable counterpart to the CLAUDE.md cc-tools section; hand-maintained, now tracking 2 known Codex users (issue #61, #70) |
+| `output-styles/` | Claude Code output styles, symlinked into `~/.claude/output-styles/` by `setup-claude.sh` |
+| `skills/wiki-claim.md` | `/wiki-claim` — literature claims with quotation grounding + dual-agent adversarial adjudication; now in the canonical manifest (was missing) |
 
 ## tex4md — peer project (active development)
 
@@ -145,35 +147,87 @@ multi-agent work: revisit issue #61's full proposal.
 demonstrated Codex user. If `AGENTS.md` and `claude-md-section.md` drift,
 `claude-md-section.md` is authoritative — reconcile by hand for now.
 
-## Graphify trial — aborted, ROI unclear (2026-07-23/24)
+**Stage 2 trigger has now fired (2026-08-17):** a second Codex user
+appeared — `jackkrew` (one of Dave Donoho's graduate students), filing
+issue #70. Stage 2 items (`cc-wiki-brief --runtime codex`, sentinel-block
+automation, `SKILL.md` ports) are not yet built — this is a decision
+point, not an automatic build order. Revisit before the next Codex-facing
+request.
 
-Attempted to run `/graphify` on `geometry-of-truth` and `Meridian` via
-background agents. Both stalled well past the ~5 min estimate (28+ min).
-Initial hypothesis was a nested-agent architecture issue (the skill's
-semantic-extraction step dispatches its own Agent-tool subagents per file
-chunk; running the skill *from* a background agent would double-nest that
-dispatch). **Andrew's correction (2026-07-24): this is unconfirmed** —
-graphify may simply take significant setup time on old, complex repos
-regardless of nesting. Both GoT and Meridian are large, long-running
-corpora (433 and 205+339 files). More importantly: **it is not yet clear
-graphify is worth the setup cost** — an open evaluation question, not a
-solved problem.
+## Output styles + wiki-claim discoverability + claims-pipeline gap (2026-08-16/17)
 
-**Also surfaced a workspace-write violation:** both projects are other
-agents' workspaces (Vera's GoT, Emma's Meridian). Neither running graphify
-there nor cleaning up the resulting `graphify-out/` directories afterward
-should have happened without asking first — "Andrew asked for it" and "I
-created the files" were both treated, incorrectly, as authorization. See
-`feedback_workspace_write_discipline` memory (extended this session).
+**Output styles shipped:** two Claude Code output styles —
+`scientific-record` and `scientific-record-shannon` (Shannon's expository
+voice: term-pinning, assumptions before results, no evaluative adjectives)
+— in `output-styles/`, symlinked via `setup-claude.sh` the same way skills
+are. Both cross-reference `*[Imputed]*` in their hedging rule rather than
+reinventing hedging language in prose. Output styles are read once at
+session start, not live — a `/clear` or new session is required after
+adding/updating one before `/config` will show it (confirmed empirically,
+not just from docs).
 
-**Status:** both `graphify-out/` directories removed; GoT and Meridian are
-back to pre-trial state. Not yet retried.
+**`infer_category()` bug fixed:** `cc-wiki-brief` had no Topics branch —
+a multi-word title-cased subject rejected from People for an abstract-noun
+suffix (`Matrix Denoising`, `Compressed Sensing`) silently fell through to
+Companies. Caught live when "Matrix Denoising" landed in the wrong
+directory. Fixed + regression-tested (`tests/test_wiki_brief_start.py`).
 
-**How to apply:** Don't restate the nested-agent theory as a confirmed
-diagnosis. Before recommending a retry, the time-cost/value tradeoff needs
-addressing first, not just the execution mechanics — and any retry still
-requires explicit confirmation from Vera/Emma or Andrew before running
-tooling in their workspace.
+**`/wiki-claim` discoverability gap found and fixed:** the skill is real
+and working (dual-agent cold-read, quotation-grounded claims, human
+adjudication) but was missing from `claude-md-section.md` entirely —
+invisible to `/wiki-upgrade` propagation and to `AGENTS.md`. Fixed across
+`claude-md-section.md`, `~/.claude/CLAUDE.md`, `README.md`, `AGENTS.md`.
+
+**Bigger finding underneath it — not yet resolved:** cc-tools has **two
+independent, unreconciled claims pipelines** — `/wiki-claim` (literature,
+portable, ships in this repo) and `templates/wiki-schema.md`'s
+thesis/antithesis/synthesis "Adversarial Review Workflow" (high-stakes
+lemmas, templates live in Andrew's private Obsidian vault, not portable).
+A third piece — a settled 2026-05-18 Fran/Tool spec for four claim types
+(Literature/Theory/Experimental/Phenomenological, distinct prefixes,
+shared paragraph shape, a Status column for evolving claims) that
+directly answers issue #70's design question — was fully designed and
+never shipped (`templates/non-literature-claim.md` doesn't exist). Full
+spec: `~/Library/Mobile Documents/iCloud~md~obsidian/Documents/research-tooling/syntheses/fran-tool-claims-design-2026-05-18.md`.
+
+**Deliberately not resolved this session:** which pipeline is canonical,
+whether to ship the four-type template, and the anchor-format conflict
+between the settled spec (Obsidian block-refs primary) and what
+`/wiki-claim` already uses (GitHub-style heading anchors) — a real
+decision, not mine to make unilaterally while responding to an external
+issue. Both new GitHub issues (#69, #70, from `jackkrew`) received
+substantive comments; #70's comment is transparent about what's shipped
+vs. designed-but-unbuilt. No follow-up issue filed yet for the
+reconciliation work.
+
+## Graphify — resolved, in active use, weekly-tracked (2026-07-23 → 2026-08-17)
+
+The 2026-07-23 trial (background-agent stall on GoT/Meridian, ROI unclear)
+is superseded. Emma independently ran `graphify --update` on Meridian
+2026-08-03 — succeeded, caught and self-corrected a real scope gap
+(`results/` and `wiki/figures/` had never been in the graph) and a real
+manifest bug (filtered-out files would have been permanently marked
+"processed"). Confirms the original stall was plausibly an artifact of
+running the skill from a *nested* background agent, not an inherent
+ROI problem — running it as Emma's own session-native action worked.
+
+**Version:** updated 0.9.25 → 0.9.36 → 0.9.46 (2026-08-12, 2026-08-17).
+Both times: `uv tool upgrade graphifyy && graphify install --platform
+claude`. Issue #2128 (secrets-manager API key support, filed by us)
+remains open and unaddressed across all releases checked so far.
+
+**Weekly scheduled check:** a cloud routine (`trig_017kXCmKSknaq9xSYwXQ35WY`,
+Mondays 9:17am America/Chicago) checks PyPI + GitHub releases from the
+last 8 days and reports REVIEW vs NO ACTION NEEDED — flags anything
+touching markdown/Python extraction, `graphify update` correctness, or
+issue #2128. It cannot upgrade the local install itself (cloud sandbox,
+no access to this Mac) — a REVIEW verdict still needs a local session to
+act on it.
+
+**How to apply:** graphify is a working, current dependency now, not an
+open evaluation question. Workspace-write discipline from the original
+incident still stands — don't run tooling in Vera's/Emma's workspaces
+without their or Andrew's go-ahead for that specific action.
 
 ## Research Discipline (new, 2026-07-16)
 
@@ -253,13 +307,15 @@ Two-step: make4ht (TeX→HTML) → pandoc (HTML→Markdown), with pandoc-direct-
 | 27 | cc-arxiv --src: fallback chain HTML → tarball → PDF |
 | 21 | cc-webfetch --math: pandoc pipeline for math-heavy HTML pages |
 | 19 | /wiki-orient skill |
-| 61 | Codex support (external) — declined as scoped; narrower `AGENTS.md` shipped instead, tracked for the fuller design if a second Codex user appears |
+| 61 | Codex support (external) — declined as scoped; narrower `AGENTS.md` shipped instead; Stage 2 trigger (second Codex user) has now fired via #70 |
+| 69 | cc-arxiv --src: make4ht fallback on 1103.1943 — same known register-overflow family, tex4md (#52) is the fix path |
+| 70 | Joint reasoning over literature + evolving research claims (external, `jackkrew`/Dave's student) — surfaced the claims-pipeline reconciliation gap below |
 
 ## Pending work
 
+- **File a follow-up issue for the claims-pipeline reconciliation:** `/wiki-claim` (literature) vs. `wiki-schema.md`'s Adversarial Review Workflow (high-stakes lemmas, templates in a private Obsidian vault) are unreconciled; the settled-but-unshipped four-claim-type spec (`fran-tool-claims-design-2026-05-18.md`) is the actual answer to issue #70's design question. Decide which pipeline is canonical, whether to ship `templates/non-literature-claim.md`, and resolve the anchor-format conflict (Obsidian block-refs vs. the heading-anchor style `/wiki-claim` already uses) before building anything.
 - **Unverified-fact tripwire for persistent files:** before writing any factual/relational claim into `CLAUDE.md`, `AGENTS.md`, a brief, or a wiki page about an entity the researcher named, verify by reading the specific source first — do not pattern-complete from other projects' structure, even when it looks obviously applicable, and do not keep guessing across multiple searches. If unresolved after one focused search, ask. Second independent case (after issue #58) for the same underlying gap: judgment-trust guidance (Anthropic's Claude 5 post) is scoped to coding-eval-validated retrieval tasks and does not transfer to truth-manufacturing artifacts inherited as ground truth by future sessions. Candidate mechanism: extend the issue #58 hook design to cover writes to any CLAUDE.md-class file, not just research claims. See `feedback_truth_manufacturing_vs_retrieval` memory for the incident (Manus/SS4R setup, 2026-07-26) this is drawn from.
-- **Codex friction from real usage:** watch for reported breakage against `AGENTS.md` (Stage 1 of the issue #61 plan) — fix specific issues as the one Codex user hits them, don't pre-build Stage 2/3
-- **Graphify — ROI unresolved:** aborted trial on GoT/Meridian; setup cost on large old repos may be inherent, not a nesting bug — whether it's worth the time is still an open question, decide that before any retry; a retry also needs Vera's/Emma's or Andrew's explicit go-ahead to run tooling in their workspace
+- **Codex Stage 2 decision:** a second Codex user has appeared (issue #70, `jackkrew`) — the trigger this session's Stage 2 plan named. Decide whether to build `cc-wiki-brief --runtime codex`, sentinel-block automation, or `SKILL.md` ports, or wait for more signal.
 - **Research Discipline section:** `ideas/research-discipline-draft.md` — promote to `~/.claude/CLAUDE.md`; Vercel data confirms always-loaded is the right home; pending Andrew approval
 - **Cross-cutting principles file:** create `cross-cutting-principles.md` at cc-tools level; propagate via `/wiki-upgrade`; starting content: commission rationale field, workspace write rule, `*[Imputed]*` as stop signal, confound-discriminability check
 - **Commission rationale field:** add mandatory `rationale:` field to commission template; gates unauthorized scope addition

@@ -194,6 +194,14 @@ The agent reads the operational brief, reads `../CLAUDE.md` for repo context, wr
 
 The multi-agent file convention (`syntheses/<topic>-<agent-slug>.md`, `## Questions for <Agent>` sections) is documented in the skill and lets two Claude instances collaborate through a shared `syntheses/` directory with the researcher as relay.
 
+### /wiki-claim: quotation-grounded literature claims with adversarial adjudication
+
+`/wiki-claim` enumerates claims from a source (paper, ingested document) as falsifiable statements, each grounded in a minimal verbatim quotation and rated for confidence. Three modes: `triage <source>` (cheap relevance screen before committing to a full read), `deep <source>` (full cold-read claim enumeration — one agent as primary, an adversary agent reads independently), and `adjudicate <source>` (human-mediated diff between the two independent reads, resolving coverage gaps and confidence mismatches into a final adjudicated claim set).
+
+Claims are addressable — `[[<source>-claims#PREFIX-NNN]]` — and are the grounding target for the `*[Imputed]*` convention: a statement with no backing claim is flagged inline rather than asserted as fact.
+
+**Note:** this covers literature claims specifically. A separate, adversarial-review pipeline in `templates/wiki-schema.md` (`claim-enum` → `adversarial-review` → `synthesis` → `destroy`) targets high-stakes mathematical claims — lemmas and proof sketches — and is not yet reconciled with `/wiki-claim`; the two are currently independent conventions serving different granularities.
+
 ## Output Styles
 
 `output-styles/` ships Claude Code output styles, symlinked into `~/.claude/output-styles/` by `setup-claude.sh` the same way skills are symlinked into `~/.claude/commands/`. Activate one with `/output-style`.

@@ -121,6 +121,26 @@ Use the matching `cc-*` command to fetch or convert, then do the requested
 task directly: search-and-summarize, summarize, narrate, or check against
 the math convention in `AUTHORING.md`.
 
+**Enumerating literature claims with adversarial adjudication.** Given a
+source (an ingested paper or document), three stages: triage (cheap
+relevance screen from the abstract alone before committing to a full
+read — verdict + estimated yield, wait for approval to go deeper), deep
+read (full claim enumeration in reading order — each claim a falsifiable
+statement grounded in a minimal verbatim quotation with a confidence
+rating; a second, independent agent reads cold and does the same), and
+adjudicate (diff the two independent readings — claims both agents found
+with matching high-confidence quotations fast-pass as anchors; coverage
+gaps, confidence mismatches, and rival interpretations go to the
+researcher one at a time). Claims are addressable
+(`[[<source>-claims#PREFIX-NNN]]`) and are the grounding target for the
+`*[Imputed]*` convention below — an unbacked statement gets flagged
+inline rather than asserted as settled fact. **Scope note:** this covers
+literature claims specifically. A separate pipeline (thesis/antithesis/
+synthesis via an adversary model) exists for high-stakes mathematical
+claims — lemmas, proof sketches — and is not yet reconciled with this
+one; treat them as two independent conventions for now, not a unified
+system.
+
 ## Claude-only for now
 
 These are not available under Codex because they depend on Claude Code's

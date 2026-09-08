@@ -48,6 +48,7 @@
 | `/wiki-promote` | `/wiki-promote <brief-path>` | Promote brief findings to wiki |
 | `/agent-brief` | `/agent-brief <brief-path>` | Instantiate a specialised agent from an operational brief |
 | `/memory-audit` | `/memory-audit` | Audit project auto-memory for stale, overdue, or promotable entries |
+| `/wiki-claim` | `/wiki-claim triage\|deep\|adjudicate <source>` | Enumerate literature claims with quotation-grounded provenance and confidence ratings; dual-agent (primary + adversary) cold-read pipeline with human-mediated adjudication |
 
 Skills auto-update on `git pull`. Docs: https://github.com/PhenomML/cc-tools
 
