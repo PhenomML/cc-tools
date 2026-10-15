@@ -1,7 +1,7 @@
 ---
 title: "Messages bearing on a scientific record carry locators only"
 type: rule-block
-status: draft v5, awaiting its first commit and a trial; optional per workspace
+status: v5; in trial in the GoT workspaces; optional per workspace
 requested: for-information
 ---
 
