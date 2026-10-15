@@ -542,6 +542,30 @@ def _uses_package(root_tex: str, package: str) -> bool:
     return False
 
 
+def _run_in_group(cmd: list[str], cwd: str, env: dict, timeout: int):
+    """Run cmd in its own process group; on timeout kill the whole group.
+
+    subprocess.run(timeout=...) kills only the direct child. make4ht spawns
+    latex through sh, so the grandchild survived and spun for days (#76).
+    Returns (returncode, stdout, stderr, timed_out).
+    """
+    import signal
+    proc = subprocess.Popen(
+        cmd, cwd=cwd, env=env, start_new_session=True,
+        stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+    )
+    try:
+        out, err = proc.communicate(timeout=timeout)
+        return proc.returncode, out, err, False
+    except subprocess.TimeoutExpired:
+        try:
+            os.killpg(proc.pid, signal.SIGKILL)
+        except ProcessLookupError:
+            pass
+        out, err = proc.communicate()
+        return proc.returncode, out, err, True
+
+
 def _convert_tarball(src_data: bytes, arxiv_id: str, figures_dir: str | None = None, output_path: str | None = None) -> str:
     """Convert raw tarball bytes to markdown. Called by _src_to_markdown and --local-src."""
     import gzip as _gzip
@@ -648,14 +672,17 @@ def _convert_tarball(src_data: bytes, arxiv_id: str, figures_dir: str | None = N
                 make4ht_cmd = ["make4ht", "-c", alg_cfg, tex_name, "mathjax"]
                 print("cc-arxiv --src: applying algpseudocode.cfg patch (#190)", file=sys.stderr)
 
-        r = subprocess.run(
-            make4ht_cmd,
-            cwd=tex_dir, capture_output=True, timeout=180, env=make_env,
-        )
+        rc, r_out, r_err, timed_out = _run_in_group(make4ht_cmd, tex_dir, make_env, 180)
         stem = os.path.splitext(tex_name)[0]
         html_path = os.path.join(tex_dir, stem + ".html")
-        if r.returncode != 0 and not os.path.exists(html_path):
-            print(f"cc-arxiv --src: make4ht failed (exit {r.returncode}), trying pandoc fallback",
+        if timed_out:
+            # Group killed; discard any partial HTML and fall back to pandoc (#74, #76).
+            print("cc-arxiv --src: make4ht timed out after 180s (process group killed), "
+                  "trying pandoc fallback", file=sys.stderr)
+            if os.path.exists(html_path):
+                os.remove(html_path)
+        elif rc != 0 and not os.path.exists(html_path):
+            print(f"cc-arxiv --src: make4ht failed (exit {rc}), trying pandoc fallback",
                   file=sys.stderr)
             # make4ht writes diagnostics to the TeX .log file, not stderr.
             # Print the tail so failures can be reported upstream (issue #189).
@@ -664,11 +691,11 @@ def _convert_tarball(src_data: bytes, arxiv_id: str, figures_dir: str | None = N
                 with open(log_path, encoding="utf-8", errors="replace") as _lf:
                     log_tail = _lf.read()[-4000:]
                 print("cc-arxiv --src: make4ht log (tail):\n" + log_tail, file=sys.stderr)
-            elif r.stderr:
-                print("cc-arxiv --src: make4ht stderr:\n" + r.stderr.decode("utf-8", errors="replace"),
+            elif r_err:
+                print("cc-arxiv --src: make4ht stderr:\n" + r_err.decode("utf-8", errors="replace"),
                       file=sys.stderr)
-            if r.stdout:
-                print("cc-arxiv --src: make4ht stdout:\n" + r.stdout.decode("utf-8", errors="replace"),
+            if r_out:
+                print("cc-arxiv --src: make4ht stdout:\n" + r_out.decode("utf-8", errors="replace"),
                       file=sys.stderr)
 
         macro_block = _extract_preamble_macros(root_tex)
