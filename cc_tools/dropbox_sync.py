@@ -72,7 +72,8 @@ def main() -> None:
     project_name = Path.cwd().name
     target_dir = sync_parent / project_name
 
-    target_dir.mkdir(parents=True, exist_ok=True)
+    if not args.dry_run:
+        target_dir.mkdir(parents=True, exist_ok=True)
 
     source = str(Path.cwd()) + "/"
     dest = str(target_dir) + "/"
