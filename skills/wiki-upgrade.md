@@ -150,6 +150,38 @@ else:
 PYEOF
 ```
 
+## Step 3c — Add the point-of-use operations rule if missing
+
+Check whether the rule is present:
+
+```bash
+grep -c "first command that touches a machine" CLAUDE.md
+```
+
+If the output is `0`, insert it the same way as Step 3b (before `## Session End` or the managed-block sentinel). The rule is conditional on the project having an operations document, so it is safe in wikis that have none. It belongs in the project-root CLAUDE.md because that file is re-read from disk after a compaction; path-scoped and nested files are not.
+
+```bash
+WIKI_CLAUDE="CLAUDE.md" python3 - <<'PYEOF'
+import os, pathlib
+
+path = pathlib.Path(os.environ["WIKI_CLAUDE"])
+text = path.read_text()
+
+if "first command that touches a machine" in text:
+    print("Operations rule already present — skipping.")
+else:
+    rule = "\n**Before the first command that touches a machine or shared resource in a context:** read the section of the project's operations document that covers it (grep the headings; do not read the whole file), and run any pane or target discovery uncut (no `| head`). A compaction clears this: the first such command after a compaction repeats the read. If the project has no operations document, this rule does not apply.\n\n"
+    for boundary in ["## Session End", "<!-- cc-tools:wiki:begin -->"]:
+        if boundary in text:
+            text = text.replace(boundary, rule + boundary, 1)
+            path.write_text(text)
+            print(f"Operations rule injected before '{boundary}'.")
+            break
+    else:
+        print("Could not find insertion point — add manually in ## Session Start section.")
+PYEOF
+```
+
 ## Step 4 — Bootstrap INDEX.md if missing
 
 Check whether `INDEX.md` exists at the wiki root:

@@ -213,6 +213,25 @@ Claims are addressable — `[[<source>-claims#PREFIX-NNN]]` — and are the grou
 
 Both cross-reference the `*[Imputed]*` convention for load-bearing uncertainty rather than reinventing hedging language — the tag carries the uncertainty so the surrounding prose can stay declarative.
 
+## Compaction hook (optional)
+
+`hooks/compaction-context.py` helps a session keep its project procedures across a compaction. It is **not registered automatically**; add it per project in `.claude/settings.json` (replace the path with your `$CC_TOOLS` checkout):
+
+```json
+{
+  "hooks": {
+    "SessionStart": [{"matcher": "compact", "hooks": [{"type": "command", "command": "python3 $CC_TOOLS/hooks/compaction-context.py"}]}],
+    "PreCompact": [{"hooks": [{"type": "command", "command": "python3 $CC_TOOLS/hooks/compaction-context.py"}]}]
+  }
+}
+```
+
+- **After a compaction** it injects a few factual lines: that the context was compacted, the path of the project's operations document if one exists (`operations.md`, `wiki/operations.md`), and the last `log.md` entry heading. It reads nothing else.
+- **Before a compaction** it prints guidance for the summariser: keep the procedure-document paths, the standing orders and the action in flight.
+- Other events print nothing, and errors exit 0, so it cannot block a session.
+
+It complements the point-of-use rule in the experiment-wiki template (read the operations section before the first machine-touching command in a context). The rule lives in the project-root `CLAUDE.md`, which is re-read from disk after a compaction; the hook only reminds. Unit-tested for output shape; not yet exercised in a live compaction.
+
 ## Unsupported tools
 
 The following tools ship in this repository but are **not supported** — no bug reports or feature requests. Use at your own risk.

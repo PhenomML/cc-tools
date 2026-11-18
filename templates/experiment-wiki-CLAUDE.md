@@ -17,6 +17,8 @@ If `ORIENTATION.md` is absent, read the documents listed in the operational brie
 
 **Why:** This wiki accumulates experiment-specific state that does not exist in Claude's training data. Working from memory substitutes training priors for the evolved project understanding.
 
+**Before the first command that touches a machine or shared resource in a context:** read the section of the project's operations document that covers it (grep the headings; do not read the whole file), and run any pane or target discovery uncut (no `| head`). A compaction clears this: the first such command after a compaction repeats the read. If the project has no operations document, this rule does not apply.
+
 ## Session End
 
 **Before closing (`/exit`), regenerate `ORIENTATION.md`.**

@@ -29,6 +29,12 @@ Complete every item on this checklist before closing the session. Each item is a
 - [ ] `README.md` — add to the Output Styles section
 - [ ] If the style governs persistent-record writing, cross-reference the `*[Imputed]*` convention rather than reinventing hedging language
 
+## New Hook (`hooks/`)
+
+- [ ] Script in `hooks/`, executable, exits 0 on any error so it cannot block a session
+- [ ] Unit test in `tests/` for output shape per event
+- [ ] `README.md` — document the settings snippet; hooks are registered per project, not by `setup-claude.sh`, unless the change says otherwise
+
 ## After Any Change
 
 - [ ] Commit with a message that names the tool/skill
